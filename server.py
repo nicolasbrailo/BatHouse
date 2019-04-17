@@ -10,6 +10,7 @@
 # * Local sensors
 # * MK proper logger for sys srvc
 # * Integrate as service + parseargs
+# * Move media player template out of zigbee2mqtt2flask module
 
 import json
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
@@ -158,7 +159,7 @@ with open('config.json', 'r') as fp:
     cfg = json.loads(fp.read())
 
 from thing_spotify import ThingSpotify
-world.register_thing(ThingSpotify(cfg))
+world.register_thing(ThingSpotify(cfg, "ZMF"))
 
 @flask_app.route('/scenes/living_room_evening')
 def flask_endpoint_scenes_1():
@@ -182,12 +183,13 @@ def flask_endpoint_scenes_5():
     return "OK"
 
 
-@flask_app.route('/foo')
+@flask_app.route('/')
+@flask_app.route('/index.html')
 def flask_endpoint_sdasdsa():
-    return send_from_directory('.', './idx.html')
-@flask_app.route('/foo2')
+    return send_from_directory('.', './index.html')
+@flask_app.route('/mqtt_log')
 def flask_endpoint_sdassddsa():
-    return send_from_directory('.', './idx2.html')
+    return send_from_directory('.', './mqtt_log.html')
 
 @flask_app.route('/world/scan_chromecasts')
 def flask_endpoint_world_scan_chromecasts():

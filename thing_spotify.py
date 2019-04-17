@@ -7,8 +7,9 @@ from spotipy.oauth2 import SpotifyOAuth
 class _ThingSpotifyDummy(Thing):
     """ Dummy Spotify thing used when no auth token is valid """
 
-    def __init__(self):
+    def __init__(self, api_base_url):
         super().__init__("Spotify", "Spotify")
+        self.api_base_url = api_base_url
 
     def supported_actions(self):
         s = super().supported_actions()
@@ -48,10 +49,10 @@ class _ThingSpotifyDummy(Thing):
         pass
 
     def json_status(self):
-        err_solve = "<a href='/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
+        err_solve = "<a href='{}/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
         return {
                 'error': 'Not authenticated',
-                'error_html_details': err_solve.format(self.get_pretty_name()),
+                'error_html_details': err_solve.format(self.api_base_url, self.get_pretty_name()),
                 'name': self.get_pretty_name(),
                 'uuid': self.get_id(),
                 'uri': None,
@@ -66,8 +67,8 @@ class _ThingSpotifyDummy(Thing):
 
 
 class _ThingSpotifyImpl(_ThingSpotifyDummy):
-    def __init__(self, tok):
-        super().__init__()
+    def __init__(self, api_base_url, tok):
+        super().__init__(api_base_url)
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
 
@@ -244,16 +245,17 @@ class ThingSpotify(Thing):
         return ThingSpotify._get_auth_obj(cfg).get_access_token(code)
 
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, api_base_url):
         super().__init__("Spotify", "Spotify")
         self.cfg = cfg
+        self.api_base_url = api_base_url
 
         tok = ThingSpotify._get_cached_token(cfg)
         if tok is None:
-            self.impl = _ThingSpotifyDummy()
+            self.impl = _ThingSpotifyDummy(api_base_url)
             print("Spotify token needs a refresh! User will need to manually update token.")
         else:
-            self.impl = _ThingSpotifyImpl(tok)
+            self.impl = _ThingSpotifyImpl(api_base_url, tok)
 
     def supported_actions(self):
         return self.impl.supported_actions()
@@ -307,7 +309,7 @@ class ThingSpotify(Thing):
             if tok is None:
                 return "Sorry, token doesn't seem valid"
             else:
-                self.impl = _ThingSpotifyImpl(tok)
+                self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
                 return "Updated!"
         except Exception as ex:
             print(ex)
