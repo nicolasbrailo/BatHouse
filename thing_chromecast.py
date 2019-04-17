@@ -4,10 +4,26 @@ from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing
 import pychromecast
 from pychromecast.controllers.youtube import YouTubeController
 
+import json
+
 class ThingChromecast(Thing):
     @staticmethod
-    def set_flask_bindings():
-        pass
+    def set_flask_bindings(flask_app, world):
+        @flask_app.route('/world/scan_chromecasts')
+        def foo():
+            return ThingChromecast.scan_chromecasts_and_register(world)
+
+    @staticmethod
+    def scan_chromecasts_and_register(world):
+        scan_result = {}
+        for cc in ThingChromecast.scan_network():
+            try:
+                world.register_thing(cc)
+                scan_result[cc.get_pretty_name()] = 'Found new device'
+            except KeyError:
+                scan_result[cc.get_pretty_name()] = 'Already registered'
+        return json.dumps(scan_result)
+
 
     @staticmethod
     def scan_network(debug_force_ip=None):
