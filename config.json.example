@@ -1,0 +1,7 @@
+{
+    "spotify_redirect_uri": "http://127.0.0.1:2000/test",
+    "spotify_client_secret": "",
+    "spotify_client_id": "",
+    "spotipy_cache": "config.spotify_cache.json",
+}
+
