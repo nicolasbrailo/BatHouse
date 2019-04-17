@@ -8,6 +8,9 @@
 
 # TODO
 # * Local sensors
+# * Spotify tok refresh
+# * MFP integr
+# * Chromecast off
 # * Remove duplicated name and id
 # * MK proper logger for sys srvc
 # * Integrate as service + parseargs

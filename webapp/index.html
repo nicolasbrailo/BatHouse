@@ -60,13 +60,27 @@ $(document).ready(function(){
     </ul>
 
     <h2>Scenes</h2>
-    <ul>
-        <li><a href="/scenes/living_room_evening">Livingroom evening setting</a></li>
-        <li><a href="/scenes/dinner">Dinner</a></li>
-        <li><a href="/scenes/sleepy">Sleepyness</a></li>
-        <li><a href="/scenes/world_off">SHUT DOWN THE WORLD</a></li>
-        <li><a href="/scenes/test">TEST</a></li>
-    </ul>
+    <ul id="scene_list"></ul>
+
+    <script id="scene-template" type="text/x-handlebars-template">
+        <ul id="scene_list">
+        {{#each this}}
+            <li><a href="/scene_set/{{this}}">{{this}}</a></li>
+        {{/each}}
+        </ul>
+    </script>
+    <script>
+        var render_scenes = Handlebars.compile($('#scene-template').html());
+        $.ajax({
+            url: '/scenes/list',
+            cache: false,
+            type: 'get',
+            dataType: 'json',
+            success: function(scenes) {
+                $('#scene_list').replaceWith(render_scenes(scenes));
+            }
+        });
+    </script>
 
     <h2>Media player quick actions</h2>
     <ul>

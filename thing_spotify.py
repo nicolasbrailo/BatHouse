@@ -349,7 +349,9 @@ class ThingSpotify(Thing):
         try:
             return self.impl.json_status()
         except SpotifyException as ex:
-            print(ex)
-            print(dir(ex))
-            print(ex.message)
+            if ex.http_status == 401:
+                print("Access token expired...")
+            else:
+                print("UNKOWN EXP ", ex)
+            # TODO self.impl = 
 
