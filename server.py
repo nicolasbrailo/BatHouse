@@ -7,6 +7,7 @@
 #print("Daemon running!")
 
 # TODO
+# * Fix default media icon path
 # * Local sensors
 # * Spotify tok refresh
 # * MFP integr
@@ -14,7 +15,7 @@
 # * Remove duplicated name and id
 # * MK proper logger for sys srvc
 # * Integrate as service + parseargs
-# * Move media player template out of zigbee2mqtt2flask module
+# * Cleanup js template dependencies in main app
 
 # Buid main app interface
 from flask import Flask, send_from_directory

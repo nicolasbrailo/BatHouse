@@ -12,41 +12,27 @@
     <!-- Handlebars -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
 
-    <!-- All things -->
+    <!-- All things rendered in this page -->
     <script type="text/javascript" src="/ZMF/webapp/things/app.js"></script>
     <script type="text/javascript" src="/ZMF/webapp/things/templated_thing.js"></script>
     <script type="text/javascript" src="/ZMF/webapp/things/lamp/model.js"></script>
     <script type="text/javascript" src="/ZMF/webapp/things/media_player/model.js"></script>
     <script type="text/javascript" src="/ZMF/webapp/things/mqtt_device_info/model.js"></script>
 
+    <!-- Custom stuff -->
+    <script type="text/javascript" src="app.js"></script>
+    <link rel="stylesheet" href="custom_styles.css">
+
 <script>
-
-
-var things_app = new ThingsApp("/ZMF/");
-var templates_ready = ThingsApp.init_all_templates("/ZMF/webapp/");
-
-$(document).ready(function(){
-    $.when(templates_ready).then(function() {
-        $.when(things_app.is_ready).then(function() {
-            var lamps = things_app.get_things_of_type(Lamp);
-            for (lamp of lamps) {
-                $('#lamps_list').append(lamp.create_ui());
-            }
-
-            var media_players = things_app.get_things_of_type(MediaPlayer);
-            for (pl of media_players) {
-                $('#media_players_list').append(pl.create_ui());
-            }
-
-            var mqtt_things = things_app.get_things_of_type(MqttDeviceInfo);
-            for (thing of mqtt_things) {
-                $('#mqtt_network_status').append(thing.create_ui());
-            }
-        });
-    });
+var app = new DumbHouseApp();
+$.when(app.is_ready).then(function() {
+    app.show_list_of(Lamp, '#lamps_list');
+    app.show_list_of(MediaPlayer, '#media_players_list');
+    app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
+    app.show_scenes();
 });
-
 </script>
+
 </head>
 
 <body>
@@ -59,49 +45,15 @@ $(document).ready(function(){
     <ul id="media_players_list" style="margin: 0; padding: 0;" />
     </ul>
 
+    <a href="/ZMF/thing/Baticueva TV/youtube/VMl0GbiVEyA"><img src="pepe.png" class="player_shortcut"/></a>
+    <a href="/ZMF/thing/Baticueva TV/youtube/B1svxwMuLf4"><img src="granja.png" class="player_shortcut"/></a>
+    <a href="/ZMF/thing/Baticueva TV/youtube/q4xKvHANqjk"><img src="test.jpeg" class="player_shortcut"/></a>
+
     <h2>Scenes</h2>
     <ul id="scene_list"></ul>
 
-    <script id="scene-template" type="text/x-handlebars-template">
-        <ul id="scene_list">
-        {{#each this}}
-            <li><a href="/scene_set/{{this}}">{{this}}</a></li>
-        {{/each}}
-        </ul>
-    </script>
-    <script>
-        var render_scenes = Handlebars.compile($('#scene-template').html());
-        $.ajax({
-            url: '/scenes/list',
-            cache: false,
-            type: 'get',
-            dataType: 'json',
-            success: function(scenes) {
-                $('#scene_list').replaceWith(render_scenes(scenes));
-            }
-        });
-    </script>
-
-    <h2>Media player quick actions</h2>
-    <ul>
-        <li><a href="/thing/Baticueva TV/youtube/VMl0GbiVEyA">Pepe</a></li>
-        <li><a href="/thing/Baticueva TV/youtube/B1svxwMuLf4">Pepe largo</a></li>
-        <li><a href="/thing/Baticueva TV/youtube/q4xKvHANqjk">Test</a></li>
-    </ul>
-
-    <h2>Mqtt network status</h2>
-    <table id="mqtt_network_status" />
-    <tr>
-        <td>Thing</td>
-        <td>Battery</td>
-        <td>Link quality</td>
-    </tr>
-    </table>
-
-    <ul>
-        <li><a href="mqtt_log.html">Goto realtime log</a></li>
-        <li><a href="/world/scan_chromecasts" target="blank">Scan Chromecasts</a></li>
-    </ul>
+    <hr/>
+    <a href="admin.html">Admin</a>
 </div>
 </body>
 </html>
