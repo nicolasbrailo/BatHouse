@@ -1,0 +1,13 @@
+.player_shortcut {
+    max-width: 150px;
+    max-height: 150px;
+    width: auto;
+    margin: 10px;
+    border-radius: 500px;
+    border: 5px solid black;
+}
+
+h2 {
+    font-size: 130%;
+    line-height: 5px;
+}

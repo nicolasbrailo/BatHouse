@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
+
+    <!-- Handlebars -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+
+    <!-- All things rendered in this page -->
+    <script type="text/javascript" src="/ZMF/webapp/things/app.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/templated_thing.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/lamp/model.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/media_player/model.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/mqtt_device_info/model.js"></script>
+
+    <!-- Custom stuff -->
+    <script type="text/javascript" src="app.js"></script>
+    <link rel="stylesheet" href="custom_styles.css">
+    
+    <!-- Connect to backend with a websocket -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var append_to_log = function(logline, details) {
+            var when = new Date().toLocaleTimeString();
+            var log = when+" - "+logline;
+            if (details) {
+                log += "<br><pre>"+details+"</pre>";
+            }
+            $('#mqtt_log').prepend("<li>"+log+"</li>");
+        }
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function() { append_to_log("Connected to server"); });
+        socket.on('disconnect', function() { append_to_log("Disconnected! Will try reconnecting."); });
+
+        socket.on('mqtt-thing-message', function(msg) {
+            console.log(msg);
+            var log = msg.thing + ' received a message in topic ' + msg.topic;
+            append_to_log(log, JSON.stringify(msg.msg));
+        });
+
+        socket.on('non-understood-mqtt-message', function(msg) {
+            console.log(msg);
+            append_to_log('Received non understood message', JSON.stringify(msg));
+        });
+
+        var app = new DumbHouseApp();
+        $.when(app.is_ready).then(function() {
+            app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
+        });
+    </script>
+</head>
+
+<body>
+<div class="container-fluid">
+    <h2>Misc</h2>
+    <a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a>
+
+    <h2>Mqtt network status</h2>
+    <table id="mqtt_network_status" />
+    <tr>
+        <td>Thing</td>
+        <td>Battery</td>
+        <td>Link quality</td>
+    </tr>
+    </table>
+
+    <h2>Realtime MQTT Log</h2>
+    <ul id="mqtt_log">
+    </ul>
+</div>
+</body>
+</html>
+
