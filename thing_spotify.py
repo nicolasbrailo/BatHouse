@@ -71,6 +71,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         super().__init__(api_base_url)
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
+        self.volume_up_pct_delta = 10;
 
     def playpause(self):
         if self._is_active():
@@ -99,7 +100,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         if not self._is_active():
             return
 
-        vol = self._get_volume_pct() + 10
+        vol = self._get_volume_pct() + self.volume_up_pct_delta
         if vol > 100:
             vol = 100
         self.set_volume_pct(vol)
@@ -108,7 +109,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         if not self._is_active():
             return
 
-        vol = self._get_volume_pct() - 10
+        vol = self._get_volume_pct() - self.volume_up_pct_delta
         if vol < 0:
             vol = 0
         self.set_volume_pct(vol)

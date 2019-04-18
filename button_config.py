@@ -1,5 +1,8 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
 
+import threading
+import time
+
 class MyIkeaButton(Button):
     def __init__(self, mqtt_id, pretty_name, world):
         super().__init__(mqtt_id, pretty_name)
@@ -35,41 +38,89 @@ class MyIkeaButton(Button):
         print("Unknown action: Ikea button - ", action)
         
 
+class HoldActionHelper(object):
+    def __init__(self):
+        self.cb = None
+        self.sleep_secs = None
+        self.should_run = False
+        self.thread = None
+
+    def start(self, sleep_secs, cb):
+        if self.thread is not None:
+            # We may receive duplicated message to start up. Ignore!
+            return True
+
+        self.cb = cb
+        self.sleep_secs = sleep_secs
+
+        def sleepy_loop():
+            while self.should_run:
+                cb()
+                time.sleep(sleep_secs)
+
+        self.thread = threading.Thread(target=sleepy_loop)
+        self.should_run = True
+        self.thread.start()
+
+    def stop(self):
+        if self.thread is not None:
+            self.should_run = False
+            self.thread.join()
+            self.thread = None
+
+
+class MediaActionHelper(object):
+    def __init__(self, world):
+        self.world = world
+
+    def all_vol_up(self):
+        for player in self.world.get_things_supporting(['volume_up']):
+            player.volume_up()
+
+    def all_vol_down(self):
+        for player in self.world.get_things_supporting(['volume_down']):
+            player.volume_down()
+
+    def all_stop(self):
+        for player in self.world.get_things_supporting(['stop']):
+            player.stop()
+
+
 class HueButton(Button):
     def __init__(self, mqtt_id, pretty_name, world, scenes):
         super().__init__(mqtt_id, pretty_name)
         self.world = world
         self.scenes = scenes
+        self.media_actions = MediaActionHelper(world)
+        self.hold_action = HoldActionHelper()
 
     def handle_action(self, action, msg):
         if action == 'up-hold':
-            # Start media vol up
-            print("VOL UP")
+            self.hold_action.start(0.15, self.media_actions.all_vol_up)
             return True
-
         if action == 'up-hold-release':
-            # Stop media vol up
-            print("VOL UP STOP")
+            self.hold_action.stop()
             return True
-
         if action == 'up-press':
-            print("UP")
+            self.media_actions.all_vol_up()
             return True
 
+        if action == 'down-hold':
+            self.hold_action.start(0.15, self.media_actions.all_vol_down)
+            return True
+        if action == 'down-hold-release':
+            self.hold_action.stop()
+            return True
         if action == 'down-press':
-            print("DOWN")
-            return True
-
-        if action == 'off-hold':
-            print("OFF")
+            self.media_actions.all_vol_down()
             return True
 
         if action == 'off-press':
-            print("OFF2")
+            self.media_actions.all_stop()
             return True
 
         if action == 'on-press':
-            print("ON")
+            self.world.get_thing_by_name('Spotify').playpause()
             return True
 
         print("No handler for action {} message {}".format(action, msg))
