@@ -1,32 +1,57 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
 
 class MyIkeaButton(Button):
-    def __init__(self, mqtt_id, pretty_name, btn1, btn2):
+    def __init__(self, mqtt_id, pretty_name, world):
         super().__init__(mqtt_id, pretty_name)
-        self.btn1 = btn1
-        self.btn2 = btn2
+        self.world = world
+        self.l1 = world.get_thing_by_name('Kitchen Counter - Left')
+        self.l2 = world.get_thing_by_name('Kitchen Counter - Right')
 
     def handle_action(self, action, msg):
-        if action == 'arrow_right_click':
-            self.btn1.brightness_up()
-        if action == 'arrow_left_click':
-            self.btn1.brightness_down()
         if action == 'brightness_up_click':
-            self.btn2.brightness_up()
+            self.l1.set_brightness(100)
+            self.l2.set_brightness(100)
+            return True
+        if action == 'arrow_right_click':
+            self.l1.set_brightness(75)
+            self.l2.set_brightness(75)
+            return True
         if action == 'brightness_down_click':
-            self.btn2.brightness_down()
+            self.l1.set_brightness(50)
+            self.l2.set_brightness(50)
+            return True
+        if action == 'arrow_left_click':
+            self.l1.set_brightness(25)
+            self.l2.set_brightness(25)
+            return True
         if action == 'toggle':
-            if self.btn1.is_on or self.btn2.is_on:
-                self.btn1.light_off()
-                self.btn2.light_off()
+            if self.l1.is_on or self.l2.is_on:
+                self.l1.light_off()
+                self.l2.light_off()
             else:
-                self.btn2.set_brightness(20)
+                self.l2.set_brightness(20)
+            return True
+
+        print("Unknown action: Ikea button - ", action)
+        
 
 class HueButton(Button):
-    def __init__(self, mqtt_id, pretty_name):
+    def __init__(self, mqtt_id, pretty_name, world, scenes):
         super().__init__(mqtt_id, pretty_name)
+        self.world = world
+        self.scenes = scenes
 
     def handle_action(self, action, msg):
+        if action = 'up-hold':
+            # Start media vol up
+            print("VOL UP")
+            return True
+
+        if action = 'up-hold-release':
+            # Stop media vol up
+            print("VOL UP STOP")
+            return True
+
         if action == 'up-press':
             print("UP")
             return True

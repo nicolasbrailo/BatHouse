@@ -49,7 +49,7 @@ class _ThingSpotifyDummy(Thing):
         pass
 
     def json_status(self):
-        err_solve = "<a href='{}/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
+        err_solve = "<a href='/{}/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
         return {
                 'error': 'Not authenticated',
                 'error_html_details': err_solve.format(self.api_base_url, self.get_pretty_name()),

@@ -47,10 +47,8 @@ world.register_thing(DimmableLamp('Kitchen Counter - Left', 'Kitchen Counter - L
 world.register_thing(DimmableLamp('Kitchen Counter - Right', 'Kitchen Counter - Right', world.mqtt))
 world.register_thing(DimmableLamp('Floorlamp', 'Floorlamp', world.mqtt))
 world.register_thing(DimmableLamp('Livingroom Lamp', 'Livingroom Lamp', world.mqtt))
-world.register_thing(HueButton(   'HueButton', 'HueButton'))
-world.register_thing(MyIkeaButton('IkeaButton', 'IkeaButton',
-                                           world.get_thing_by_name('Kitchen Counter - Left'),
-                                           world.get_thing_by_name('Kitchen Counter - Right')))
+world.register_thing(HueButton(   'HueButton', 'HueButton', world, scenes))
+world.register_thing(MyIkeaButton('IkeaButton', 'IkeaButton', world))
 
 # Register known things which are not mqtt
 from thing_spotify import ThingSpotify
