@@ -1,0 +1,18 @@
+# Install instructions
+
+## Config
+Edit config.json.example with right config
+
+## Install service:
+$ cd /etc/systemd/system && sudo ln -s /home/pi/dumbhouse/dumbhouse.service 
+$ sudo systemctl enable dumbhouse
+
+## Start and stop:
+$ sudo systemctl start dumbhouse
+$ sudo systemctl stop dumbhouse
+
+## Status:
+$ systemctl status dumbhouse
+$ sudo journalctl -u dumbhouse -f
+
+

@@ -1,0 +1,14 @@
+[Unit]
+Description=DumbHouse
+After=zigbee2mqtt.target
+
+[Service]
+ExecStart=/usr/bin/python3 -m pipenv run python ./server.py
+WorkingDirectory=/home/pi/kryten/dumbhouse
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
