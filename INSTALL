@@ -55,6 +55,12 @@ More troubleshooting
 
 ## Run dumbhouse
 
+## Install dependencies
+
+$ python3 -m pipenv install requests
+
+Note the project has a Pipfile but no Pipfile.lock. This is because hashes for the RaspberryPi and for x86 seem to be different, making pipenv installs fail. Remember not to commit any Pipfile.lock in PR's.
+
 ## Config
 Edit config.json.example with right config
 
