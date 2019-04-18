@@ -1,6 +1,7 @@
 # TODO
 # * Local sensors
 # * MFP integr
+# * Links in app -> no redir
 # * Chromecast off
 # * Chromecast photo cycle
 # * MK proper logger for sys srvc
