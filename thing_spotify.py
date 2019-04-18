@@ -314,44 +314,62 @@ class ThingSpotify(Thing):
             print(ex)
             return str(ex)
 
+    def _catch_spotify_deauth(base_func):
+        """ Detect if Spotify has an expired token. Set impl to a dummy object
+        if auth expired """
+        def wrap(self, *a, **kw):
+            try:
+                return base_func(self, *a, **kw)
+            except SpotifyException as ex:
+                if ex.http_status == 401:
+                    print("Spotify access token expired...")
+                    self.impl = _ThingSpotifyDummy(self.api_base_url)
+                    return base_func(self, *a, **kw)
+                else:
+                    raise ex
+        return wrap
+
+    @_catch_spotify_deauth
     def playpause(self):
         return self.impl.playpause()
 
+    @_catch_spotify_deauth
     def stop(self):
         return self.impl.stop()
 
+    @_catch_spotify_deauth
     def play_next_in_queue(self):
         return self.impl.play_next_in_queue()
 
+    @_catch_spotify_deauth
     def play_prev_in_queue(self):
         return self.impl.play_prev_in_queue()
 
+    @_catch_spotify_deauth
     def set_playtime(self, t):
         return self.impl.set_playtime(t)
 
+    @_catch_spotify_deauth
     def volume_up(self):
         return self.impl.volume_up()
 
+    @_catch_spotify_deauth
     def volume_down(self):
         return self.impl.volume_down()
 
+    @_catch_spotify_deauth
     def set_volume_pct(self, pct):
         return self.impl.set_volume_pct(pct)
 
+    @_catch_spotify_deauth
     def toggle_mute(self):
         return self.impl.toggle_mute()
 
+    @_catch_spotify_deauth
     def play_in_device(self, dev_name):
         return self.impl.play_in_device(dev_name)
 
+    @_catch_spotify_deauth
     def json_status(self):
-        try:
-            return self.impl.json_status()
-        except SpotifyException as ex:
-            if ex.http_status == 401:
-                print("Spotify access token expired...")
-                self.impl = _ThingSpotifyDummy(self.api_base_url)
-                return self.impl.json_status()
-            else:
-                raise ex
+        return self.impl.json_status()
 
