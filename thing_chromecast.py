@@ -19,9 +19,9 @@ class ThingChromecast(Thing):
         for cc in ThingChromecast.scan_network():
             try:
                 world.register_thing(cc)
-                scan_result[cc.get_pretty_name()] = 'Found new device'
+                scan_result[cc.get_id()] = 'Found new device'
             except KeyError:
-                scan_result[cc.get_pretty_name()] = 'Already registered'
+                scan_result[cc.get_id()] = 'Already registered'
         return json.dumps(scan_result)
 
 
@@ -40,12 +40,11 @@ class ThingChromecast(Thing):
 
     def __init__(self, cc_object):
         self.cc = cc_object
-        thing_id = str(self.cc.device.uuid)
-        pretty_name = self.cc.device.friendly_name
-        super().__init__(thing_id, pretty_name)
+        thing_id = self.cc.device.friendly_name
+        super().__init__(thing_id)
 
         cc_object.start()
-        print("Found Chromecast {}".format(pretty_name))
+        print("Found Chromecast {}".format(thing_id))
 
     def playpause(self):
         try:
@@ -60,7 +59,7 @@ class ThingChromecast(Thing):
             self.cc.media_controller.pause()
         else:
             print("Error: CC {} is not playing nor paused. Status: {}".format(
-                        self.get_pretty_name(), self.cc.media_controller.status.player_state))
+                        self.get_id(), self.cc.media_controller.status.player_state))
 
     def stop(self):
         # A bit more agressive than stop, but stop on its own seems useless:
@@ -122,12 +121,11 @@ class ThingChromecast(Thing):
 
     def json_status(self):
         if self.cc.status is None:
-            print("Warning: CC {} was disconected?".format(self.get_pretty_name()))
+            print("Warning: CC {} was disconected?".format(self.get_id()))
             self.cc.start()
 
         status = {
-                'name': self.get_pretty_name(),
-                'uuid': self.get_id(),
+                'name': self.get_id(),
                 'uri': self.cc.uri,
                 'app': self.cc.status.display_name,
                 'volume_pct': int(100 * self.cc.status.volume_level),

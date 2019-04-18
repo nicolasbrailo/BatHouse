@@ -8,7 +8,7 @@ class _ThingSpotifyDummy(Thing):
     """ Dummy Spotify thing used when no auth token is valid """
 
     def __init__(self, api_base_url):
-        super().__init__("Spotify", "Spotify")
+        super().__init__("Spotify")
         self.api_base_url = api_base_url
 
     def supported_actions(self):
@@ -52,9 +52,8 @@ class _ThingSpotifyDummy(Thing):
         err_solve = "<a href='/{}/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
         return {
                 'error': 'Not authenticated',
-                'error_html_details': err_solve.format(self.api_base_url, self.get_pretty_name()),
-                'name': self.get_pretty_name(),
-                'uuid': self.get_id(),
+                'error_html_details': err_solve.format(self.api_base_url, self.get_id()),
+                'name': self.get_id(),
                 'uri': None,
                 'active_device': None,
                 'available_devices': None,
@@ -164,8 +163,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         vol = self._get_volume_pct()
         dev = self._get_active_device()
         status = {
-                'name': self.get_pretty_name(),
-                'uuid': self.get_id(),
+                'name': self.get_id(),
                 'uri': None,
                 'active_device': dev['name'] if dev is not None else None,
                 'available_devices': self._get_available_devices(),
@@ -247,7 +245,7 @@ class ThingSpotify(Thing):
 
 
     def __init__(self, cfg, api_base_url):
-        super().__init__("Spotify", "Spotify")
+        super().__init__("Spotify")
         self.cfg = cfg
         self.api_base_url = api_base_url
 

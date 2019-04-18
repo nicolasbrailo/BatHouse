@@ -11,7 +11,6 @@
 # * Spotify tok refresh
 # * MFP integr
 # * Chromecast off
-# * Remove duplicated name and id
 # * MK proper logger for sys srvc
 # * Integrate as service + parseargs
 # * Cleanup js template dependencies in main app
@@ -42,13 +41,13 @@ scenes = SceneHandler(flask_app, world)
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
 from button_config import HueButton, MyIkeaButton
 
-world.register_thing(ColorDimmableLamp('DeskLamp', 'DeskLamp', world.mqtt))
-world.register_thing(DimmableLamp('Kitchen Counter - Left', 'Kitchen Counter - Left', world.mqtt))
-world.register_thing(DimmableLamp('Kitchen Counter - Right', 'Kitchen Counter - Right', world.mqtt))
-world.register_thing(DimmableLamp('Floorlamp', 'Floorlamp', world.mqtt))
-world.register_thing(DimmableLamp('Livingroom Lamp', 'Livingroom Lamp', world.mqtt))
-world.register_thing(HueButton(   'HueButton', 'HueButton', world, scenes))
-world.register_thing(MyIkeaButton('IkeaButton', 'IkeaButton', world))
+world.register_thing(ColorDimmableLamp('DeskLamp', world.mqtt))
+world.register_thing(DimmableLamp('Kitchen Counter - Left', world.mqtt))
+world.register_thing(DimmableLamp('Kitchen Counter - Right', world.mqtt))
+world.register_thing(DimmableLamp('Floorlamp', world.mqtt))
+world.register_thing(DimmableLamp('Livingroom Lamp', world.mqtt))
+world.register_thing(HueButton(   'HueButton', world, scenes))
+world.register_thing(MyIkeaButton('IkeaButton', world))
 
 # Register known things which are not mqtt
 from thing_spotify import ThingSpotify

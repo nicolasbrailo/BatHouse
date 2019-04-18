@@ -4,8 +4,8 @@ import threading
 import time
 
 class MyIkeaButton(Button):
-    def __init__(self, mqtt_id, pretty_name, world):
-        super().__init__(mqtt_id, pretty_name)
+    def __init__(self, mqtt_id, world):
+        super().__init__(mqtt_id)
         self.world = world
         self.l1 = world.get_thing_by_name('Kitchen Counter - Left')
         self.l2 = world.get_thing_by_name('Kitchen Counter - Right')
@@ -87,8 +87,8 @@ class MediaActionHelper(object):
 
 
 class HueButton(Button):
-    def __init__(self, mqtt_id, pretty_name, world, scenes):
-        super().__init__(mqtt_id, pretty_name)
+    def __init__(self, mqtt_id, world, scenes):
+        super().__init__(mqtt_id)
         self.world = world
         self.scenes = scenes
         self.media_actions = MediaActionHelper(world)
