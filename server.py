@@ -7,7 +7,6 @@
 #print("Daemon running!")
 
 # TODO
-# * Fix default media icon path
 # * Local sensors
 # * Spotify tok refresh
 # * MFP integr
