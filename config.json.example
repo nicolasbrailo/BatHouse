@@ -1,4 +1,14 @@
 {
+    "daemonize": false,
+    "api_listen_host": "0.0.0.0",
+    "api_listen_port": 2000,
+
+    "chromecast_scan_on_startup": false,
+    "chromecast_debug_device": "192.168.2.101",
+
+    "mqtt_broker_ip": "192.168.2.100",
+    "mqtt_broker_port": 1883,
+
     "spotify_redirect_uri": "http://127.0.0.1:2000/test",
     "spotify_client_secret": "",
     "spotify_client_id": "",

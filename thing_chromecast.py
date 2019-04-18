@@ -26,17 +26,14 @@ class ThingChromecast(Thing):
 
 
     @staticmethod
-    def scan_network(debug_force_ip=None):
-        """ Get all Chromecasts in the network. If debug_force_ip is set
-        then the net won't be scanned, only one CC will be returned (useful
-        to avoid a long scan wait when debugging) """
-
+    def scan_network():
+        """ Get all Chromecasts in the network """
         print("Scanning for ChromeCasts")
-
-        if debug_force_ip is not None:
-            return [ThingChromecast(pychromecast.Chromecast(debug_force_ip))]
-
         return [ThingChromecast(cc) for cc in pychromecast.get_chromecasts()]
+
+    @staticmethod
+    def mk_from_ip(ip):
+        return ThingChromecast(pychromecast.Chromecast(ip))
 
     def __init__(self, cc_object):
         self.cc = cc_object
