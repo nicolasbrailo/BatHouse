@@ -1,6 +1,5 @@
 # TODO
 # * Local sensors
-# * Spotify tok refresh
 # * MFP integr
 # * Chromecast off
 # * Chromecast photo cycle
@@ -56,7 +55,8 @@ world.register_thing(MyIkeaButton('IkeaButton', world))
 
 # Register known things which are not mqtt
 from thing_spotify import ThingSpotify
-world.register_thing(ThingSpotify(CFG, "ZMF"))
+spotify_control = ThingSpotify(CFG, "ZMF")
+world.register_thing(spotify_control)
 
 from thing_chromecast import ThingChromecast
 ThingChromecast.set_flask_bindings(flask_app, world)
@@ -80,4 +80,5 @@ def flask_webapp_root(urlpath):
 world.start_mqtt_connection()
 flask_socketio.run(flask_app, host=CFG['api_listen_host'], port=CFG['api_listen_port'], debug=False)
 world.stop_mqtt_connection()
+spotify_control.shutdown()
 

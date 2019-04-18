@@ -207,6 +207,8 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         return status
 
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 class ThingSpotify(Thing):
     @staticmethod
@@ -225,7 +227,9 @@ class ThingSpotify(Thing):
     def _get_cached_token(cfg):
         """ Call to try and receive a cached auth token. Will return
         None if there is no valid token. If so, goto refresh_url to get a new token
-        from Spotify (user will need to do that manually: it requires user approval) """
+        from Spotify (user will need to do that manually: it requires user approval).
+        If the token is valid, it should refresh it so it continues being valid for
+        a while more. """
         tok = ThingSpotify._get_auth_obj(cfg).get_cached_token()
         if tok:
             return tok['access_token']
@@ -248,6 +252,7 @@ class ThingSpotify(Thing):
         super().__init__("Spotify")
         self.cfg = cfg
         self.api_base_url = api_base_url
+        self.secs_between_tok_revalidate = 60 * 45
 
         tok = ThingSpotify._get_cached_token(cfg)
         if tok is None:
@@ -255,6 +260,19 @@ class ThingSpotify(Thing):
             print("Spotify token needs a refresh! User will need to manually update token.")
         else:
             self.impl = _ThingSpotifyImpl(api_base_url, tok)
+
+        self.scheduler = BackgroundScheduler()
+        self.scheduler.add_job(func=self._cached_tok_refresh,
+                               trigger="interval", seconds=self.secs_between_tok_revalidate)
+        self.scheduler.start()
+
+    def _cached_tok_refresh(self):
+        # TODO: Uncomment after testing the decorator
+        #ThingSpotify._get_cached_token(self.cfg)
+        pass
+
+    def shutdown(self):
+        self.scheduler.shutdown()
 
     def supported_actions(self):
         return self.impl.supported_actions()
