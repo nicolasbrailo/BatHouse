@@ -8,7 +8,7 @@ class DumbHouseApp {
 
         var self = this;
         $(document).ready(function(){
-            $.when(self.templates_ready).then(function() {
+            $.when(self.things_templates_ready).then(function() {
                 $.when(self.things_app.is_ready).then(function() {
                     $.when(self.scenes_tmpl_ready.is_ready).then(function() {
                         self.is_ready.resolve(); 
