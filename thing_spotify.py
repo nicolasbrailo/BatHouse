@@ -267,9 +267,8 @@ class ThingSpotify(Thing):
         self.scheduler.start()
 
     def _cached_tok_refresh(self):
-        # TODO: Uncomment after testing the decorator
-        #ThingSpotify._get_cached_token(self.cfg)
-        pass
+        # This should refresh the token for another hour or so...
+        ThingSpotify._get_cached_token(self.cfg)
 
     def shutdown(self):
         self.scheduler.shutdown()
@@ -335,6 +334,8 @@ class ThingSpotify(Thing):
     def _catch_spotify_deauth(base_func):
         """ Detect if Spotify has an expired token. Set impl to a dummy object
         if auth expired """
+        # This seems to kill stdout? Print stops working. I guess it won't be important
+        # once a proper logger is in place
         def wrap(self, *a, **kw):
             try:
                 return base_func(self, *a, **kw)
