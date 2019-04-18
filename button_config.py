@@ -42,12 +42,12 @@ class HueButton(Button):
         self.scenes = scenes
 
     def handle_action(self, action, msg):
-        if action = 'up-hold':
+        if action == 'up-hold':
             # Start media vol up
             print("VOL UP")
             return True
 
-        if action = 'up-hold-release':
+        if action == 'up-hold-release':
             # Stop media vol up
             print("VOL UP STOP")
             return True
