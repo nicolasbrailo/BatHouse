@@ -3,6 +3,10 @@ from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
 import threading
 import time
 
+# Use the same logger as ZMF things
+import logging
+logger = logging.getLogger('zigbee2mqtt2flask.thing')
+
 class MyIkeaButton(Button):
     def __init__(self, mqtt_id, world):
         super().__init__(mqtt_id)
@@ -35,7 +39,7 @@ class MyIkeaButton(Button):
                 self.l2.set_brightness(20)
             return True
 
-        print("Unknown action: Ikea button - ", action)
+        logger.warning("Unknown action: Ikea button - ", action)
         
 
 class HoldActionHelper(object):
@@ -123,6 +127,6 @@ class HueButton(Button):
             self.world.get_thing_by_name('Spotify').playpause()
             return True
 
-        print("No handler for action {} message {}".format(action, msg))
+        logger.warning("No handler for action {} message {}".format(action, msg))
         return False
     

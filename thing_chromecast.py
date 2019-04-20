@@ -6,11 +6,16 @@ from pychromecast.controllers.youtube import YouTubeController
 
 import json
 
+# Use the same logger as ZMF things
+import logging
+logger = logging.getLogger('zigbee2mqtt2flask.thing')
+
+
 class ThingChromecast(Thing):
     @staticmethod
     def set_flask_bindings(flask_app, world):
         @flask_app.route('/world/scan_chromecasts')
-        def foo():
+        def flask_ep_chromecast_scan_network():
             return ThingChromecast.scan_chromecasts_and_register(world)
 
     @staticmethod
@@ -28,7 +33,7 @@ class ThingChromecast(Thing):
     @staticmethod
     def scan_network():
         """ Get all Chromecasts in the network """
-        print("Scanning for ChromeCasts")
+        logger.info("Scanning for ChromeCasts")
         return [ThingChromecast(cc) for cc in pychromecast.get_chromecasts()]
 
     @staticmethod
@@ -41,7 +46,7 @@ class ThingChromecast(Thing):
         super().__init__(thing_id)
 
         cc_object.start()
-        print("Found Chromecast {}".format(thing_id))
+        logger.info("Found Chromecast {}".format(thing_id))
 
     def playpause(self):
         try:
@@ -55,7 +60,7 @@ class ThingChromecast(Thing):
         elif self.cc.media_controller.is_playing:
             self.cc.media_controller.pause()
         else:
-            print("Error: CC {} is not playing nor paused. Status: {}".format(
+            logger.error("Error: CC {} is not playing nor paused. Status: {}".format(
                         self.get_id(), self.cc.media_controller.status.player_state))
 
     def stop(self):
@@ -118,7 +123,7 @@ class ThingChromecast(Thing):
 
     def json_status(self):
         if self.cc.status is None:
-            print("Warning: CC {} was disconected?".format(self.get_id()))
+            logger.warning("CC {} was disconected? Trying to reconnect.".format(self.get_id()))
             self.cc.start()
 
         status = {

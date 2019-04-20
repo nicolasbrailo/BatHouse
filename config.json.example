@@ -1,5 +1,7 @@
 {
     "daemonize": false,
+    "verbose_log": false,
+
     "api_listen_host": "0.0.0.0",
     "api_listen_port": 2000,
 

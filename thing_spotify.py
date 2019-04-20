@@ -4,6 +4,10 @@ from spotipy import Spotify
 from spotipy.client import SpotifyException
 from spotipy.oauth2 import SpotifyOAuth
 
+# Use the same logger as ZMF things
+import logging
+logger = logging.getLogger('zigbee2mqtt2flask.thing')
+
 class _ThingSpotifyDummy(Thing):
     """ Dummy Spotify thing used when no auth token is valid """
 
@@ -232,8 +236,10 @@ class ThingSpotify(Thing):
         a while more. """
         tok = ThingSpotify._get_auth_obj(cfg).get_cached_token()
         if tok:
+            logger.debug("Got Spotify token from cache")
             return tok['access_token']
         else:
+            logger.debug("Can't get Spotify token from cache")
             return None
 
     @staticmethod
@@ -242,6 +248,7 @@ class ThingSpotify(Thing):
         redirect that comes from calling the new authorize url """
         tok = ThingSpotify._get_auth_obj(cfg).get_access_token(code)
         if tok:
+            logger.debug("Updated access token from code")
             return tok['access_token']
 
         # Check if there's a cached token we can use
@@ -257,7 +264,7 @@ class ThingSpotify(Thing):
         tok = ThingSpotify._get_cached_token(cfg)
         if tok is None:
             self.impl = _ThingSpotifyDummy(api_base_url)
-            print("Spotify token needs a refresh! User will need to manually update token.")
+            logger.warning("Spotify token needs a refresh! User will need to manually update token.")
         else:
             self.impl = _ThingSpotifyImpl(api_base_url, tok)
 
@@ -268,7 +275,8 @@ class ThingSpotify(Thing):
 
     def _cached_tok_refresh(self):
         # This should refresh the token for another hour or so...
-        ThingSpotify._get_cached_token(self.cfg)
+        tok = ThingSpotify._get_cached_token(self.cfg)
+        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
 
     def shutdown(self):
         self.scheduler.shutdown()
@@ -323,25 +331,25 @@ class ThingSpotify(Thing):
         try:
             tok = ThingSpotify._update_token_from_url_code(self.cfg, code)
             if tok is None:
+                logger.debug("User setting invalid new Spotify access token {}".format(code))
                 return "Sorry, token doesn't seem valid"
             else:
                 self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
+                logger.debug("User set new Spotify access token {}, Spotify client should work again".format(code))
                 return "Updated!"
         except Exception as ex:
-            print(ex)
+            logger.error("Error while updating Spotify token", exc_info=True)
             return str(ex)
 
     def _catch_spotify_deauth(base_func):
         """ Detect if Spotify has an expired token. Set impl to a dummy object
         if auth expired """
-        # This seems to kill stdout? Print stops working. I guess it won't be important
-        # once a proper logger is in place
         def wrap(self, *a, **kw):
             try:
                 return base_func(self, *a, **kw)
             except SpotifyException as ex:
                 if ex.http_status == 401:
-                    print("Spotify access token expired...")
+                    logger.debug("Spotify access token expired, impl is now dummy Spotify thing")
                     self.impl = _ThingSpotifyDummy(self.api_base_url)
                     return base_func(self, *a, **kw)
                 else:

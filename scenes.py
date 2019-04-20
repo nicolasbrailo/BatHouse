@@ -1,5 +1,10 @@
 import json
 
+# Use the same logger as ZMF things
+import logging
+logger = logging.getLogger('BatHome')
+
+
 class SceneHandler(object):
     def __init__(self, flask_app, world):
         self.world = world
@@ -11,6 +16,7 @@ class SceneHandler(object):
 
         @flask_app.route('/scene_set/<name>')
         def flask_endpoint_set_scene(name):
+            logger.info("User requested scene {}".format(name))
             m = getattr(self, name, None)
             if m is None:
                 return "No scene {}".format(action, thing_name), 405
