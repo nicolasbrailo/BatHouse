@@ -2,14 +2,14 @@
 
 This readme has been tested in a RaspberryPi 3, but it should be applicable to any Linux-y system.
 
-Besides hardware, running dumbhouse requires:
+Besides hardware, running BatHouse requires:
 
 1. An mqtt broker
 2. zigbee2mqtt
 3. A bunch of pipenv dependencies
 
 * Important *
-Give your devices friendly names in zigbee2mqtt - otherwise dumbhouse will display them by their ID.
+Give your devices friendly names in zigbee2mqtt - otherwise BatHouse will display them by their ID.
 
 ## Mqtt server
 1. Mosquitto is easiest:
@@ -53,7 +53,7 @@ More troubleshooting
 * https://github.com/Koenkk/zigbee2mqtt/issues/156 
 
 
-## Run dumbhouse
+## Run BatHouse 
 
 ## Install dependencies
 
@@ -65,15 +65,15 @@ Note the project has a Pipfile but no Pipfile.lock. This is because hashes for t
 Edit config.json.example with right config
 
 ## Install service:
-$ cd /etc/systemd/system && sudo ln -s /home/pi/dumbhouse/dumbhouse.service 
-$ sudo systemctl enable dumbhouse
+$ cd /etc/systemd/system && sudo ln -s /home/pi/BatHouse/BatHouse.service 
+$ sudo systemctl enable BatHouse
 
 ## Start and stop:
-$ sudo systemctl start dumbhouse
-$ sudo systemctl stop dumbhouse
+$ sudo systemctl start BatHouse
+$ sudo systemctl stop BatHouse
 
 ## Status:
-$ systemctl status dumbhouse
-$ sudo journalctl -u dumbhouse -f
+$ systemctl status BatHouse
+$ sudo journalctl -u BatHouse -f
 
 
