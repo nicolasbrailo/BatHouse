@@ -1,9 +1,6 @@
 
 # TODO
-# * Support transition time 
-#       mosquitto_pub -t "zigbee2mqtt/DeskLamp/set" -h 127.0.0.1 -m '{"state": "OFF", "transition": 5 }'
-#       mosquitto_pub -t "zigbee2mqtt/DeskLamp/set" -h 127.0.0.1 -m '{"state": "ON", "brightness": "200", "transition": 10 }'
-#   Transtime + set state to reduce in-fligth msgs
+# * Add to scenes Transtime + set state to reduce in-fligth msgs
 # * Local sensors
 # * MFP integr
 # * Links in app -> no redir
