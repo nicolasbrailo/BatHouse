@@ -243,6 +243,17 @@ class ThingSpotify(Thing):
             return None
 
     @staticmethod
+    def _force_tok_refresh(cfg):
+        tok = ThingSpotify._get_auth_obj(cfg).get_cached_token()
+        if not tok:
+            logger.debug("Force Spotify token refresh failed: no cached token")
+            return None
+
+        new_tok = ThingSpotify._get_auth_obj(cfg).refresh_access_token(tok['refresh_token'])
+        logger.debug("Force Spotify token refresh succeeded: new token is {}".format(str(new_tok)))
+        return new_tok['access_token']
+
+    @staticmethod
     def _update_token_from_url_code(cfg, code):
         """ If get_cached_token failed, call get_token_from_redir_url with the result of the url
         redirect that comes from calling the new authorize url """
@@ -252,7 +263,7 @@ class ThingSpotify(Thing):
             return tok['access_token']
 
         # Check if there's a cached token we can use
-        return ThingSpotify._get_auth_obj(cfg).get_access_token(code)
+        return ThingSpotify._get_cached_token(cfg)
 
 
     def __init__(self, cfg, api_base_url):
@@ -275,7 +286,8 @@ class ThingSpotify(Thing):
 
     def _cached_tok_refresh(self):
         # This should refresh the token for another hour or so...
-        tok = ThingSpotify._get_cached_token(self.cfg)
+        logger.debug("Forcing Spotify token refresh")
+        tok = ThingSpotify._force_tok_refresh(self.cfg)
         self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
 
     def shutdown(self):
@@ -351,6 +363,15 @@ class ThingSpotify(Thing):
                 if ex.http_status == 401:
                     logger.debug("Spotify access token expired, impl is now dummy Spotify thing")
                     self.impl = _ThingSpotifyDummy(self.api_base_url)
+
+                    logger.debug("Trying to renew token...")
+                    tok = ThingSpotify._get_cached_token(cfg)
+                    if tok is None:
+                        logger.debug("Refresh token failed, user will need to renew manually")
+                    else:
+                        logger.debug("Refresh token OK: {}".format(tok))
+                        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
+
                     return base_func(self, *a, **kw)
                 else:
                     raise ex

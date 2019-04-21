@@ -7,6 +7,7 @@
 # * Chromecast off
 # * Chromecast photo cycle
 # * Cleanup js template dependencies in main app
+# * Minfy/cache stuff
 # * Weather integration
 
 

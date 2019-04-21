@@ -62,12 +62,12 @@ class SceneHandler(object):
             pass
 
     def test(self):
-        #self.world.get_thing_by_name('DeskLamp').set_brightness(1, broadcast_update=True)
-        #self.world.get_thing_by_name('DeskLamp').set_rgb('0000F0', broadcast_update=True)
-        #self.world.get_thing_by_name('DeskLamp').set_rgb('F00000', broadcast_update=False)
-        #self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=5)
-        self.world.get_thing_by_name('DeskLamp').set_brightness(50, broadcast_update=False)
+        self.world.get_thing_by_name('DeskLamp').set_brightness(1, broadcast_update=True)
+        self.world.get_thing_by_name('DeskLamp').set_rgb('0000F0', broadcast_update=True)
+        self.world.get_thing_by_name('DeskLamp').set_rgb('F00000', broadcast_update=False)
         self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=5)
+        #self.world.get_thing_by_name('DeskLamp').set_brightness(50, broadcast_update=False)
+        #self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=5)
 
 
 
