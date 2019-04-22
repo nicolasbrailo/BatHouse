@@ -7,6 +7,9 @@ config.spotify_cache.json
 config.pcloud_auth_cache.json
 config.pcloud_slideshow_cache.json
 
+# Ignore minified js
+webapp/minified.js
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
