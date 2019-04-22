@@ -61,7 +61,14 @@
 <body>
 <div class="container-fluid">
     <h2>Misc</h2>
-    <a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a>
+    <p><a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a></p>
+
+    <b>Reauth slideshow</b>
+    <ol>
+        <li><a href="/pcloud_slideshow/auth/step1">Get auth link</a>. Goto link, copy code.</li>
+        <li>With the code, goto this url (append /$code to the url): <a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
+        <li>Stale cache? <a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
+    </ol>
 
     <h2>Mqtt network status</h2>
     <table id="mqtt_network_status" />

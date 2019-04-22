@@ -31,8 +31,7 @@
 var app = new DumbHouseApp();
 $.when(app.is_ready).then(function() {
     app.show_list_of(Lamp, '#lamps_list');
-    app.show_list_of(MediaPlayer, '#media_players_list');
-    app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
+    app.show_list_of_media_players('#media_players_list');
     app.show_scenes();
 });
 </script>
@@ -49,21 +48,8 @@ $.when(app.is_ready).then(function() {
     <ul id="media_players_list" style="margin: 0; padding: 0;" />
     </ul>
 
-    <a href="/ZMF/thing/Baticueva TV/youtube/VMl0GbiVEyA"><img src="pepe.png" class="player_shortcut"/></a>
-    <a href="/ZMF/thing/Baticueva TV/youtube/B1svxwMuLf4"><img src="granja.png" class="player_shortcut"/></a>
-    <a href="/ZMF/thing/Baticueva TV/youtube/q4xKvHANqjk"><img src="test.jpeg" class="player_shortcut"/></a>
-
     <h2>Scenes</h2>
     <ul id="scene_list"></ul>
-
-    <h2>Slideshow</h2>
-    <ul>
-        <li><a href="/pcloud_slideshow/start">Start slideshow</a></li>
-        <li><a href="/pcloud_slideshow/stop">Stop slideshow</a></li>
-        <li><a href="/pcloud_slideshow/auth/step1">Auth link</a></li>
-        <li><a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
-        <li><a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
-    </ul>
 
     <hr/>
     <a href="admin.html">Admin</a> |
