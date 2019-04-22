@@ -116,10 +116,16 @@ class ThingChromecast(Thing):
         self.cc.register_handler(yt)
         yt.play_video(video_id)
 
+    def show_image(self, url):
+        self.cc.play_media(url=url, content_type='image/jpeg')
+
+    def register_status_listener(self, listener):
+        self.cc.media_controller.register_status_listener(listener)
+
     def supported_actions(self):
         return ['playpause', 'stop', 'play_next_in_queue', 'play_prev_in_queue',
                 'toggle_mute', 'volume_up', 'volume_down', 'set_volume_pct',
-                'set_playtime', 'youtube']
+                'set_playtime', 'youtube', 'show_image']
 
     def json_status(self):
         if self.cc.status is None:

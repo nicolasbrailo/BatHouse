@@ -40,8 +40,9 @@ def configure_logger(l, verbose):
     logging.getLogger(l).addHandler(ch2)
     logging.getLogger(l).setLevel(logging.DEBUG if verbose else logging.INFO)
 
-    
-[configure_logger(x, CFG['verbose_log']) for x in ['BatHome', 'zigbee2mqtt2flask', 'werkzeug']]
+
+[configure_logger(x, CFG['verbose_log']) for x in ['BatHome', 'zigbee2mqtt2flask']]
+logging.getLogger('werkzeug').propagate = False
 
 
 # Run as server?
@@ -78,7 +79,7 @@ scenes = SceneHandler(flask_app, world)
 
 # Register known things in ithe world
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
-from button_config import HueButton, MyIkeaButton
+from button_config import HueButton, MyIkeaButton, RoundIkeaButton
 
 world.register_thing(ColorDimmableLamp('DeskLamp', world.mqtt))
 world.register_thing(DimmableLamp('Kitchen Counter - Left', world.mqtt))
@@ -87,6 +88,7 @@ world.register_thing(DimmableLamp('Floorlamp', world.mqtt))
 world.register_thing(DimmableLamp('Livingroom Lamp', world.mqtt))
 world.register_thing(HueButton(   'HueButton', world, scenes))
 world.register_thing(MyIkeaButton('IkeaButton', world))
+world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
 
 
 # Register known things which are not mqtt
@@ -114,9 +116,16 @@ def flask_webapp_root(urlpath):
     return send_from_directory('./webapp/', urlpath)
 
 
+# Slideshow object
+from pCloudSlideshow import build_pcloud_slideshow_from_cfg, set_pcloud_slideshow_flask_bindings
+slideshow = build_pcloud_slideshow_from_cfg(CFG, world.get_thing_by_name('Baticueva TV'))
+set_pcloud_slideshow_flask_bindings(slideshow, flask_app)
+
+
 # Start world interaction, wait for interrupt
 world.start_mqtt_connection()
 flask_socketio.run(flask_app, host=CFG['api_listen_host'], port=CFG['api_listen_port'], debug=False)
 world.stop_mqtt_connection()
 spotify_control.shutdown()
+slideshow.shutdown()
 
