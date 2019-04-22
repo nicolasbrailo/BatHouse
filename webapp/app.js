@@ -1,18 +1,15 @@
 
 class DumbHouseApp {
     constructor() {
-        this.things_app = new ThingsApp("/ZMF/");
-        this.things_templates_ready = ThingsApp.init_all_templates("/ZMF/webapp/");
+        this.things_app = new ThingsApp("/ZMF/", "/ZMF/webapp/", [Lamp, MediaPlayer, MqttDeviceInfo]);
         this.is_ready = $.Deferred();
         this.scenes_tmpl_ready = $.Deferred();
 
         var self = this;
         $(document).ready(function(){
-            $.when(self.things_templates_ready).then(function() {
-                $.when(self.things_app.is_ready).then(function() {
-                    $.when(self.scenes_tmpl_ready.is_ready).then(function() {
-                        self.is_ready.resolve(); 
-                    });
+            $.when(self.things_app.is_ready).then(function() {
+                $.when(self.scenes_tmpl_ready.is_ready).then(function() {
+                    self.is_ready.resolve(); 
                 });
             });
         });
