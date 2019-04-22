@@ -4,7 +4,6 @@
 # * MFP integr
 # * Links in app -> no redir
 # * Chromecast off
-# * Cleanup js template dependencies in main app
 # * Minfy/cache stuff
 # * Weather integration
 
