@@ -75,6 +75,25 @@ class DumbHouseApp {
         $('#media_player_Baticueva_TV_ctrl').append(this.render_baticueva_extras());
     }
 
+    invoke_media_player_action(player_name, url) {
+        var self = this;
+        $.ajax({
+            url: url,
+            cache: false,
+            type: 'get',
+            dataType: 'html',
+            success: function(action_res) {
+                console.log(player_name, ".", url, " => ", action_res);
+                // Try to trigger a UI update in a second
+                // TODO: This doesn't actually work: updateUI only recreates the UI, doesn't fetch new state
+                // A call to updateStatus would be smarter
+                setTimeout(function(){ self.get_player(player_name).updateUI(); }, 2000);
+            }
+        });
+
+        return false;
+    }
+
     show_list_of_media_players(element_selector) {
         for (var thing of this.media_players) {
             $(element_selector).append(thing.create_ui());
