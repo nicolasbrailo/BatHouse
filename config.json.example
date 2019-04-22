@@ -18,8 +18,14 @@
 
     "pcloud_client_id": "",
     "pcloud_client_secret": "",
-    "pcloud_auth_tok": "",
-    "pcloud_img_wget_base_path": "",
-    "pcloud_img_cast_update_secs": 60
+    "pcloud_auth_cache_file": "config.pcloud_auth_cache.json",
+
+    "pcloud_slideshow_cache_file": "config.pcloud_slideshow_cache.json",
+    "pcloud_slideshow_src_paths": [
+                "/foo",
+                "/bar"
+            ],
+    "pcloud_slideshow_update_image_secs": 60,
+    "pcloud_slideshow_extensions_filter": ["jpg", "jpeg", "png"]
 }
 

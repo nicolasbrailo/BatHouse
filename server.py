@@ -1,11 +1,9 @@
-
 # TODO
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
 # * Local sensors
 # * MFP integr
 # * Links in app -> no redir
 # * Chromecast off
-# * Chromecast photo cycle
 # * Cleanup js template dependencies in main app
 # * Minfy/cache stuff
 # * Weather integration
@@ -77,18 +75,10 @@ from scenes import SceneHandler
 scenes = SceneHandler(flask_app, world)
 
 
-# Register known things in ithe world
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
-from button_config import HueButton, MyIkeaButton, RoundIkeaButton
+# Register known things in the world
+from thing_config import register_all_things
+register_all_things(world)
 
-world.register_thing(ColorDimmableLamp('DeskLamp', world.mqtt))
-world.register_thing(DimmableLamp('Kitchen Counter - Left', world.mqtt))
-world.register_thing(DimmableLamp('Kitchen Counter - Right', world.mqtt))
-world.register_thing(DimmableLamp('Floorlamp', world.mqtt))
-world.register_thing(DimmableLamp('Livingroom Lamp', world.mqtt))
-world.register_thing(HueButton(   'HueButton', world, scenes))
-world.register_thing(MyIkeaButton('IkeaButton', world))
-world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
 
 
 # Register known things which are not mqtt
@@ -104,6 +94,13 @@ if CFG["chromecast_scan_on_startup"]:
     ThingChromecast.scan_chromecasts_and_register(world)
 
 
+
+# Slideshow object
+from pCloudSlideshow import build_pcloud_slideshow_from_cfg
+slideshow = build_pcloud_slideshow_from_cfg(CFG, world.get_thing_by_name('Baticueva TV'), flask_app)
+
+
+
 # Set webapp path
 from flask import redirect, url_for
 
@@ -115,11 +112,6 @@ def flask_endpoint_default_redir():
 def flask_webapp_root(urlpath):
     return send_from_directory('./webapp/', urlpath)
 
-
-# Slideshow object
-from pCloudSlideshow import build_pcloud_slideshow_from_cfg, set_pcloud_slideshow_flask_bindings
-slideshow = build_pcloud_slideshow_from_cfg(CFG, world.get_thing_by_name('Baticueva TV'))
-set_pcloud_slideshow_flask_bindings(slideshow, flask_app)
 
 
 # Start world interaction, wait for interrupt

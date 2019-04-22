@@ -1,9 +1,11 @@
 # Pipfile.lock -> causes problems when deploying to different target (ie x86Linux/RPi)
 Pipfile.lock
 
-# Never commit config secrets
+# Never commit config secrets and caches
 config.json
 config.spotify_cache.json
+config.pcloud_auth_cache.json
+config.pcloud_slideshow_cache.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
