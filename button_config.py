@@ -129,4 +129,21 @@ class HueButton(Button):
 
         logger.warning("No handler for action {} message {}".format(action, msg))
         return False
-    
+
+
+class RoundIkeaButton(Button):
+    def __init__(self, mqtt_id, world):
+        super().__init__(mqtt_id)
+        self.world = world
+
+    def handle_action(self, action, msg):
+        if action in ['rotate_left', 'rotate_right']:
+            vol_pct = 100 * int(msg['brightness']) / 255
+            for player in self.world.get_things_supporting(['volume_down']):
+                logger.debug("Set player {} to {}% vol".format(player.get_id(), vol_pct))
+                player.set_volume_pct(vol_pct)
+            return True
+        logger.warning("No handler for action {} message {}".format(action, msg))
+        return False
+
+
