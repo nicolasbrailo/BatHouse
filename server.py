@@ -4,8 +4,17 @@
 # * MFP integr
 # * Links in app -> no redir
 # * Chromecast off
-# * Minfy/cache stuff
 # * Weather integration
+
+
+# Changed JS? Run minify
+# echo "" > ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
+# minify ./webapp/app.js >> ./webapp/minified.js
 
 
 # Read app config

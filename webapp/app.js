@@ -24,7 +24,7 @@ class DumbHouseApp {
         var self = this;
         $.ajax({
             url: "scenes_view.html",
-            cache: false,
+            cache: true,
             type: 'get',
             dataType: 'html',
             success: function(tmpl) {
@@ -41,7 +41,7 @@ class DumbHouseApp {
         var self = this;
         $.ajax({
             url: "Baticueva_TV_extras.html",
-            cache: false,
+            cache: true,
             type: 'get',
             dataType: 'html',
             success: function(tmpl) {
