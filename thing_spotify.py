@@ -365,7 +365,7 @@ class ThingSpotify(Thing):
                     self.impl = _ThingSpotifyDummy(self.api_base_url)
 
                     logger.debug("Trying to renew token...")
-                    tok = ThingSpotify._get_cached_token(cfg)
+                    tok = ThingSpotify._get_cached_token(self.cfg)
                     if tok is None:
                         logger.debug("Refresh token failed, user will need to renew manually")
                     else:
