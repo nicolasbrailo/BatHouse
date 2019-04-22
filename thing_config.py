@@ -1,4 +1,4 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
 
 import threading
 import time
@@ -91,10 +91,9 @@ class MediaActionHelper(object):
 
 
 class HueButton(Button):
-    def __init__(self, mqtt_id, world, scenes):
+    def __init__(self, mqtt_id, world):
         super().__init__(mqtt_id)
         self.world = world
-        self.scenes = scenes
         self.media_actions = MediaActionHelper(world)
         self.hold_action = HoldActionHelper()
 
@@ -146,4 +145,14 @@ class RoundIkeaButton(Button):
         logger.warning("No handler for action {} message {}".format(action, msg))
         return False
 
+
+def register_all_things(world):
+    world.register_thing(ColorDimmableLamp('DeskLamp', world.mqtt))
+    world.register_thing(DimmableLamp('Kitchen Counter - Left', world.mqtt))
+    world.register_thing(DimmableLamp('Kitchen Counter - Right', world.mqtt))
+    world.register_thing(DimmableLamp('Floorlamp', world.mqtt))
+    world.register_thing(DimmableLamp('Livingroom Lamp', world.mqtt))
+    world.register_thing(HueButton(   'HueButton', world))
+    world.register_thing(MyIkeaButton('IkeaButton', world))
+    world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
 
