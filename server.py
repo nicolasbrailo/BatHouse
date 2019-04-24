@@ -1,8 +1,7 @@
 # TODO
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
-# * Local sensors
+# * Local sensors -> Add rotate time
 # * MFP integr
-# * Links in app -> no redir
 # * Chromecast off
 # * Weather integration
 

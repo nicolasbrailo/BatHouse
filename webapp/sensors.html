@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <title>BatHome</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
+    
+    <!-- Handlebars -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+</head>
+<body>
+<div class="container-fluid">
+    <div id="graphdiv" style="width: 100%"></div>
+
+    <script type="text/javascript">
+      // http://dygraphs.com/options.html
+      new Dygraph(
+        document.getElementById("graphdiv"),
+        "co2_history.csv",
+        {
+            labels: [ 'Date', 'Temperature', 'CO2'],
+            ylabel: 'CO2 PPM',
+            y2label: 'Temperature (C)',
+            series: {
+                'Temperature': {'axis': 'y2'}
+            },
+            axes: {
+              x: {
+                  valueFormatter: function(d) {
+                      return new Date(d*1000);
+                  },
+                  axisLabelFormatter: function(d, gran, opts) {
+                      var t = new Date(d*1000);
+                      return t.getHours() + ":" + t.getMinutes() + " " + t.getDay() + "/" + t.getMonth();
+                  }
+              }
+            },
+        }
+      );
+    </script>
+</div>
+</body>
+</html>
+
