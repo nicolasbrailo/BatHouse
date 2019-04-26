@@ -1,7 +1,7 @@
 # TODO
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
+# * MFP
 # * Local sensors -> Add rotate time
-# * MFP integr
 # * Chromecast off
 # * NetGraph
 # mosquitto_sub -h 192.168.2.100 -C 1 -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng | display -
@@ -9,13 +9,13 @@
 
 
 # Changed JS? Run minify
-echo "" > ./webapp/minified.js
-minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
-minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
-minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
-minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
-minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
-minify ./webapp/app.js >> ./webapp/minified.js
+# echo "" > ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
+# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
+# minify ./webapp/app.js >> ./webapp/minified.js
 
 
 # Read app config
@@ -92,7 +92,7 @@ register_all_things(world)
 
 # Register known things which are not mqtt
 from thing_spotify import ThingSpotify
-spotify_control = ThingSpotify(CFG, "ZMF")
+spotify_control = ThingSpotify(CFG['spotify'], "ZMF")
 world.register_thing(spotify_control)
 
 from thing_chromecast import ThingChromecast
@@ -106,7 +106,7 @@ if CFG["chromecast_scan_on_startup"]:
 
 # Slideshow object
 from pCloudSlideshow import build_pcloud_slideshow_from_cfg
-slideshow = build_pcloud_slideshow_from_cfg(CFG, world.get_thing_by_name('Baticueva TV'), flask_app)
+slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
 
 
 
@@ -121,6 +121,13 @@ def flask_endpoint_default_redir():
 def flask_webapp_root(urlpath):
     return send_from_directory('./webapp/', urlpath)
 
+
+# MFP integration
+from mfp import MFP_Crawler
+mfp = MFP_Crawler(CFG['mfp']['cache_file'], CFG['mfp']['relevant_days'], CFG['mfp']['user'], CFG['mfp']['pass'])
+@flask_app.route('/foo')
+def flask_mfp():
+    return str(mfp.stats)
 
 
 # Start world interaction, wait for interrupt

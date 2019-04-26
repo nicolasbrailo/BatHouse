@@ -54,7 +54,7 @@
         var app = new DumbHouseApp();
         $.when(app.is_ready).then(function() {
             app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
-            app.show_scenes();
+            app.show_scenes('#scene_list');
         });
     </script>
 </head>

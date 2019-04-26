@@ -1,6 +1,5 @@
 import json
 
-# Use the same logger as ZMF things
 import logging
 logger = logging.getLogger('BatHome')
 

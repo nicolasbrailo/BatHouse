@@ -11,21 +11,34 @@
     "mqtt_broker_ip": "192.168.2.100",
     "mqtt_broker_port": 1883,
 
-    "spotify_redirect_uri": "http://127.0.0.1:2000/test",
-    "spotify_client_secret": "",
-    "spotify_client_id": "",
-    "spotipy_cache": "config.spotify_cache.json",
+    "spotify": {
+        "redirect_uri": "http://127.0.0.1:2000/test",
+        "client_secret": "",
+        "client_id": "",
+        "spotipy_cache": "config.spotify_cache.json"
+    },
 
-    "pcloud_client_id": "",
-    "pcloud_client_secret": "",
-    "pcloud_auth_cache_file": "config.pcloud_auth_cache.json",
+    "pcloud": {
+        "client_id": "",
+        "client_secret": "",
+        "auth_cache_file": "config.pcloud_auth_cache.json",
+        "slideshow": {
+            "cache_file": "config.pcloud_slideshow_cache.json",
+            "src_paths": [
+                        "/Foo",
+                        "/Bar",
+                        "/Foobar/baz"
+                    ],
+            "update_image_secs": 60,
+            "extensions_filter": ["jpg", "jpeg"]
+        }
+    },
 
-    "pcloud_slideshow_cache_file": "config.pcloud_slideshow_cache.json",
-    "pcloud_slideshow_src_paths": [
-                "/foo",
-                "/bar"
-            ],
-    "pcloud_slideshow_update_image_secs": 60,
-    "pcloud_slideshow_extensions_filter": ["jpg", "jpeg", "png"]
+    "mfp": {
+        "cache_file": "mfp.cache",
+        "relevant_days": 20,
+        "user": "",
+        "pass": ""
+    }
 }
 

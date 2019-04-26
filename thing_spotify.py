@@ -221,9 +221,9 @@ class ThingSpotify(Thing):
 
     @staticmethod
     def _get_auth_obj(cfg):
-        return SpotifyOAuth(cfg['spotify_client_id'], 
-                            cfg['spotify_client_secret'],
-                            cfg['spotify_redirect_uri'],
+        return SpotifyOAuth(cfg['client_id'], 
+                            cfg['client_secret'],
+                            cfg['redirect_uri'],
                             scope=ThingSpotify._get_spotify_scopes(),
                             cache_path=cfg['spotipy_cache'])
 

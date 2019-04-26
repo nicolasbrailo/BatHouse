@@ -181,11 +181,11 @@ class pCloudCastSlideshow(object):
 
 
 def build_pcloud_slideshow_from_cfg(CFG, chromecast, flask_app):
-    auth = pCloudAuth(CFG['pcloud_client_id'], CFG['pcloud_client_secret'], CFG['pcloud_auth_cache_file'])
-    img_provider = pCloudWgetImg(auth, CFG["pcloud_slideshow_cache_file"],
-                                       CFG["pcloud_slideshow_src_paths"],
-                                       CFG["pcloud_slideshow_extensions_filter"])
-    slideshow = pCloudCastSlideshow(int(CFG['pcloud_slideshow_update_image_secs']), img_provider, chromecast)
+    auth = pCloudAuth(CFG['client_id'], CFG['client_secret'], CFG['auth_cache_file'])
+    img_provider = pCloudWgetImg(auth, CFG["slideshow"]["cache_file"],
+                                       CFG["slideshow"]["src_paths"],
+                                       CFG["slideshow"]["extensions_filter"])
+    slideshow = pCloudCastSlideshow(int(CFG["slideshow"]["update_image_secs"]), img_provider, chromecast)
 
     @flask_app.route('/pcloud_slideshow/auth/step1')
     def flask_ep_pcloud_slideshow_auth_step1():
