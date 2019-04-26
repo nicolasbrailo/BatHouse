@@ -3,17 +3,19 @@
 # * Local sensors -> Add rotate time
 # * MFP integr
 # * Chromecast off
-# * Weather integration
+# * NetGraph
+# mosquitto_sub -h 192.168.2.100 -C 1 -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng | display -
+# mosquitto_pub -h 192.168.2.100 -t zigbee2mqtt/bridge/networkmap -m graphviz
 
 
 # Changed JS? Run minify
-# echo "" > ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
-# minify ./webapp/app.js >> ./webapp/minified.js
+echo "" > ./webapp/minified.js
+minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
+minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
+minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
+minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
+minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
+minify ./webapp/app.js >> ./webapp/minified.js
 
 
 # Read app config

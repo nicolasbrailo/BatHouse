@@ -33,7 +33,6 @@ var app = new DumbHouseApp();
 $.when(app.is_ready).then(function() {
     app.show_list_of(Lamp, '#lamps_list');
     app.show_list_of_media_players('#media_players_list');
-    app.show_scenes();
 });
 </script>
 
@@ -48,9 +47,6 @@ $.when(app.is_ready).then(function() {
     <h2>Media players</h2>
     <ul id="media_players_list" style="margin: 0; padding: 0;" />
     </ul>
-
-    <h2>Scenes</h2>
-    <ul id="scene_list"></ul>
 
     <hr/>
     <h1>

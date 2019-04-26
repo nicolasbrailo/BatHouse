@@ -54,6 +54,7 @@
         var app = new DumbHouseApp();
         $.when(app.is_ready).then(function() {
             app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
+            app.show_scenes();
         });
     </script>
 </head>
@@ -78,6 +79,9 @@
         <td>Link quality</td>
     </tr>
     </table>
+
+    <h2>List of all known scenes</h2>
+    <ul id="scene_list"></ul>
 
     <h2>Realtime MQTT Log</h2>
     <ul id="mqtt_log">

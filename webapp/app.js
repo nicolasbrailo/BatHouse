@@ -3,7 +3,6 @@ class DumbHouseApp {
     constructor() {
         this.things_app = new ThingsApp("/ZMF/", "/ZMF/webapp/", [Lamp, MediaPlayer, MqttDeviceInfo]);
         this.is_ready = $.Deferred();
-        this.scenes_tmpl_ready = $.Deferred();
         this.baticueva_extras_tmpl_ready = $.Deferred();
 
         var self = this;
@@ -12,29 +11,9 @@ class DumbHouseApp {
                 $.when(self.baticueva_extras_tmpl_ready).then(function() {
                     self.media_players = self.things_app.get_things_of_type(MediaPlayer);
                     self.monkeypatch();
-
-                    $.when(self.scenes_tmpl_ready.is_ready).then(function() {
-                        self.is_ready.resolve(); 
-                    });
+                    self.is_ready.resolve(); 
                 });
             });
-        });
-
-        // Get scenes template
-        var self = this;
-        $.ajax({
-            url: "scenes_view.html",
-            cache: true,
-            type: 'get',
-            dataType: 'html',
-            success: function(tmpl) {
-                if (!Handlebars || !Handlebars.registerHelper) {
-                    console.error("Handlebars plugin not found");
-                }
-
-                self.render_scenes = Handlebars.compile(tmpl);
-                self.scenes_tmpl_ready.resolve();
-            }
         });
 
         // Get Baticueva extras
@@ -66,13 +45,19 @@ class DumbHouseApp {
         var patched_self = this.get_player('Baticueva TV');
         var patched_func = this.get_player('Baticueva TV').updateUI;
         this.get_player('Baticueva TV').updateUI = function() {
+            self.before_baticueva_tv_shown();
             patched_func.apply(patched_self);
             self.on_baticueva_tv_shown();
         }
     }
 
+    before_baticueva_tv_shown() {
+        this.baticueva_extras_open = $('#Baticueva_TV_extras_div').is(':visible');
+    }
+
     on_baticueva_tv_shown() {
         $('#media_player_Baticueva_TV_ctrl').append(this.render_baticueva_extras());
+        if (this.baticueva_extras_open) $('#Baticueva_TV_extras_div').show();
     }
 
     invoke_media_player_action(player_name, url) {
@@ -109,14 +94,33 @@ class DumbHouseApp {
     }
 
     show_scenes(template_element_selector) {
+        this.scenes_tmpl_ready = $.Deferred();
         var self = this;
+
+        $.ajax({
+            url: "scenes_view.html",
+            cache: true,
+            type: 'get',
+            dataType: 'html',
+            success: function(tmpl) {
+                if (!Handlebars || !Handlebars.registerHelper) {
+                    console.error("Handlebars plugin not found");
+                }
+
+                self.render_scenes = Handlebars.compile(tmpl);
+                self.scenes_tmpl_ready.resolve();
+            }
+        });
+
         $.ajax({
             url: '/scenes/list',
             cache: false,
             type: 'get',
             dataType: 'json',
             success: function(scenes) {
-                $('#scene_list').replaceWith(self.render_scenes(scenes));
+                $.when(self.scenes_tmpl_ready.is_ready).then(function() {
+                    $(template_element_selector).replaceWith(self.render_scenes(scenes));
+                });
             }
         });
     }
