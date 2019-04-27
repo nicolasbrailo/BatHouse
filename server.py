@@ -1,11 +1,12 @@
 # TODO
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
-# * MFP
 # * Local sensors -> Add rotate time
+# * Cron to update MFP daily
 # * Chromecast off
 # * NetGraph
 # mosquitto_sub -h 192.168.2.100 -C 1 -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng | display -
 # mosquitto_pub -h 192.168.2.100 -t zigbee2mqtt/bridge/networkmap -m graphviz
+# * WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
 
 
 # Changed JS? Run minify
@@ -108,6 +109,13 @@ if CFG["chromecast_scan_on_startup"]:
 from pCloudSlideshow import build_pcloud_slideshow_from_cfg
 slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
 
+# MFP integration
+from mfp import MFP_Crawler
+mfp = MFP_Crawler(flask_app,
+                  CFG['mfp']['cache_file'], 
+                  CFG['mfp']['user'], CFG['mfp']['pass'],
+                  int(CFG['mfp']['history_days']))
+
 
 
 # Set webapp path
@@ -121,19 +129,11 @@ def flask_endpoint_default_redir():
 def flask_webapp_root(urlpath):
     return send_from_directory('./webapp/', urlpath)
 
-
-# MFP integration
-from mfp import MFP_Crawler
-mfp = MFP_Crawler(CFG['mfp']['cache_file'], CFG['mfp']['relevant_days'], CFG['mfp']['user'], CFG['mfp']['pass'])
-@flask_app.route('/foo')
-def flask_mfp():
-    return str(mfp.stats)
-
-
 # Start world interaction, wait for interrupt
 world.start_mqtt_connection()
 flask_socketio.run(flask_app, host=CFG['api_listen_host'], port=CFG['api_listen_port'], debug=False)
 world.stop_mqtt_connection()
 spotify_control.shutdown()
 slideshow.shutdown()
+
 

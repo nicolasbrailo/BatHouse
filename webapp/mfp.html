@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <title>BatHome</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
+    
+    <!-- Handlebars -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+
+<style>
+#mfp_eatmeter {
+    width: 100%;
+    border: 1px solid black;
+    font-size: small;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+meter {
+  width: 100%;
+  box-shadow: 0 5px 5px -5px #999 inset;
+}
+meter::-webkit-meter-suboptimum-value {
+  background-image: linear-gradient(
+    90deg, 
+    #8C5 0%, 
+    #F33 100%
+  );
+  background-size: 100% 100%;
+}
+
+#mfp_exercise_legend {
+    float: left;
+}
+
+#mfp_exercise {
+    margin-top: 5px;
+    float: left;
+}
+
+#mfp_exercise li {
+    font-size: small;
+    border: 1px solid black;
+    padding: 2px;
+    float: left;
+    list-style-type: none;
+}
+#mfp_exercise .exercise {
+    background-color: green;
+}
+
+#mfp_exercise .noexercise {
+    text-decoration: line-through wavy red;
+}
+
+
+#mfp_chart {
+    margin-top: 20px;
+}
+
+
+</style>
+
+</head>
+<body>
+<div class="container-fluid">
+    <h2 id="mfp_stats_title">MFP</h2>
+
+    <table width="100%">
+    <tr>
+        <td width="42%">
+            <div id="mfp_eatmeter_desc">Loading MFP stats...</div>
+        </td>
+
+        <td width="58%">
+            <table id="mfp_eatmeter">
+            <tr>
+                <td style="width: 45%; background-color: yellow;">UNDER EATING</td>
+                <td style="width: 10%; background-color: green;">TARGET</td>
+                <td style="width: 45%; background-color: red;">OVER EATING</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <meter id="mfp_eatmeter_bar" max=100 min=0 high=55 low=45 optimum=50></meter>
+                </td>
+            </tr>
+            </table>
+
+            <p id="mfp_exercise_legend">Training days:</p>
+            <ul id="mfp_exercise">
+            </ul>
+        </td>
+    </tr>
+    </table>
+
+    <div id="mfp_chart" style="width: 100%"></div>
+
+
+    <script type="text/javascript">
+      function plot_mfp_diary(diary) {
+          // Convert to sorted CSV
+          var days = [];
+          for (var d in diary) days.push(d);
+          days = days.sort();
+
+          var csv = "Date,Calories,Weight\n";
+          for (var day of days) {
+              var log = diary[day];
+              csv += day + "," + log.calories + "," + (log.weight? log.weight : '') + "\n";
+          }
+
+          new Dygraph(
+            document.getElementById("mfp_chart"), csv,
+            {
+                ylabel: 'Calories',
+                y2label: 'Weight',
+                series: {
+                    'Calories': {axis: 'y'},
+                    'Weight': {axis: 'y2'},
+                },
+                axes: {
+                  y : { valueRange: [0, 3000], },
+                  y2: { valueRange: [70, 82], },
+                },
+                strokeWidth: 3,
+                pointSize : 5,
+                drawPoints: true,
+                highlightCircleSize: 5,
+                highlightSeriesOpts: {strokeWidth: 5, highlightCircleSize: 10},
+                underlayCallback: function(ctx, area, graph) {
+                    function horizontalLine(y_val, color) {
+                        var xl = graph.toDomCoords(0,y_val);
+                        ctx.strokeStyle= color;
+                        ctx.beginPath();
+                        ctx.moveTo(xl[0],xl[1]);
+                        ctx.lineTo(9e22,xl[1]);
+                        ctx.closePath();
+                        ctx.stroke();      
+                    }
+
+                    horizontalLine(1500, 'green');
+                    horizontalLine(1900, 'yellow');
+                    horizontalLine(2300, 'red');
+                },
+            }
+          );
+      }
+
+      function aggregate_mfp_diary(daily_target_cals, diary) {
+          var stats = {
+                  daily_target_cals: daily_target_cals,
+                  period_day_count: 0,
+                  period_exercise_days: 0,
+                  period_exercise_time: 0,
+                  period_total_cals: 0,
+          }
+
+          $.each(diary, function(day, log) {
+              stats.period_day_count += 1;
+              stats.period_total_cals += log.calories;
+              if (log.exercise_minutes > 0) {
+                  stats.period_exercise_days += 1;
+                  stats.period_exercise_time += log.exercise_minutes;
+              }
+          });
+
+          stats.daily_average_cals = stats.period_total_cals / stats.period_day_count;
+          stats.period_target_cals = stats.daily_target_cals * stats.period_day_count;
+          stats.period_target_cals_pct = Math.ceil(100 * stats.period_total_cals / stats.period_target_cals);
+          return stats;
+      }
+
+      var daily_target_cals = 1950;
+
+      $.ajax({
+          url: "/mfp/stats",
+          cache: false,
+          type: 'get',
+          dataType: 'json',
+          success: function(diary) {
+              var stats = aggregate_mfp_diary(daily_target_cals, diary);
+
+              $("#mfp_stats_title").text("MFP "+stats.period_day_count+" day stats");
+              // focus on?
+              var recommend = ""
+              if (stats.period_target_cals_pct > 105) recommend = "<li><b>eat less</b></li>";
+              if (stats.period_target_cals_pct <  80) recommend = "<li><b>eat more</b></li>";
+
+              // Short stats
+              var summary = "<ul>" +
+                  "<li>avg " + stats.daily_average_cals + " cal/day " +
+                      "("+ stats.period_target_cals_pct +"%)</li>" +
+                  "<li>trained "+stats.period_exercise_days+" days out of "+stats.period_day_count+
+                      " ("+stats.period_exercise_time+"min)</li>" +
+                  recommend +
+                  "</ul>";
+
+              $("#mfp_eatmeter_desc").html(summary);
+              // Adjust so "good value" is centered
+              $("#mfp_eatmeter_bar").val(stats.period_target_cals_pct - 50);
+
+              // Exercise log
+              var days = [];
+              for (var d in diary) days.push(d);
+              days = days.sort();
+
+              for (var day of days) {
+                  var log = diary[day];
+                  var cls = (log.exercise_minutes > 0)? 'exercise' : 'noexercise';
+                  $("#mfp_exercise").append("<li class='"+cls+"'>"+day.substr(5)+"</li>");
+              }
+
+              plot_mfp_diary(diary);
+          }
+      });
+    </script>
+</div>
+</body>
+</html>
+
+
