@@ -136,13 +136,13 @@ $.when(app.is_ready).then(function() {
             <td width="58%">
                 <table id="mfp_eatmeter">
                 <tr>
-                    <td style="width: 45%; background-color: yellow;">UNDER EATING</td>
-                    <td style="width: 10%; background-color: green;">TARGET</td>
-                    <td style="width: 45%; background-color: red;">OVER EATING</td>
+                    <td style="width: 42%; background-color: yellow;">UNDER EATING</td>
+                    <td style="width: 16%; background-color: green;">TARGET</td>
+                    <td style="width: 42%; background-color: red;">OVER EATING</td>
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <meter id="mfp_eatmeter_bar" max=100 min=0 high=55 low=45 optimum=50></meter>
+                        <meter id="mfp_eatmeter_bar" max=100 min=0 high=58 low=42 optimum=50></meter>
                     </td>
                 </tr>
                 </table>
@@ -167,9 +167,30 @@ $.when(app.is_ready).then(function() {
         </ul>
     </div>
 
+    <hr/>
+
     <div style="clear: both">
-        <h2>CHARTS</h2>
+        <h2><a href="#" onclick="$('#mfp_chart').toggle(); return false;">MFP daily</a></h2>
         <div id="mfp_chart" style="width: 100%"></div>
+
+        <h2><a href="#local_co2_temp_h2" id="local_co2_temp_h2"
+                onclick="return app.toggle_Local_Sensors_Plot('local_co2_temp');">
+                Local sensors</a></h2>
+        <div id="local_co2_temp" style="display: none; width: 100%"></div>
+
+        <div style="float: left; width: 50%">
+            <h2><a href="#weather_plots" id="weather_plots"
+                    onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
+                    Rain forecast</a></h2>
+            <div id="rain_forecast" style="display: none; width: 100%"></div>
+        </div>
+
+        <div style="float: left; width: 50%">
+            <h2><a href="#weather_plots"
+                    onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
+                    Temperature forecast, hourly</a></h2>
+            <div id="temp_forecast" style="display: none; width: 100%"></div>
+        </div>
     </div>
 </div>
 </body>
