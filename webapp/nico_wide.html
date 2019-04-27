@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <title>BatHome</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
+    
+    <!-- Handlebars -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+
+    <!-- Dygraph -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+
+    <!--
+    <script type="text/javascript" src="/webapp/minified.js"></script>
+     -->
+    <script type="text/javascript" src="/ZMF/webapp/things/app.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/templated_thing.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/lamp/model.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/media_player/model.js"></script>
+    <script type="text/javascript" src="/ZMF/webapp/things/mqtt_device_info/model.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+
+    <link rel="stylesheet" href="custom_styles.css">
+
+<script>
+var app = new DumbHouseApp();
+$.when(app.is_ready).then(function() {
+    app.show_list_of(Lamp, '#lamps_list');
+    app.show_list_of_media_players('#media_players_list');
+
+    var daily_target_cals = 1950;
+    app.get_mfp_stats(daily_target_cals, function(days, diary, stats, mfp_summary) {
+        $("#mfp_stats_title").text(mfp_summary.title);
+        $("#mfp_eatmeter_desc").html(mfp_summary.text);
+        $("#mfp_eatmeter_bar").val(stats.period_target_cals_pct - 50);
+
+        // Exercise log
+        for (var day of days) {
+            var log = diary[day];
+            var cls = (log.exercise_minutes > 0)? 'exercise' : 'noexercise';
+            $("#mfp_exercise").append("<li class='"+cls+"'>"+day.substr(5)+"</li>");
+        }
+
+        app.plot_mfp_diary("mfp_chart", days, daily_target_cals, diary);
+    });
+});
+</script>
+
+<style>
+.column {
+    float: left;
+    border: 1px solid black;
+    padding: 5px;
+    margin: 5px;
+}
+.scenes_column {
+    width: 450px;
+}
+
+.player_shortcut {
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    margin: 2px;
+    padding: 0;
+}
+
+.mfp_column {
+    width: calc(100% - 470px); /* 100% - icon width */
+}
+
+.mfp_column h2 {
+    margin: 0;
+    padding: 5px;
+}
+
+#mfp_stats_title {
+    font-size: smaller;
+}
+
+#mfp_eatmeter_desc {
+    font-size: smaller;
+}
+
+.lamps_column {
+    clear: left;
+    width: 40%;
+}
+.mps_column {
+    width: 57%;
+}
+
+@media (max-width: 900px) {
+    .lamp_set_brightness_slider {
+        float: none;
+        width: 100% !important;
+    }
+}
+</style>
+
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="column scenes_column">
+        <a href="#" onClick="return app.invoke_action('/scene_set/dinner');">
+            <img src="dinner.jpg" class="player_shortcut"/></a>
+        <a href="#" onClick="return app.invoke_action('/scene_set/living_room_evening');">
+            <img src="evening.jpg" class="player_shortcut"/></a>
+        <a href="#" onClick="return app.invoke_action('/scene_set/sleepy');">
+            <img src="sleepy.jpg" class="player_shortcut"/></a>
+        <a href="#" onClick="return app.invoke_action('/scene_set/world_off');">
+            <img src="world_off.png" class="player_shortcut"/></a>
+    </div>
+
+    <div class="column mfp_column">
+        <h2 id="mfp_stats_title">MFP</h2>
+
+        <table width="100%">
+        <tr>
+            <td width="42%">
+                <div id="mfp_eatmeter_desc">Loading MFP stats...</div>
+            </td>
+
+            <td width="58%">
+                <table id="mfp_eatmeter">
+                <tr>
+                    <td style="width: 45%; background-color: yellow;">UNDER EATING</td>
+                    <td style="width: 10%; background-color: green;">TARGET</td>
+                    <td style="width: 45%; background-color: red;">OVER EATING</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <meter id="mfp_eatmeter_bar" max=100 min=0 high=55 low=45 optimum=50></meter>
+                    </td>
+                </tr>
+                </table>
+
+                <p id="mfp_exercise_legend">Training days:</p>
+                <ul id="mfp_exercise">
+                </ul>
+            </td>
+        </tr>
+        </table>
+    </div>
+
+    <div class="column lamps_column">
+        <h2>Lamps</h2>
+        <ul id="lamps_list" style="margin: 0; padding: 0;" />
+        </ul>
+    </div>
+
+    <div class="column mps_column">
+        <h2>Media players</h2>
+        <ul id="media_players_list" style="margin: 0; padding: 0;" />
+        </ul>
+    </div>
+
+    <div style="clear: both">
+        <h2>CHARTS</h2>
+        <div id="mfp_chart" style="width: 100%"></div>
+    </div>
+</div>
+</body>
+</html>

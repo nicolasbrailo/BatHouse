@@ -16,6 +16,7 @@
     <!-- Handlebars -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
 
+    <!-- Dygraph -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
     <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
@@ -75,7 +76,7 @@
           type: 'get',
           dataType: 'json',
           success: function(forecast) {
-              var csv = "";
+              var csv = "Date,Rain(mm/h)\n";
               var t = forecast.start;
               for (var rain of forecast.precip) {
                   csv += t + "," + rain + "\n";
@@ -86,15 +87,11 @@
                   document.getElementById("rain_forecast"),
                   csv,
                   {
-                      fillGraph: true,
-                      labels: [ 'Date', 'Rain (mm/h)'],
                       series: {
-                          'Rain (mm/h)': {'plotter': smoothPlotter}
+                          'Rain(mm/h)': {'plotter': smoothPlotter}
                       },
                       axes: {
-                          y: {
-                              //valueRange: [0, 5],
-                          },
+                          y: {valueRange: [0, 5],},
                           x: {
                               valueFormatter: function(d) { return new Date(d*1000); },
                               axisLabelFormatter: function(d, gran, opts) {
