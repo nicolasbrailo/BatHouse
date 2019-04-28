@@ -141,44 +141,42 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
 
         raise KeyError("Spotify knows no device called {}".format(dev_name))
 
-    def _get_available_devices(self):
-        return [x['name'] for x in self._sp.devices()['devices']]
-
-    def _get_active_device(self):
-        l = [x for x in self._sp.devices()['devices'] if x['is_active'] == True]
-
-        if len(l) == 0:
-            return None
-
-        assert(len(l) == 1)
-        return l[0]
-
     def _get_volume_pct(self):
-        dev = self._get_active_device()
-        if dev is None:
-            return 0
-        return dev['volume_percent']
+        l = [x for x in self._sp.devices()['devices'] if x['is_active'] == True]
+        if len(l) == 0:
+            return 0 
+        return l[0]['volume_percent']
 
     def _is_active(self):
         track = self._sp.current_user_playing_track()
         return (track is not None) and track['is_playing']
 
     def json_status(self):
-        vol = self._get_volume_pct()
-        dev = self._get_active_device()
+        devices = self._sp.devices()['devices']
+
+        active_dev = None
+        if len(devices) > 0:
+            act_devs = [x for x in devices if x['is_active'] == True]
+            if len(act_devs) > 0:
+                active_dev = act_devs[0]
+
+        vol = active_dev['volume_percent'] if active_dev is not None else 0
+
+        track = self._sp.current_user_playing_track()
+        is_active = (track is not None) and track['is_playing']
+
         status = {
                 'name': self.get_id(),
                 'uri': None,
-                'active_device': dev['name'] if dev is not None else None,
-                'available_devices': self._get_available_devices(),
+                'active_device': active_dev['name'] if active_dev is not None else None,
+                'available_devices': [x['name'] for x in devices],
                 'app': None,
                 'volume_pct': vol,
                 'volume_muted': (vol == 0),
-                'player_state': 'Playing' if self._is_active() else 'Idle',
+                'player_state': 'Playing' if is_active else 'Idle',
                 'media': None,
                 }
         
-        track = self._sp.current_user_playing_track()
         if track is None:
             return status
 
