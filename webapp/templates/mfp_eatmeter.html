@@ -8,7 +8,9 @@
             <li>avg {{stats.daily_average_cals}} cal/day ({{stats.period_target_cals_pct}}%)</li>
             <li>trained {{stats.period_exercise_days}} days out of {{stats.period_day_count}}
                 ({{stats.period_exercise_time}}min)</li>
-            <li>{{stats.recommendation}}</li>
+            {{#if stats.recommendation}}
+                <li><b>{{stats.recommendation}}</b></li>
+            {{/if}}
         </ul>
         </div>
 

@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <title>BatHome</title>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- jQuery -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
-    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
-
     <!-- Handlebars -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+    <!-- Dygraph -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
 
-    <!-- All things rendered in this page -->
-    <script type="text/javascript" src="/ZMF/webapp/things/app.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/templated_thing.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/lamp/model.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/media_player/model.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/mqtt_device_info/model.js"></script>
+    <script type="text/javascript" src="2b9a5b1373.bathouse.minified.js"></script>
+    <link rel="stylesheet" href="bd3323a1ee.bathouse.minified.css">
 
-    <!-- Custom stuff -->
-    <script type="text/javascript" src="app.js"></script>
-    <link rel="stylesheet" href="custom_styles.css">
-    
     <!-- Connect to backend with a websocket -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
@@ -53,8 +50,8 @@
 
         var app = new DumbHouseApp();
         $.when(app.is_ready).then(function() {
+            app.show_scenes('#scenes_ui');
             app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
-            app.show_scenes('#scene_list');
         });
     </script>
 </head>
@@ -62,14 +59,18 @@
 <body>
 <div class="container-fluid">
     <h2>Misc</h2>
-    <p><a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a></p>
-
-    <b>Reauth slideshow</b>
-    <ol>
-        <li><a href="/pcloud_slideshow/auth/step1">Get auth link</a>. Goto link, copy code.</li>
-        <li>With the code, goto this url (append /$code to the url): <a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
-        <li>Stale cache? <a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
-    </ol>
+    <ul>
+        <li><a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a></li>
+        <li><a href="/mfp/refresh" target="blank">Refresh MFP cache</a></li>
+        <li><a href="/mfp/refresh/10days" target="blank">Temporarily get more MFP days (change number in url for more days)</a></li>
+        <li><b>Reauth slideshow</b>
+            <ol>
+                <li><a href="/pcloud_slideshow/auth/step1">Get auth link</a>. Goto link, copy code.</li>
+                <li>With the code, goto this url (append /$code to the url): <a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
+                <li>Stale cache? <a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
+            </ol>
+        </li>
+    </ul>
 
     <h2>Mqtt network status</h2>
     <table id="mqtt_network_status" />
@@ -81,7 +82,7 @@
     </table>
 
     <h2>List of all known scenes</h2>
-    <ul id="scene_list"></ul>
+    <ul id="scenes_ui"></ul>
 
     <h2>Realtime MQTT Log</h2>
     <ul id="mqtt_log">

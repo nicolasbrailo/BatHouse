@@ -17,22 +17,8 @@
     <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
 
-    <script type="text/javascript" src="/webapp/js/graphs.js"></script>
-    <script type="text/javascript" src="/webapp/js/templated_thing.js"></script>
-    <script type="text/javascript" src="/webapp/js/scene_list.js"></script>
-    <script type="text/javascript" src="/webapp/js/mqtt_device_info.js"></script>
-    <script type="text/javascript" src="/webapp/js/media_player.js"></script>
-    <script type="text/javascript" src="/webapp/js/lamp.js"></script>
-    <script type="text/javascript" src="/webapp/js/baticueva_tv_extras.js"></script>
-    <script type="text/javascript" src="/webapp/js/mfp.js"></script>
-    <script type="text/javascript" src="/webapp/js/app.js"></script>
-    <script type="text/javascript" src="/webapp/tmpls.js"></script>
-
-    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet"        href="css/things_style.css">
-    <link rel="stylesheet"        href="css/custom_styles.css">
+    <script type="text/javascript" src="2b9a5b1373.bathouse.minified.js"></script>
+    <link rel="stylesheet" href="bd3323a1ee.bathouse.minified.css">
 
 <script>
 var app = new DumbHouseApp();
@@ -127,34 +113,9 @@ $.when(app.is_ready).then(function() {
         </div>
     </div>
 
-
-
-    <h1>REFACTOR</h1>
-    <h2>Misc</h2>
-    <p><a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a></p>
-
-    <b>Reauth slideshow</b>
-    <ol>
-        <li><a href="/pcloud_slideshow/auth/step1">Get auth link</a>. Goto link, copy code.</li>
-        <li>With the code, goto this url (append /$code to the url): <a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
-        <li>Stale cache? <a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
-    </ol>
-
-    <h2>Mqtt network status</h2>
-    <table id="mqtt_network_status" />
-    <tr>
-        <td>Thing</td>
-        <td>Battery</td>
-        <td>Link quality</td>
-    </tr>
-    </table>
-
-    <h2>List of all known scenes</h2>
-    <ul id="scenes_ui"></ul>
-
-    <h2>Realtime MQTT Log</h2>
-    <ul id="mqtt_log">
-    </ul>
+    <h1>
+        <a href="admin.html">Admin</a>
+    </h1>
 </div>
 </body>
 </html>

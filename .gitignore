@@ -9,7 +9,14 @@ config.pcloud_slideshow_cache.json
 mfp.cache.db
 
 # Ignore minified js
-webapp/minified.js
+webapp/*minified.js
+webapp/*minified.css
+
+# Ignore npm if present (neded for deploy_webapp.sh)
+node_modules
+
+# Not a real file (symlinked)
+webapp/co2_history.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
