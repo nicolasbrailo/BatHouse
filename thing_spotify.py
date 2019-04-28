@@ -1,5 +1,7 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing
 
+import time
+
 from spotipy import Spotify
 from spotipy.client import SpotifyException
 from spotipy.oauth2 import SpotifyOAuth
@@ -75,6 +77,10 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
         self.volume_up_pct_delta = 10;
+
+        self.status_cache_seconds = 10
+        self.last_status = None
+        self.last_status_t = 0
 
     def playpause(self):
         if self._is_active():
@@ -152,6 +158,13 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         return (track is not None) and track['is_playing']
 
     def json_status(self):
+        if self.last_status is not None:
+            if time.time() - self.last_status_t < self.status_cache_seconds:
+                logger.debug("Return Spotify status from cache")
+                return self.last_status
+        
+        self.last_status_t = time.time()
+
         devices = self._sp.devices()['devices']
 
         active_dev = None
@@ -165,7 +178,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         track = self._sp.current_user_playing_track()
         is_active = (track is not None) and track['is_playing']
 
-        status = {
+        self.last_status = {
                 'name': self.get_id(),
                 'uri': None,
                 'active_device': active_dev['name'] if active_dev is not None else None,
@@ -178,7 +191,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                 }
         
         if track is None:
-            return status
+            return self.last_status
 
         # Get all cover images sorted by image size
         imgs = [(img['height'] * img['width'], img['url'])
@@ -192,7 +205,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
             if area >= 90000:
                 break
 
-        status['media'] = {
+        self.last_status['media'] = {
                     'icon': selected_img,
                     'title': track['item']['name'],
                     'duration': track['item']['duration_ms'] / 1000,
@@ -206,7 +219,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                     }
                 }
 
-        return status
+        return self.last_status
 
 
 from apscheduler.schedulers.background import BackgroundScheduler
