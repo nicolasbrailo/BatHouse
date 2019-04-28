@@ -1,12 +1,14 @@
 # TODO
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
 # * Local sensors -> Add rotate time
+#       tail -n500 co2_history.csv > co2_history.csv.tmp && mv co2_history.csv.tmp co2_history.csv
 # * Cron to update MFP daily
 # * Chromecast off
 # * NetGraph
 # mosquitto_sub -h 192.168.2.100 -C 1 -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng | display -
 # mosquitto_pub -h 192.168.2.100 -t zigbee2mqtt/bridge/networkmap -m graphviz
 # * WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
+
 
 # Read app config
 import json

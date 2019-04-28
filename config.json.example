@@ -3,7 +3,7 @@
     "verbose_log": false,
 
     "api_listen_host": "0.0.0.0",
-    "api_listen_port": 2000,
+    "api_listen_port": 1234,
 
     "chromecast_scan_on_startup": false,
     "chromecast_debug_device": "192.168.2.101",
