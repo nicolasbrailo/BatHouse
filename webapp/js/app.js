@@ -136,6 +136,18 @@ class DumbHouseApp {
         });
     }
 
+    show_scene_shortcuts(elm_select) {
+        var renderer = Handlebars.templates["scene_shortcuts.html"];
+        var tmpl = renderer();
+        $(elm_select).html(tmpl);
+    }
+
+    show_mfp_diary(daily_target_cals, mfp_eatmeter_elm, mfp_dygraph_elm) {
+        var mfp = new MFP(daily_target_cals);
+        mfp.create_ui(mfp_eatmeter_elm);
+        mfp.plot_diary(mfp_dygraph_elm);
+    }
+
     toggle_Local_Sensors_Plot(dygraph_element_id) {
         $('#' + dygraph_element_id ).toggle();
         if ($('#' + dygraph_element_id ).is(':visible')) {
@@ -150,66 +162,6 @@ class DumbHouseApp {
             DumbHouse_plot_temp_forecast(temp_forecast_element, hours);
             DumbHouse_plot_rain(rain_forecast_element);
         }
-    }
-
-    get_mfp_stats(dygraph_element_id, daily_target_cals, callback) {
-        var aggregate_mfp_diary = function(daily_target_cals, diary) {
-            var stats = {
-                    daily_target_cals: daily_target_cals,
-                    period_day_count: 0,
-                    period_exercise_days: 0,
-                    period_exercise_time: 0,
-                    period_total_cals: 0,
-            }
-
-            $.each(diary, function(day, log) {
-                stats.period_day_count += 1;
-                stats.period_total_cals += log.calories;
-                if (log.exercise_minutes > 0) {
-                    stats.period_exercise_days += 1;
-                    stats.period_exercise_time += log.exercise_minutes;
-                }
-            });
-
-            stats.daily_average_cals = stats.period_total_cals / stats.period_day_count;
-            stats.period_target_cals = stats.daily_target_cals * stats.period_day_count;
-            stats.period_target_cals_pct = Math.ceil(100 * stats.period_total_cals / stats.period_target_cals);
-            return stats;
-        }
-
-
-        var self = this;
-        $.ajax({
-            url: "/mfp/stats",
-            cache: false,
-            type: 'get',
-            dataType: 'json',
-            success: function(diary) {
-                var stats = aggregate_mfp_diary(daily_target_cals, diary);
-
-                var recommend = ""
-                if (stats.period_target_cals_pct > 105) recommend = "<li><b>eat less</b></li>";
-                if (stats.period_target_cals_pct <  80) recommend = "<li><b>eat more</b></li>";
-
-                var mfp_summary = {
-                        title: "MFP "+stats.period_day_count+" day stats",
-                        text: "<ul>" +
-                            "<li>avg " + stats.daily_average_cals + " cal/day " +
-                            "("+ stats.period_target_cals_pct +"%)</li>" +
-                            "<li>trained "+stats.period_exercise_days+" days out of "+stats.period_day_count+
-                            " ("+stats.period_exercise_time+"min)</li>" +
-                            recommend +
-                            "</ul>",
-                };
-
-                var days = [];
-                for (var d in diary) days.push(d);
-                days = days.sort();
-
-                DumHouse_plot_mfp_diary(dygraph_element_id, days, daily_target_cals, diary);
-                callback(days, diary, stats, mfp_summary);
-            },
-        });
     }
 }
 

@@ -1,0 +1,46 @@
+<h2 id="mfp_stats_title">MFP {{stats.period_day_count}} day stats</h2>
+
+<table width="100%">
+<tr>
+    <td width="42%">
+        <div id="mfp_eatmeter_desc">
+        <ul>
+            <li>avg {{stats.daily_average_cals}} cal/day ({{stats.period_target_cals_pct}}%)</li>
+            <li>trained {{stats.period_exercise_days}} days out of {{stats.period_day_count}}
+                ({{stats.period_exercise_time}}min)</li>
+            <li>{{stats.recommendation}}</li>
+        </ul>
+        </div>
+
+    </td>
+
+    <td width="58%">
+        <table id="mfp_eatmeter_ctrl">
+        <tr>
+            <td style="width: 42%; background-color: yellow;">UNDER EATING</td>
+            <td style="width: 16%; background-color: green;">TARGET</td>
+            <td style="width: 42%; background-color: red;">OVER EATING</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <meter id="mfp_eatmeter_bar" max=100 min=0 
+                        high=58 low=42 optimum=50
+                        value="{{ui_period_cals_pct}}"></meter>
+            </td>
+        </tr>
+        </table>
+
+        <p id="mfp_exercise_legend">Exercise mins per day:</p>
+        <ul id="mfp_exercise">
+            {{#each exercise_days}}
+                {{#if this.activity}}
+                    <li class="exercise">{{this.minutes}}</li>
+                {{else}}
+                    <li class="noexercise">{{this.day}}</li>
+                {{/if}}
+            {{/each}}
+        </ul>
+    </td>
+</tr>
+</table>
+

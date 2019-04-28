@@ -1,4 +1,5 @@
 # TODO
+# * Cache status if json_stat call requires wget
 # * Add to scenes Transtime + set state to reduce in-fligth msgs
 # * Local sensors -> Add rotate time
 # * Cron to update MFP daily

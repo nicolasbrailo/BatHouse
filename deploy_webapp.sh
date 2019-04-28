@@ -1,6 +1,8 @@
 # sudo apt install npm
 # npm install handlebars -g
 
+# node node_modules/.bin/handlebars -k each -k if -k selectIfEq -k media_player_formatSeconds ./templates/*
+
 TARGET_JS=bathouse.minified.js
 TARGET_CSS=bathouse.minified.css
 

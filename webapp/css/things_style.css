@@ -227,3 +227,69 @@
     }
 }
 
+
+/**********************************************/
+/* MFP STYLES */
+/**********************************************/
+
+#mfp_eatmeter_ctrl {
+    width: 100%;
+    border: 1px solid black;
+    font-size: small;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#mfp_eatmeter_bar {
+  width: 100%;
+  box-shadow: 0 5px 5px -5px #999 inset;
+}
+#mfp_eatmeter_bar::-webkit-meter-suboptimum-value {
+  background-image: linear-gradient(
+    90deg, 
+    #8C5 0%, 
+    #F33 100%
+  );
+  background-size: 100% 100%;
+}
+
+#mfp_exercise_legend {
+    float: left;
+    font-size: small;
+    margin-top: 5px;
+}
+
+#mfp_exercise {
+    margin-top: 5px;
+    float: left;
+}
+
+#mfp_exercise li {
+    font-size: small;
+    border: 1px solid black;
+    padding: 2px;
+    float: left;
+    list-style-type: none;
+}
+#mfp_exercise .exercise {
+    background-color: green;
+}
+
+#mfp_exercise .noexercise {
+    text-decoration: line-through wavy red;
+}
+
+#mfp_stats_title {
+    font-size: smaller;
+}
+
+#mfp_eatmeter_desc {
+    font-size: smaller;
+}
+
+#mfp_chart {
+    margin-top: 20px;
+}
+

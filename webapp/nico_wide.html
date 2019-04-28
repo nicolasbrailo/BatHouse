@@ -24,6 +24,7 @@
     <script type="text/javascript" src="/webapp/js/media_player.js"></script>
     <script type="text/javascript" src="/webapp/js/lamp.js"></script>
     <script type="text/javascript" src="/webapp/js/baticueva_tv_extras.js"></script>
+    <script type="text/javascript" src="/webapp/js/mfp.js"></script>
     <script type="text/javascript" src="/webapp/js/app.js"></script>
     <script type="text/javascript" src="/webapp/tmpls.js"></script>
 
@@ -42,19 +43,9 @@ $.when(app.is_ready).then(function() {
     app.show_scenes('#scenes_ui');
     app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
 
-    var daily_target_cals = 1950;
-    app.get_mfp_stats("mfp_chart", daily_target_cals, function(days, diary, stats, mfp_summary) {
-        $("#mfp_stats_title").text(mfp_summary.title);
-        $("#mfp_eatmeter_desc").html(mfp_summary.text);
-        $("#mfp_eatmeter_bar").val(stats.period_target_cals_pct - 50);
+    app.show_mfp_diary(1950, '#mfp_eatmeter', "mfp_chart");
 
-        // Exercise log
-        for (var day of days) {
-            var log = diary[day];
-            var cls = (log.exercise_minutes > 0)? 'exercise' : 'noexercise';
-            $("#mfp_exercise").append("<li class='"+cls+"'>"+day.substr(5)+"</li>");
-        }
-    });
+    app.show_scene_shortcuts("#scenes_shortcuts");
 });
 </script>
 
@@ -91,46 +82,11 @@ $.when(app.is_ready).then(function() {
 
 <body>
 <div class="container-fluid">
-    <div class="column scenes_column">
-        <a href="#" onClick="return app.invoke_action('/scene_set/dinner');">
-            <img src="shortcut_icons/dinner.jpg" class="player_shortcut"/></a>
-        <a href="#" onClick="return app.invoke_action('/scene_set/living_room_evening');">
-            <img src="shortcut_icons/evening.jpg" class="player_shortcut"/></a>
-        <a href="#" onClick="return app.invoke_action('/scene_set/sleepy');">
-            <img src="shortcut_icons/sleepy.jpg" class="player_shortcut"/></a>
-        <a href="#" onClick="return app.invoke_action('/scene_set/world_off');">
-            <img src="shortcut_icons/world_off.png" class="player_shortcut"/></a>
+    <div id="scenes_shortcuts" class="column scenes_column">
     </div>
 
     <div class="column mfp_column">
-        <h2 id="mfp_stats_title">MFP</h2>
-
-        <table width="100%">
-        <tr>
-            <td width="42%">
-                <div id="mfp_eatmeter_desc">Loading MFP stats...</div>
-            </td>
-
-            <td width="58%">
-                <table id="mfp_eatmeter">
-                <tr>
-                    <td style="width: 42%; background-color: yellow;">UNDER EATING</td>
-                    <td style="width: 16%; background-color: green;">TARGET</td>
-                    <td style="width: 42%; background-color: red;">OVER EATING</td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <meter id="mfp_eatmeter_bar" max=100 min=0 high=58 low=42 optimum=50></meter>
-                    </td>
-                </tr>
-                </table>
-
-                <p id="mfp_exercise_legend">Training days:</p>
-                <ul id="mfp_exercise">
-                </ul>
-            </td>
-        </tr>
-        </table>
+        <div id="mfp_eatmeter"></div>
     </div>
 
     <div class="column lamps_column">
