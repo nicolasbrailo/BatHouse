@@ -26,3 +26,92 @@ h2 {
 }
 
 
+@media all and (min-width: 800px) {
+    /* Big screens style */
+    #mfp_eatmeter {
+        width: 70%;
+        float: left;
+    }
+
+    #mfp_eatmeter_desc {
+        width: 30%;
+        float: left;
+    }
+
+    .column {
+        float: left;
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+    }
+    .scenes_column {
+        width: 450px;
+    }
+
+    .mfp_column {
+        width: calc(100% - 470px); /* 100% - icon width */
+    }
+
+    .mfp_column h2 {
+        margin: 0;
+        padding: 5px;
+    }
+
+    .lamps_column {
+        clear: left;
+        width: 40%;
+    }
+    .mps_column {
+        width: 57%;
+    }
+
+    .weather_dygraphs {
+        width: 50%;
+        float: left;
+    }
+}
+
+@media not all and (min-width: 800px) {
+    /* Small screens style */
+    #scenes_shortcuts {
+        height: 95px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        width:100%;
+        width:auto;
+        white-space:nowrap; 
+        margin-right: 0;
+    }
+
+    #mfp_eatmeter_desc {
+        display: none;
+    }
+
+    #mfp_exercise {
+        display: inline-block;
+    }
+
+    .column {
+        display: block;
+        border: 1px solid black;
+        padding: 5px;
+        margin: 5px;
+        width: 100%;
+    }
+
+    .mfp_column h2 {
+        margin: 0;
+        padding: 5px;
+    }
+
+    #mfp_eatmeter_desc ul {
+        padding: 0;
+        margin: 0;
+    }
+    #mfp_eatmeter_desc li {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+}
+

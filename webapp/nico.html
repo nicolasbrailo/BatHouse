@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <!--link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/-->
     <title>BatHome</title>
 
     <meta charset="UTF-8">
@@ -17,53 +17,18 @@
     <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
 
-    <script type="text/javascript" src="2b9a5b1373.bathouse.minified.js"></script>
-    <link rel="stylesheet" href="bd3323a1ee.bathouse.minified.css">
+    <script type="text/javascript" src="8c7923ed79.bathouse.minified.js"></script>
+    <link rel="stylesheet" href="375d476209.bathouse.minified.css">
 
 <script>
-var app = new DumbHouseApp();
-$.when(app.is_ready).then(function() {
-    app.show_list_of(Lamp, '#lamps_list');
-    app.show_list_of_media_players('#media_players_list');
-
-    app.show_scenes('#scenes_ui');
-    app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
-
-    app.show_mfp_diary(1950, '#mfp_eatmeter', "mfp_chart");
-
-    app.show_scene_shortcuts("#scenes_shortcuts");
-});
+    var app = new DumbHouseApp();
+    $.when(app.is_ready).then(function() {
+        app.show_list_of(Lamp, '#lamps_list');
+        app.show_list_of_media_players('#media_players_list');
+        app.show_mfp_diary(1950, '#mfp_info', "mfp_chart");
+        app.show_scene_shortcuts("#scenes_shortcuts");
+    });
 </script>
-
-<style>
-.column {
-    float: left;
-    border: 1px solid black;
-    padding: 5px;
-    margin: 5px;
-}
-.scenes_column {
-    width: 450px;
-}
-
-.mfp_column {
-    width: calc(100% - 470px); /* 100% - icon width */
-}
-
-.mfp_column h2 {
-    margin: 0;
-    padding: 5px;
-}
-
-.lamps_column {
-    clear: left;
-    width: 40%;
-}
-.mps_column {
-    width: 57%;
-}
-</style>
-
 </head>
 
 <body>
@@ -72,7 +37,7 @@ $.when(app.is_ready).then(function() {
     </div>
 
     <div class="column mfp_column">
-        <div id="mfp_eatmeter"></div>
+        <div id="mfp_info"></div>
     </div>
 
     <div class="column lamps_column">
@@ -98,23 +63,20 @@ $.when(app.is_ready).then(function() {
                 Local sensors</a></h2>
         <div id="local_co2_temp" style="display: none; width: 100%"></div>
 
-        <div style="float: left; width: 50%">
-            <h2><a href="#weather_plots" id="weather_plots"
-                    onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
-                    Rain forecast</a></h2>
-            <div id="rain_forecast" style="display: none; width: 100%"></div>
+        <h2><a href="#weather_plots" id="weather_plots"
+                onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
+                Weather</a></h2>
+        <div class="weather_dygraphs">
+            <div id="rain_forecast" style="display: none; width: 100%;"></div>
         </div>
-
-        <div style="float: left; width: 50%">
-            <h2><a href="#weather_plots"
-                    onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
-                    Temperature forecast, hourly</a></h2>
-            <div id="temp_forecast" style="display: none; width: 100%"></div>
+        <div class="weather_dygraphs">
+            <div id="temp_forecast" style="display: none; width: 100%;"></div>
         </div>
     </div>
 
     <h1>
         <a href="admin.html">Admin</a>
+        | <a href="olivia.html">Olivia</a>
     </h1>
 </div>
 </body>
