@@ -1,12 +1,14 @@
 /* Media player custom styles */
 .player_shortcut {
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 100px;
+    max-height: 100px;
     width: auto;
-    margin: 10px;
+    margin: 2px;
+    padding: 0;
     border-radius: 500px;
     border: 5px solid black;
 }
+
 
 h2 {
     font-size: 100%;
@@ -72,6 +74,13 @@ meter::-webkit-meter-suboptimum-value {
     text-decoration: line-through wavy red;
 }
 
+#mfp_stats_title {
+    font-size: smaller;
+}
+
+#mfp_eatmeter_desc {
+    font-size: smaller;
+}
 
 #mfp_chart {
     margin-top: 20px;

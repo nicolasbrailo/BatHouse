@@ -8,17 +8,6 @@
 # mosquitto_pub -h 192.168.2.100 -t zigbee2mqtt/bridge/networkmap -m graphviz
 # * WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
 
-
-# Changed JS? Run minify
-# echo "" > ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/app.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/templated_thing.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/media_player/model.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/mqtt_device_info/model.js >> ./webapp/minified.js
-# minify ./zigbee2mqtt2flask/zigbee2mqtt2flask/webapp/things/lamp/model.js >> ./webapp/minified.js
-# minify ./webapp/app.js >> ./webapp/minified.js
-
-
 # Read app config
 import json
 with open('config.json', 'r') as fp:

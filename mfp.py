@@ -33,6 +33,8 @@ class MFP_Crawler(object):
         @flask_app.route('/mfp/refresh')
         @flask_app.route('/mfp/refresh/<days>days')
         def flask_mfp_update_stats(days=None):
+            if days is None:
+                days = self.default_update_days
             self.update_stats(int(days))
             return "OK"
 

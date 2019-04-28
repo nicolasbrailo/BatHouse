@@ -7,31 +7,31 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
-    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
-    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/ZMF/webapp/css/bootstrap-theme.min.css">
-    
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <!-- Handlebars -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
-
     <!-- Dygraph -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
     <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
 
-    <!--
-    <script type="text/javascript" src="/webapp/minified.js"></script>
-     -->
-    <script type="text/javascript" src="/ZMF/webapp/things/app.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/templated_thing.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/lamp/model.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/media_player/model.js"></script>
-    <script type="text/javascript" src="/ZMF/webapp/things/mqtt_device_info/model.js"></script>
-    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="/webapp/js/graphs.js"></script>
+    <script type="text/javascript" src="/webapp/js/templated_thing.js"></script>
+    <script type="text/javascript" src="/webapp/js/scene_list.js"></script>
+    <script type="text/javascript" src="/webapp/js/mqtt_device_info.js"></script>
+    <script type="text/javascript" src="/webapp/js/media_player.js"></script>
+    <script type="text/javascript" src="/webapp/js/lamp.js"></script>
+    <script type="text/javascript" src="/webapp/js/baticueva_tv_extras.js"></script>
+    <script type="text/javascript" src="/webapp/js/app.js"></script>
+    <script type="text/javascript" src="/webapp/tmpls.js"></script>
 
-    <link rel="stylesheet" href="custom_styles.css">
+    <!-- https://getbootstrap.com/docs/3.4/customize/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet"        href="css/things_style.css">
+    <link rel="stylesheet"        href="css/custom_styles.css">
 
 <script>
 var app = new DumbHouseApp();
@@ -39,8 +39,11 @@ $.when(app.is_ready).then(function() {
     app.show_list_of(Lamp, '#lamps_list');
     app.show_list_of_media_players('#media_players_list');
 
+    app.show_scenes('#scenes_ui');
+    app.show_list_of(MqttDeviceInfo, '#mqtt_network_status');
+
     var daily_target_cals = 1950;
-    app.get_mfp_stats(daily_target_cals, function(days, diary, stats, mfp_summary) {
+    app.get_mfp_stats("mfp_chart", daily_target_cals, function(days, diary, stats, mfp_summary) {
         $("#mfp_stats_title").text(mfp_summary.title);
         $("#mfp_eatmeter_desc").html(mfp_summary.text);
         $("#mfp_eatmeter_bar").val(stats.period_target_cals_pct - 50);
@@ -51,8 +54,6 @@ $.when(app.is_ready).then(function() {
             var cls = (log.exercise_minutes > 0)? 'exercise' : 'noexercise';
             $("#mfp_exercise").append("<li class='"+cls+"'>"+day.substr(5)+"</li>");
         }
-
-        app.plot_mfp_diary("mfp_chart", days, daily_target_cals, diary);
     });
 });
 </script>
@@ -68,14 +69,6 @@ $.when(app.is_ready).then(function() {
     width: 450px;
 }
 
-.player_shortcut {
-    max-width: 100px;
-    max-height: 100px;
-    width: auto;
-    margin: 2px;
-    padding: 0;
-}
-
 .mfp_column {
     width: calc(100% - 470px); /* 100% - icon width */
 }
@@ -85,27 +78,12 @@ $.when(app.is_ready).then(function() {
     padding: 5px;
 }
 
-#mfp_stats_title {
-    font-size: smaller;
-}
-
-#mfp_eatmeter_desc {
-    font-size: smaller;
-}
-
 .lamps_column {
     clear: left;
     width: 40%;
 }
 .mps_column {
     width: 57%;
-}
-
-@media (max-width: 900px) {
-    .lamp_set_brightness_slider {
-        float: none;
-        width: 100% !important;
-    }
 }
 </style>
 
@@ -115,13 +93,13 @@ $.when(app.is_ready).then(function() {
 <div class="container-fluid">
     <div class="column scenes_column">
         <a href="#" onClick="return app.invoke_action('/scene_set/dinner');">
-            <img src="dinner.jpg" class="player_shortcut"/></a>
+            <img src="shortcut_icons/dinner.jpg" class="player_shortcut"/></a>
         <a href="#" onClick="return app.invoke_action('/scene_set/living_room_evening');">
-            <img src="evening.jpg" class="player_shortcut"/></a>
+            <img src="shortcut_icons/evening.jpg" class="player_shortcut"/></a>
         <a href="#" onClick="return app.invoke_action('/scene_set/sleepy');">
-            <img src="sleepy.jpg" class="player_shortcut"/></a>
+            <img src="shortcut_icons/sleepy.jpg" class="player_shortcut"/></a>
         <a href="#" onClick="return app.invoke_action('/scene_set/world_off');">
-            <img src="world_off.png" class="player_shortcut"/></a>
+            <img src="shortcut_icons/world_off.png" class="player_shortcut"/></a>
     </div>
 
     <div class="column mfp_column">
@@ -192,6 +170,35 @@ $.when(app.is_ready).then(function() {
             <div id="temp_forecast" style="display: none; width: 100%"></div>
         </div>
     </div>
+
+
+
+    <h1>REFACTOR</h1>
+    <h2>Misc</h2>
+    <p><a href="/world/scan_chromecasts" target="blank">Rescan Chromecasts</a></p>
+
+    <b>Reauth slideshow</b>
+    <ol>
+        <li><a href="/pcloud_slideshow/auth/step1">Get auth link</a>. Goto link, copy code.</li>
+        <li>With the code, goto this url (append /$code to the url): <a href="/pcloud_slideshow/auth/step2">Auth step 2</a></li>
+        <li>Stale cache? <a href="/pcloud_slideshow/images/refresh_cache">Refresh</a></li>
+    </ol>
+
+    <h2>Mqtt network status</h2>
+    <table id="mqtt_network_status" />
+    <tr>
+        <td>Thing</td>
+        <td>Battery</td>
+        <td>Link quality</td>
+    </tr>
+    </table>
+
+    <h2>List of all known scenes</h2>
+    <ul id="scenes_ui"></ul>
+
+    <h2>Realtime MQTT Log</h2>
+    <ul id="mqtt_log">
+    </ul>
 </div>
 </body>
 </html>
