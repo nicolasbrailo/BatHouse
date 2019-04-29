@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <title>BatHome</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="http://www.webgraphviz.com/viz.js"></script>
+
+    <script>
+        $.ajax({
+          type: 'GET',
+          dataType: 'text',
+          url: "/ZMF/graphviz_netmap",
+          success: function(netmap){
+              $("#graphviz_raw_div").html(netmap);
+              $("#graphviz_svg_div").html("");
+              var svg = Viz(netmap, "svg");
+              $("#graphviz_svg_div").html(svg);
+          },
+        });
+    </script>
+</head>
+
+<body>
+<div class="container-fluid">
+    <h2>Network map (Viz from http://www.webgraphviz.com)</h2>
+    <div id="graphviz_svg_div">
+        Loading...
+    </div>
+
+    <hr/>
+    Raw graph data:
+    <pre id="graphviz_raw_div">
+    </pre>
+</div>
+</body>
+</html>
+
