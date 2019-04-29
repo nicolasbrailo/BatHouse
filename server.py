@@ -1,5 +1,4 @@
 # TODO
-# * Add to scenes Transtime + set state to reduce in-fligth msgs
 # * Local sensors -> Add rotate time
 #       tail -n500 co2_history.csv > co2_history.csv.tmp && mv co2_history.csv.tmp co2_history.csv
 # * Cron to update MFP daily
