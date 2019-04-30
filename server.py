@@ -1,7 +1,4 @@
 # TODO
-# * Local sensors -> Add rotate time
-#       tail -n500 co2_history.csv > co2_history.csv.tmp && mv co2_history.csv.tmp co2_history.csv
-# * Cron to update MFP daily
 # * Chromecast off
 # * WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
 

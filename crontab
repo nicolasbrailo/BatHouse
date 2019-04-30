@@ -1,0 +1,5 @@
+# Everyday at 2.05 AM, update MFP
+05 02 * * * wget -qO- 127.0.0.1:1234/mfp/refresh
+# Everyday at 2.00 AM, rotate sensor logs
+00 02 * * * tail -n500 /home/pi/co2_history.csv > /tmp/co2_history.csv && mv /tmp/co2_history.csv /home/pi/co2_history.csv
+

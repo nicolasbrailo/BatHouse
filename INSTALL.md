@@ -8,7 +8,7 @@ Besides hardware, running BatHouse requires:
 2. zigbee2mqtt
 3. A bunch of pipenv dependencies
 
-* Important *
+*Important*
 Give your devices friendly names in zigbee2mqtt - otherwise BatHouse will display them by their ID.
 
 ## Mqtt server
@@ -62,7 +62,7 @@ $ python3 -m pipenv install requests
 Note the project has a Pipfile but no Pipfile.lock. This is because hashes for the RaspberryPi and for x86 seem to be different, making pipenv installs fail. Remember not to commit any Pipfile.lock in PR's.
 
 ## Config
-Edit config.json.example with right config
+Edit config.json.example with right config. Also edit and install the crontab entries as specified in the file "crontab".
 
 ## Install service:
 $ cd /etc/systemd/system && sudo ln -s /home/pi/BatHouse/BatHouse.service 
