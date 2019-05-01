@@ -119,13 +119,19 @@ class ThingChromecast(Thing):
     def show_image(self, url):
         self.cc.play_media(url=url, content_type='image/jpeg')
 
+    def play_local(self):
+        # Deploy file to local and send to chromecast
+        # https://stackoverflow.com/questions/43580/how-to-find-the-mime-type-of-a-file-in-python
+        # Get mime type: file --mime-type -b
+        self.cc.play_media(url='http://192.168.2.100:1234/webapp/bartolito.mkv', content_type='video/x-matroska')
+
     def register_status_listener(self, listener):
         self.cc.media_controller.register_status_listener(listener)
 
     def supported_actions(self):
         return ['playpause', 'stop', 'play_next_in_queue', 'play_prev_in_queue',
                 'toggle_mute', 'volume_up', 'volume_down', 'set_volume_pct',
-                'set_playtime', 'youtube', 'show_image']
+                'set_playtime', 'youtube', 'show_image', 'show_media']
 
     def json_status(self):
         if self.cc.status is None:

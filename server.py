@@ -1,7 +1,6 @@
 # TODO
 # * Chromecast off
-# * WebSocket transport not available. Install eventlet or gevent and gevent-websocket for improved performance.
-
+# * Cast local file/video
 
 # Read app config
 import json
