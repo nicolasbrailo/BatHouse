@@ -56,7 +56,6 @@ class SceneHandler(object):
         self.world.get_thing_by_name('Kitchen Counter - Left').broadcast_new_state(transition_time=3)
 
     def sleepy(self):
-        self.stop_all_media_players()
         self.world.get_thing_by_name('DeskLamp').set_brightness(20, broadcast_update=False)
         self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=3)
         self.world.get_thing_by_name('Floorlamp').set_brightness(20, broadcast_update=False)
@@ -67,12 +66,13 @@ class SceneHandler(object):
         self.world.get_thing_by_name('Kitchen Counter - Right').broadcast_new_state(transition_time=3)
         self.world.get_thing_by_name('Kitchen Counter - Left').light_off(broadcast_update=False)
         self.world.get_thing_by_name('Kitchen Counter - Left').broadcast_new_state(transition_time=3)
+        self.stop_all_media_players()
 
     def world_off(self):
-        self.stop_all_media_players()
         for light in self.world.get_things_supporting(['light_off']):
             light.light_off(broadcast_update=True)
             logger.info("Light {} off".format(light.get_id()))
+        self.stop_all_media_players()
 
     def stop_all_media_players(self):
         for player in self.world.get_things_supporting(['stop']):
