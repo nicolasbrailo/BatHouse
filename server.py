@@ -1,5 +1,5 @@
 # TODO
-# * Chromecast off
+# * Baby-debounce for UI
 # * Cast local file/video
 
 # Read app config
@@ -99,6 +99,12 @@ mfp = MFP_Crawler(flask_app,
                   CFG['mfp']['user'], CFG['mfp']['pass'],
                   int(CFG['mfp']['history_days']))
 
+
+@flask_app.route('/shutdown_baticueva_tv')
+def flask_endpoint_shutdown_baticueva_tv():
+    from scenes import shutdown_baticueva_tv
+    shutdown_baticueva_tv()
+    return "OK"
 
 
 # Set webapp path

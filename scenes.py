@@ -1,8 +1,17 @@
+import os
 import json
 from apscheduler.schedulers.background import BackgroundScheduler
 
 import logging
 logger = logging.getLogger('BatHome')
+
+def shutdown_baticueva_tv():
+    cmd = "/home/pi/kryten/shutdown_baticueva_tv.sh"
+    logger.info("Trying to shutdown Baticueva TV using Google assistant. Hopefully command log follows.")
+    logger.info("Run " + cmd)
+    os.system(cmd)
+    logger.info("Finish trying to shutdown Baticueva TV using Google assistant.")
+
 
 class SceneHandler(object):
     def __init__(self, flask_app, world):
@@ -62,8 +71,7 @@ class SceneHandler(object):
     def world_off(self):
         self.stop_all_media_players()
         for light in self.world.get_things_supporting(['light_off']):
-            light.light_off(broadcast_update=False)
-            light.broadcast_new_state(transition_time=5)
+            light.light_off(broadcast_update=True)
             logger.info("Light {} off".format(light.get_id()))
 
     def stop_all_media_players(self):
@@ -73,6 +81,9 @@ class SceneHandler(object):
                 logger.info("Stopping player {}".format(player.get_id()))
             except:
                 logger.info("Failed stopping player {}".format(player.get_id()))
+
+        # Try to turn TV off
+        shutdown_baticueva_tv()
 
     def groovy(self):
         class Groovy(object):
