@@ -76,7 +76,7 @@
 		(function(c) {
 			$(document).on('click', '#btn_'+c, function(){ lamp.set_rgb_color(''+c); });
 		})(color);
-		var ui = '<input type="button" id="btn_'+color+'" style="height: 50px; width: 100%; background-color: #'+color+';" value=""/>';
+		var ui = '<input type="button" id="btn_'+color+'" style="height: 100px; width: 100%; background-color: #'+color+';" value=""/>';
 		$('#ui_main_list').append(ui);
 	}
     });
