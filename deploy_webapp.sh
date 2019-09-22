@@ -5,6 +5,7 @@
 TARGET_JS=bathouse.minified.js
 TARGET_CSS=bathouse.minified.css
 DEPLOY_PATH=webapp
+MINIFY_APP=cat
 
 PATH_OLD_JS=`ls $DEPLOY_PATH/*$TARGET_JS || echo 0000000NOOLDFILE`
 PATH_OLD_CSS=`ls $DEPLOY_PATH/*$TARGET_CSS || echo 0000000NOOLDFILE`
@@ -25,19 +26,19 @@ node node_modules/.bin/handlebars \
         ./$DEPLOY_PATH/templates/* >> tmp.$TARGET_JS
 
 echo "Minifying app .js files"
-minify ./$DEPLOY_PATH/js/graphs.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/templated_thing.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/scene_list.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/mqtt_device_info.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/media_player.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/lamp.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/baticueva_tv_extras.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/mfp.js >> tmp.$TARGET_JS
-minify ./$DEPLOY_PATH/js/app.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/graphs.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/templated_thing.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/scene_list.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/mqtt_device_info.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/media_player.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/lamp.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/baticueva_tv_extras.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/mfp.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/app.js >> tmp.$TARGET_JS
 
 # Minify css files 
 echo "Minifying app .css files"
-minify ./$DEPLOY_PATH/css/* >> tmp.$TARGET_CSS
+$MINIFY_APP ./$DEPLOY_PATH/css/* >> tmp.$TARGET_CSS
 
 HASH_NEW_JS=`md5sum tmp.$TARGET_JS | cut -c 1-10`
 HASH_NEW_CSS=`md5sum tmp.$TARGET_CSS | cut -c 1-10`

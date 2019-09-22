@@ -36,6 +36,8 @@ class Lamp extends TemplatedThing {
             function(){ self.update_color_from_ui(); });
         $(document).on('input', '#lamp_set_rgb'+this.html_id,
             function(){ self.throttled_update_color_from_ui(); });
+        $(document).on('input', '#lamp_color_shifter_'+this.html_id,
+            function(){ self.toggle_shift(); });
     }
 
     updateUI() {
@@ -65,11 +67,20 @@ class Lamp extends TemplatedThing {
         this.request_action('/set_brightness/' + brightness_pct);
     }
 
+    set_rgb_color(color) {
+        this.rgb_color = color;
+        this.request_action('/set_rgb/' + color);
+    }
+
     update_color_from_ui() {
         var color = $('#lamp_set_rgb'+this.html_id).val().substring(1);
         this.rgb_color = color;
         this.updateUI();
         this.request_action('/set_rgb/' + color);
+    }
+
+    toggle_shift() {
+        this.request_action('/light_color_shift_toggle');
     }
 
     throttled_update_color_from_ui() {

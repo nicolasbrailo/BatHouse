@@ -16,6 +16,7 @@ def shutdown_baticueva_tv():
 class SceneHandler(object):
     def __init__(self, flask_app, world):
         self._groovy_ref = None
+        self.fake_players = []
         self.world = world
         self.scenes = [x for x in dir(self) if not x.startswith('_')]
 
@@ -69,12 +70,18 @@ class SceneHandler(object):
         self.stop_all_media_players()
 
     def world_off(self):
+        self.stop_all_media_players()
+        self.all_lights_off()
+
+    def all_lights_off(self):
         for light in self.world.get_things_supporting(['light_off']):
             light.light_off(broadcast_update=True)
             logger.info("Light {} off".format(light.get_id()))
-        self.stop_all_media_players()
 
     def stop_all_media_players(self):
+        for player in self.fake_players:
+            player.stop()
+
         for player in self.world.get_things_supporting(['stop']):
             try:
                 player.stop()

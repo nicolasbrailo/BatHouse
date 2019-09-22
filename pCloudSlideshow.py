@@ -113,8 +113,14 @@ class pCloudWgetImg(object):
 
     def _get_file_url(self, cloudpath):
         r = requests.get(self.auth.build_url('getfilelink', {'path': cloudpath})).json()
-        url = 'https://' + random.choice(r['hosts']) + r['path']
-        return url
+        try:
+            url = 'https://' + random.choice(r['hosts']) + r['path']
+            return url
+        except KeyError as ex:
+            logger.error("pCloud sent reply I can't understand: {}".format(str(r.text)))
+            raise ex
+
+
 
     def get_random_img_url(self):
         try:

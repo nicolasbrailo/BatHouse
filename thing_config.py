@@ -7,12 +7,38 @@ import time
 import logging
 logger = logging.getLogger('zigbee2mqtt2flask.thing')
 
+class MyIkeaButton2(Button):
+    def __init__(self, mqtt_id, world, scenes):
+        super().__init__(mqtt_id)
+        self.world = world
+        self.scenes = scenes
+
+    def handle_action(self, action, msg):
+        if action == 'brightness_up_click':
+            self.world.get_thing_by_name('Pieza').set_brightness(30)
+            return True
+        if action == 'arrow_right_click':
+            self.world.get_thing_by_name('Pieza').light_off()
+            return True
+        if action == 'brightness_down_click':
+            self.world.get_thing_by_name('Lampara pasillo').set_brightness(30)
+            return True
+        if action == 'arrow_left_click':
+            self.world.get_thing_by_name('Lampara pasillo').light_off()
+            return True
+        if action == 'toggle':
+            self.scenes.all_lights_off()
+            return True
+
+        logger.warning("Unknown action: Ikea button - ", action)
+        
+
 class MyIkeaButton(Button):
     def __init__(self, mqtt_id, world):
         super().__init__(mqtt_id)
         self.world = world
-        self.l1 = world.get_thing_by_name('Kitchen Counter - Left')
-        self.l2 = world.get_thing_by_name('Kitchen Counter - Right')
+        self.l1 = world.get_thing_by_name('Livingroom Table Lamp')
+        self.l2 = world.get_thing_by_name('Livingroom Couch Lamp')
 
     def handle_action(self, action, msg):
         if action == 'brightness_up_click':
@@ -91,9 +117,10 @@ class MediaActionHelper(object):
 
 
 class HueButton(Button):
-    def __init__(self, mqtt_id, world):
+    def __init__(self, mqtt_id, world, scenes):
         super().__init__(mqtt_id)
         self.world = world
+        self.scenes = scenes
         self.media_actions = MediaActionHelper(world)
         self.hold_action = HoldActionHelper()
 
@@ -118,13 +145,22 @@ class HueButton(Button):
             self.media_actions.all_vol_down()
             return True
 
+        if action == 'off-hold':
+            self.scenes.all_lights_off()
+            return True
+
         if action == 'off-press':
             self.media_actions.all_stop()
+            self.scenes.all_lights_off()
             return True
 
         if action == 'on-press':
-            self.world.get_thing_by_name('Spotify').playpause()
+            self.world.get_thing_by_name('Livingroom Table Lamp').set_brightness(50)
+            self.world.get_thing_by_name('Livingroom Couch Lamp').set_brightness(50)
+            self.world.get_thing_by_name('Cuarto Olivia').set_brightness(20)
+            self.world.get_thing_by_name('Lampara pasillo').set_brightness(75)
             return True
+
 
         logger.warning("No handler for action {} message {}".format(action, msg))
         return False
@@ -146,13 +182,15 @@ class RoundIkeaButton(Button):
         return False
 
 
-def register_all_things(world):
-    world.register_thing(ColorDimmableLamp('DeskLamp', world.mqtt))
-    world.register_thing(DimmableLamp('Kitchen Counter - Left', world.mqtt))
-    world.register_thing(DimmableLamp('Kitchen Counter - Right', world.mqtt))
-    world.register_thing(DimmableLamp('Floorlamp', world.mqtt))
-    world.register_thing(DimmableLamp('Livingroom Lamp', world.mqtt))
-    world.register_thing(HueButton(   'HueButton', world))
+def register_all_things(world, scenes):
+    world.register_thing(DimmableLamp('Livingroom Table Lamp', world.mqtt))
+    world.register_thing(ColorDimmableLamp('Livingroom Couch Lamp', world.mqtt))
+    world.register_thing(ColorDimmableLamp('Cuarto Olivia', world.mqtt))
+    world.register_thing(DimmableLamp('Pieza', world.mqtt))
+    world.register_thing(DimmableLamp('Lampara pasillo', world.mqtt))
+
     world.register_thing(MyIkeaButton('IkeaButton', world))
+    world.register_thing(MyIkeaButton2('Otro IkeaButton', world, scenes))
+    world.register_thing(HueButton(   'HueButton', world, scenes))
     world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
 

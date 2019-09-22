@@ -70,7 +70,7 @@ scenes = SceneHandler(flask_app, world)
 
 # Register known things in the world
 from thing_config import register_all_things
-register_all_things(world)
+register_all_things(world, scenes)
 
 
 
@@ -91,6 +91,8 @@ if CFG["chromecast_scan_on_startup"]:
 # Slideshow object
 from pCloudSlideshow import build_pcloud_slideshow_from_cfg
 slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
+# Make sure the scene handler can stop the slideshow when needed
+scenes.fake_players.append(slideshow)
 
 # MFP integration
 from mfp import MFP_Crawler

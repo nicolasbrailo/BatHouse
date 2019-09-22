@@ -14,9 +14,12 @@ function dygraph_helper_horizontalLine(ctx, graph, y_val, color) {
 /* WEATHER */
 /**************************************/
 
+var MY_POS_LAT = 52.37064;
+var MY_POS_LON = 4.94223;
+
 function DumbHouse_plot_rain(dygraph_element_id) {
     $.ajax({
-        url: "https://cdn-secure.buienalarm.nl/api/3.4/forecast.php?lat=52.37064&lon=4.94223&region=nl&unit=mm/u",
+        url: "https://cdn-secure.buienalarm.nl/api/3.4/forecast.php?lat="+MY_POS_LAT+"&lon="+MY_POS_LON+"&region=nl&unit=mm/u",
         cache: false,
         type: 'get',
         dataType: 'json',
