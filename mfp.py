@@ -71,9 +71,12 @@ class MFP_Crawler(object):
     def _get_exercise_time(mfp_day):
         ex_time = 0
         for ex_type in mfp_day.exercises:
-            for ex_entry in ex_type:
-                ex_info = ex_entry.nutrition_information
-                ex_time += ex_info['minutes']
+            try:
+                for ex_entry in ex_type:
+                    ex_info = ex_entry.nutrition_information
+                    ex_time += ex_info['minutes']
+            except KeyError:
+                pass
         return ex_time
 
     def _get_mfp_day(self, mfp, day):
@@ -84,8 +87,14 @@ class MFP_Crawler(object):
             w = None
 
         day_log = mfp.get_date(day)
-        cals = day_log.totals['calories']
+
+        try:
+            cals = day_log.totals['calories']
+        except KeyError:
+            cals = 0
+
         ex = self._get_exercise_time(day_log)
+
         return MFP_Stats(weight=w, calories_consumed=cals, exercise_minutes=ex)
 
     def _get_stats(self, ignore_cache_day_count, days):
