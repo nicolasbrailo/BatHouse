@@ -75,7 +75,7 @@ class MFP_Crawler(object):
                 for ex_entry in ex_type:
                     ex_info = ex_entry.nutrition_information
                     ex_time += ex_info['minutes']
-            except KeyError:
+            except:
                 pass
         return ex_time
 
@@ -83,14 +83,14 @@ class MFP_Crawler(object):
         logger.info("Reading MyFitnessPal day {} from API. This is a slow operation.".format(day))
         try:
             w = mfp.get_measurements('Weight', day)[day]
-        except KeyError:
+        except:
             w = None
 
         day_log = mfp.get_date(day)
 
         try:
             cals = day_log.totals['calories']
-        except KeyError:
+        except:
             cals = 0
 
         ex = self._get_exercise_time(day_log)
