@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <!--link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/-->
+    <title>BatHome</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- Handlebars -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+    <!-- Dygraph -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+    <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+
+    <script type="text/javascript" src="8a1a43241b.bathouse.minified.js"></script>
+    <link rel="stylesheet" href="df48befd97.bathouse.minified.css">
+
+<script>
+    var app = new DumbHouseApp();
+    $.when(app.is_ready).then(function() {
+	var get_lamp = function(name) {
+		for (var thing of app.get_things_of_type(Lamp)) {
+			if (thing.name == name) return thing;
+		}
+		return null;
+	}
+
+	var colors = [
+		'FFFFFF',
+		'FF0000',
+		'DC143C',
+		'FF8C00',
+		'FFD700',
+		'BDB76B',
+		'808000',
+		'FFFF00',
+		'7CFC00',
+		'006400',
+		'98FB98',
+		'8FBC8F',
+		'008080',
+		'00FFFF',
+		'4682B4',
+		'000080',
+		'0000FF',
+		'8A2BE2',
+		'483D8B',
+		'8B008B',
+		'BA55D3',
+		'FF00FF',
+		'FFB6C1',
+		'FFF8DC',
+		'FFFFE0',
+		'8B4513',
+		'D2691E',
+		'BC8F8F',
+		'FFDEAD',
+		'F5FFFA',
+		'B0C4DE',
+		'FFFAF0',
+		'00FF00',
+		'0000FF',
+		'FFFF00',
+		'00FFFF',
+		'FF00FF',
+		];
+
+	var lamp = get_lamp('Cuarto Olivia');
+	for (var color of colors) {
+		// Copy color, otherwise lambda binds color to last idx
+		(function(c) {
+			$(document).on('click', '#btn_'+c, function(){ lamp.set_rgb_color(''+c); });
+		})(color);
+		var ui = '<input type="button" id="btn_'+color+'" style="height: 100px; width: 100%; background-color: #'+color+';" value=""/>';
+		$('#ui_main_list').append(ui);
+	}
+    });
+</script>
+</head>
+<body>
+<div class="container-fluid" id='ui_main_list'>
+</div>
+</body>
+</html>
