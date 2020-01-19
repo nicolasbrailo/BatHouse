@@ -4,7 +4,7 @@
                            {{#if is_on}}checked="checked"{{/if}} />
     {{/if}}
 
-    {{#if has_color}}
+    {{#if has_extra_cfg}}
         <a class="lamp_open_panel_ctrl" id="lamp_open_panel_ctrl{{html_id}}" href="#">{{name}}</a>
     {{else}}
         {{name}}
@@ -16,11 +16,17 @@
                                                                       value="{{brightness}}" />
     {{/if}}
 
-    {{#if has_color}}
     <div class="lamp_detailed_panel_ctrl" id="lamp_detailed_panel_ctrl{{html_id}}" style="display: none;">
-        Lamp color: <input type="color" id="lamp_set_rgb{{html_id}}"
-                                        {{#if rgb_color}}value="#{{rgb_color}}"{{/if}} >
-	<input type="button" id="lamp_color_shifter_{{html_id}}" text="Shift!"/>
+	{{#if has_color}}
+		Lamp color: <input type="color" id="lamp_set_rgb{{html_id}}"
+				{{#if rgb_color}}value="#{{rgb_color}}"{{/if}} >
+		<input type="button" id="lamp_color_shifter_{{html_id}}" text="Shift!"/>
+        {{/if}}
+
+	{{#if has_color_temp}}
+	    Temperature: <input type="range" class="lamp_set_brightness_slider form-control-range"
+                   id="lamp_set_color_temp_slider{{html_id}}" min="0" max="500"
+                   value="{{color_temp}}" />
+        {{/if}}
     </div>
-    {{/if}}
 </li>

@@ -3,6 +3,7 @@ class Lamp extends TemplatedThing {
     static has_on_off(actions) { return actions.includes('light_on') && actions.includes('light_off'); }
     static has_brightness(actions) { return actions.includes('set_brightness'); }
     static has_color(actions) { return actions.includes('set_rgb'); }
+    static has_color_temp(actions) { return actions.includes('set_color_temp'); }
 
     /**
      * Check if a list of actions look like an interface for a lamp
@@ -17,6 +18,8 @@ class Lamp extends TemplatedThing {
         this.supports_onoff = Lamp.has_on_off(supported_actions);
         this.supports_brightness = Lamp.has_brightness(supported_actions);
         this.has_color = Lamp.has_color(supported_actions);
+	this.has_color_temp = Lamp.has_color_temp(supported_actions);
+	this.has_extra_cfg = this.has_color || this.has_color_temp;
 
         // Register object UI callbacks
         var self = this;
@@ -38,6 +41,11 @@ class Lamp extends TemplatedThing {
             function(){ self.throttled_update_color_from_ui(); });
         $(document).on('input', '#lamp_color_shifter_'+this.html_id,
             function(){ self.toggle_shift(); });
+
+        $(document).on('click', '#lamp_set_color_temp_slider'+this.html_id,
+            function(){ self.update_color_temp_from_ui(); });
+        $(document).on('touchend', '#lamp_set_color_temp_slider'+this.html_id,
+            function(){ self.update_color_temp_from_ui(); });
     }
 
     updateUI() {
@@ -50,6 +58,7 @@ class Lamp extends TemplatedThing {
         this.is_on = stat.is_on;
         this.brightness = stat.brightness;
         this.rgb_color = stat.rgb;
+	this.color_temp = stat.color_temp;
     }
 
     update_on_state_from_ui() {
@@ -70,6 +79,13 @@ class Lamp extends TemplatedThing {
     set_rgb_color(color) {
         this.rgb_color = color;
         this.request_action('/set_rgb/' + color);
+    }
+
+    update_color_temp_from_ui() {
+        var color_temp = $('#lamp_set_color_temp_slider'+this.html_id).val();
+        this.color_temp = color_temp;
+        this.updateUI();
+        this.request_action('/set_color_temp/' + color_temp);
     }
 
     update_color_from_ui() {

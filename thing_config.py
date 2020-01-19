@@ -1,4 +1,4 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, Button
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button
 
 import threading
 import time
@@ -156,8 +156,8 @@ class HueButton(Button):
 
         if action == 'on-press':
             self.world.get_thing_by_name('Livingroom Table Lamp').set_brightness(50)
-            self.world.get_thing_by_name('Livingroom Couch Lamp').set_brightness(50)
-            self.world.get_thing_by_name('Cuarto Olivia').set_brightness(20)
+            self.world.get_thing_by_name('Livingroom Couch Lamp').set_brightness(90)
+            self.world.get_thing_by_name('Cuarto Olivia').set_brightness(60)
             self.world.get_thing_by_name('Lampara pasillo').set_brightness(75)
             return True
 
@@ -185,9 +185,10 @@ class RoundIkeaButton(Button):
 def register_all_things(world, scenes):
     world.register_thing(DimmableLamp('Livingroom Table Lamp', world.mqtt))
     world.register_thing(ColorDimmableLamp('Livingroom Couch Lamp', world.mqtt))
-    world.register_thing(ColorDimmableLamp('Cuarto Olivia', world.mqtt))
+    world.register_thing(ColorDimmableLamp('Pasillo', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('Cuarto Olivia', world.mqtt))
     world.register_thing(DimmableLamp('Pieza', world.mqtt))
-    world.register_thing(DimmableLamp('Lampara pasillo', world.mqtt))
+    #world.register_thing(DimmableLamp('Dead lamp', world.mqtt))
 
     world.register_thing(MyIkeaButton('IkeaButton', world))
     world.register_thing(MyIkeaButton2('Otro IkeaButton', world, scenes))
