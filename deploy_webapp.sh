@@ -14,8 +14,8 @@ HASH_OLD_CSS=`echo $PATH_OLD_CSS | cut -c8-17`
 echo "Old JS hash is $HASH_OLD_JS, old CSS hash is $HASH_OLD_CSS."
 
 # Clean (make sure loading old scripts fail)
-rm $DEPLOY_PATH/*$TARGET_JS
-rm $DEPLOY_PATH/*$TARGET_CSS
+rm -f $DEPLOY_PATH/*$TARGET_JS
+rm -f $DEPLOY_PATH/*$TARGET_CSS
 
 echo "" > tmp.$TARGET_JS
 echo "" > tmp.$TARGET_CSS
