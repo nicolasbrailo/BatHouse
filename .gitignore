@@ -1,5 +1,6 @@
 # Pipfile.lock -> causes problems when deploying to different target (ie x86Linux/RPi)
 Pipfile.lock
+package-lock.json
 
 # Never commit config secrets and caches
 config.json
