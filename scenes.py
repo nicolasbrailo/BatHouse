@@ -15,10 +15,10 @@ def shutdown_baticueva_tv():
 
 class SceneHandler(object):
     def __init__(self, flask_app, world):
+        self.scenes = [x for x in dir(self) if not x.startswith('_')]
         self._groovy_ref = None
         self.fake_players = []
         self.world = world
-        self.scenes = [x for x in dir(self) if not x.startswith('_')]
 
         @flask_app.route('/scenes/list')
         def flask_endpoint_get_scenes():

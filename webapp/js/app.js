@@ -62,8 +62,9 @@ class DumbHouseApp {
     monkeypatch() {
         var self = this;
         var patched_self = this.get_player('Baticueva TV');
+        if (patched_self === undefined) return;
         var patched_func = this.get_player('Baticueva TV').updateUI;
-        this.get_player('Baticueva TV').updateUI = function() {
+        self.get_player('Baticueva TV').updateUI = function() {
             self.before_baticueva_tv_shown();
             patched_func.apply(patched_self);
             self.on_baticueva_tv_shown();
