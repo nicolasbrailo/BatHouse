@@ -183,15 +183,15 @@ class RoundIkeaButton(Button):
 
 
 def register_all_things(world, scenes):
-    world.register_thing(DimmableLamp('Livingroom Table Lamp', world.mqtt))
-    world.register_thing(ColorDimmableLamp('Livingroom Couch Lamp', world.mqtt))
-    world.register_thing(ColorDimmableLamp('Pasillo', world.mqtt))
-    world.register_thing(ColorTempDimmableLamp('Cuarto Olivia', world.mqtt))
-    world.register_thing(DimmableLamp('Pieza', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
+    #world.register_thing(DimmableLamp('Livingroom Table Lamp', world.mqtt))
+    #world.register_thing(ColorDimmableLamp('Livingroom Couch Lamp', world.mqtt))
+    #world.register_thing(ColorDimmableLamp('Pasillo', world.mqtt))
+    #world.register_thing(ColorTempDimmableLamp('Cuarto Olivia', world.mqtt))
+    #world.register_thing(DimmableLamp('Pieza', world.mqtt))
     #world.register_thing(DimmableLamp('Dead lamp', world.mqtt))
-
-    world.register_thing(MyIkeaButton('IkeaButton', world))
-    world.register_thing(MyIkeaButton2('Otro IkeaButton', world, scenes))
-    world.register_thing(HueButton(   'HueButton', world, scenes))
-    world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
+    #world.register_thing(MyIkeaButton('IkeaButton', world))
+    #world.register_thing(MyIkeaButton2('Otro IkeaButton', world, scenes))
+    #world.register_thing(HueButton(   'HueButton', world, scenes))
+    #world.register_thing(RoundIkeaButton('RoundIkeaButton', world))
 

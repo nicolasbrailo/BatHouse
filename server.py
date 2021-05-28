@@ -76,8 +76,9 @@ register_all_things(world, scenes)
 
 # Register known things which are not mqtt
 from thing_spotify import ThingSpotify
-spotify_control = ThingSpotify(CFG['spotify'], "ZMF")
-world.register_thing(spotify_control)
+if 'spotify' in CFG:
+    spotify_control = ThingSpotify(CFG['spotify'], "ZMF")
+    world.register_thing(spotify_control)
 
 from thing_chromecast import ThingChromecast
 ThingChromecast.set_flask_bindings(flask_app, world)
@@ -89,17 +90,19 @@ if CFG["chromecast_scan_on_startup"]:
 
 
 # Slideshow object
-from pCloudSlideshow import build_pcloud_slideshow_from_cfg
-slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
-# Make sure the scene handler can stop the slideshow when needed
-scenes.fake_players.append(slideshow)
+if 'pcloud' in CFG:
+    from pCloudSlideshow import build_pcloud_slideshow_from_cfg
+    slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
+    # Make sure the scene handler can stop the slideshow when needed
+    scenes.fake_players.append(slideshow)
 
-# MFP integration
-from mfp import MFP_Crawler
-mfp = MFP_Crawler(flask_app,
-                  CFG['mfp']['cache_file'], 
-                  CFG['mfp']['user'], CFG['mfp']['pass'],
-                  int(CFG['mfp']['history_days']))
+if 'mfp' in CFG:
+    # MFP integration
+    from mfp import MFP_Crawler
+    mfp = MFP_Crawler(flask_app,
+                      CFG['mfp']['cache_file'], 
+                      CFG['mfp']['user'], CFG['mfp']['pass'],
+                      int(CFG['mfp']['history_days']))
 
 
 @flask_app.route('/shutdown_baticueva_tv')
