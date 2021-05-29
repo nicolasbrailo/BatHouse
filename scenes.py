@@ -35,39 +35,20 @@ class SceneHandler(object):
             return "OK"
 
     def living_room_evening(self):
-        self.world.get_thing_by_name('DeskLamp').set_brightness(60, broadcast_update=False)
-        self.world.get_thing_by_name('DeskLamp').set_rgb('ED7F0C', broadcast_update=False)
-        self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Floorlamp').set_brightness(100, broadcast_update=False)
-        self.world.get_thing_by_name('Floorlamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Livingroom Lamp').set_brightness(100, broadcast_update=False)
-        self.world.get_thing_by_name('Livingroom Lamp').broadcast_new_state(transition_time=3)
-
-    def dinner(self):
-        self.world.get_thing_by_name('Baticueva TV').stop()
-        self.world.get_thing_by_name('DeskLamp').set_brightness(30, broadcast_update=False)
-        self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Floorlamp').set_brightness(100, broadcast_update=False)
-        self.world.get_thing_by_name('Floorlamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Livingroom Lamp').light_off(broadcast_update=False)
-        self.world.get_thing_by_name('Livingroom Lamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Kitchen Counter - Right').set_brightness(50, broadcast_update=False)
-        self.world.get_thing_by_name('Kitchen Counter - Right').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Kitchen Counter - Left').set_brightness(80, broadcast_update=False)
-        self.world.get_thing_by_name('Kitchen Counter - Left').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(60, broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('ED7F0C', broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(30, broadcast_update=False)
+        self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('BatBedsideLamp').set_brightness(20, broadcast_update=False)
+        self.world.get_thing_by_name('BatBedsideLamp').broadcast_new_state(transition_time=3)
 
     def sleepy(self):
-        self.world.get_thing_by_name('DeskLamp').set_brightness(20, broadcast_update=False)
-        self.world.get_thing_by_name('DeskLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Floorlamp').set_brightness(20, broadcast_update=False)
-        self.world.get_thing_by_name('Floorlamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Livingroom Lamp').light_off(broadcast_update=False)
-        self.world.get_thing_by_name('Livingroom Lamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Kitchen Counter - Right').set_brightness(40, broadcast_update=False)
-        self.world.get_thing_by_name('Kitchen Counter - Right').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('Kitchen Counter - Left').light_off(broadcast_update=False)
-        self.world.get_thing_by_name('Kitchen Counter - Left').broadcast_new_state(transition_time=3)
-        self.stop_all_media_players()
+        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10, broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('ED7F0C', broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10, broadcast_update=False)
+        self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
 
     def world_off(self):
         self.stop_all_media_players()
@@ -113,7 +94,7 @@ class SceneHandler(object):
             self._groovy_ref.shutdown()
             self._groovy_ref = None
         else:
-            g = Groovy(self.world.get_thing_by_name('DeskLamp'))
+            g = Groovy(self.world.get_thing_by_name('BaticomedorLamp'))
             self._groovy_ref = BackgroundScheduler()
             self._groovy_ref.add_job(func=g.doit, trigger="interval", seconds=6)
             self._groovy_ref.start()

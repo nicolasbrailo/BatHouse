@@ -187,7 +187,7 @@ def register_all_things(world, scenes):
     world.register_thing(ColorDimmableLamp('EmliviaRoomLamp', world.mqtt))
     world.register_thing(ColorTempDimmableLamp('EntrepisoLamp', world.mqtt))
     world.register_thing(DimmableLamp('BatiofficeDeskLamp', world.mqtt))
-    world.register_thing(DimmableLamp('PhillipsHueLamp', world.mqtt))
+    world.register_thing(DimmableLamp('BatBedsideLamp', world.mqtt))
     #world.register_thing(MyIkeaButton('IkeaButton', world))
     #world.register_thing(MyIkeaButton2('Otro IkeaButton', world, scenes))
     #world.register_thing(HueButton(   'HueButton', world, scenes))

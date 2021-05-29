@@ -91,6 +91,11 @@ systemctl enable zigbee2mqtt
 # Configure BatHouse
 pip3 install pipenv
 
+# authbind -> run in port 80 with no root
+apt-get install authbind
+touch /etc/authbind/byport/80
+chmod 777 /etc/authbind/byport/80
+
 pushd $PWD > /dev/null
 nosu git clone --recurse-submodules git@github.com:nicolasbrailo/BatHouse.git
 cd $BATHOME_TGTDIR/BatHouse
@@ -106,7 +111,7 @@ Description=BatHouse
 After=zigbee2mqtt.target
 
 [Service]
-ExecStart=/usr/bin/python3 -m pipenv run python ./server.py
+ExecStart=/usb/bin/authbind --deep /usr/bin/python3 -m pipenv run python ./server.py
 WorkingDirectory=$BATHOME_TGTDIR/BatHouse
 StandardOutput=inherit
 StandardError=inherit
