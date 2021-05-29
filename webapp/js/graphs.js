@@ -62,7 +62,6 @@ function DumbHouse_plot_temp_forecast(dygraph_element_id, hours) {
         success: function(forecast) {
                 var csv = "Date,Temp (C),Feels like\n";
                 for(var h of forecast.slice(0, hours)) {
-                    console.log(h);
                     csv += h.time + "," + h.temp + "," + h.feels_like + "\n";
                 }
 
