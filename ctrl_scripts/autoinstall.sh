@@ -3,10 +3,6 @@
 set -eu
 set -o pipefail
 
-echo "This script may be destructive if you changed your config files."
-echo "Ensure you really want to run this and then delete the exit command in this script"
-exit
-
 NORMAL_USER="pi"
 BATHOME_TGTDIR="/home/pi/BatHome"
 BATHOME_LOGS="$BATHOME_TGTDIR/logs"
@@ -26,6 +22,12 @@ EOF
 nosu mkdir -p "$BATHOME_TGTDIR"
 nosu mkdir -p "$BATHOME_LOGS"
 nosu mkdir -p "$BATHOME_CFG"
+
+
+echo "This script may be destructive if you changed your config files."
+echo "Ensure you really want to run this and then delete the exit command in this script"
+exit
+
 
 #Xapt-get update
 sudo apt-get upgrade
@@ -87,6 +89,19 @@ systemctl daemon-reload
 systemctl start zigbee2mqtt
 systemctl status zigbee2mqtt
 systemctl enable zigbee2mqtt
+
+
+# Configure co2reader
+nosu git clone git@github.com:nicolasbrailo/co2.git $BATHOME_TGTDIR/co2
+
+ln -s $BATHOME_TGTDIR/co2/co2reader.service /etc/systemd/system
+ln -s $BATHOME_TGTDIR/co2/99-co2dev.rules /etc/udev/rules.d/
+service udev restart
+udevadm control --reload-rules && udevadm trigger
+systemctl daemon-reload
+systemctl restart co2reader
+systemctl status co2reader
+systemctl enable co2reader
 
 # Configure BatHouse
 pip3 install pipenv

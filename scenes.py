@@ -35,13 +35,12 @@ class SceneHandler(object):
             return "OK"
 
     def living_room_evening(self):
-        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(60, broadcast_update=False)
-        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('ED7F0C', broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(100, broadcast_update=False)
+        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('FD6F0C', broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(30, broadcast_update=False)
+        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(50, broadcast_update=False)
         self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('BatBedsideLamp').set_brightness(20, broadcast_update=False)
-        self.world.get_thing_by_name('BatBedsideLamp').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('BatBedsideLamp').set_brightness(30)
 
     def sleepy(self):
         self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10, broadcast_update=False)
@@ -94,7 +93,9 @@ class SceneHandler(object):
             self._groovy_ref.shutdown()
             self._groovy_ref = None
         else:
-            g = Groovy(self.world.get_thing_by_name('BaticomedorLamp'))
+            l = self.world.get_thing_by_name('BaticomedorLamp')
+            l.set_brightness(100, broadcast_update=False)
+            g = Groovy(l)
             self._groovy_ref = BackgroundScheduler()
             self._groovy_ref.add_job(func=g.doit, trigger="interval", seconds=6)
             self._groovy_ref.start()
