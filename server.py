@@ -104,6 +104,9 @@ if 'mfp' in CFG:
                       CFG['mfp']['user'], CFG['mfp']['pass'],
                       int(CFG['mfp']['history_days']))
 
+if 'weather' in CFG:
+    from weather_adapter import register_flask as warf
+    warf(flask_app, CFG['weather'])
 
 @flask_app.route('/shutdown_baticueva_tv')
 def flask_endpoint_shutdown_baticueva_tv():
@@ -124,8 +127,9 @@ def flask_webapp_root(urlpath):
     return send_from_directory('./webapp/', urlpath)
 
 # Start world interaction, wait for interrupt
+flask_debug_mode = CFG['flask_debug_mode'] if 'flask_debug_mode' in CFG else False
 world.start_mqtt_connection()
-flask_socketio.run(flask_app, host=CFG['api_listen_host'], port=CFG['api_listen_port'], debug=False)
+flask_socketio.run(flask_app, host=CFG['api_listen_host'], port=CFG['api_listen_port'], debug=flask_debug_mode)
 world.stop_mqtt_connection()
 spotify_control.shutdown()
 slideshow.shutdown()

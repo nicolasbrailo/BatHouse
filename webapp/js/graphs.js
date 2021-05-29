@@ -14,12 +14,9 @@ function dygraph_helper_horizontalLine(ctx, graph, y_val, color) {
 /* WEATHER */
 /**************************************/
 
-var MY_POS_LAT = 52.37064;
-var MY_POS_LON = 4.94223;
-
-function DumbHouse_plot_rain(dygraph_element_id) {
+function DumbHouse_plot_rain(lat, lon, dygraph_element_id) {
     $.ajax({
-        url: "https://cdn-secure.buienalarm.nl/api/3.4/forecast.php?lat="+MY_POS_LAT+"&lon="+MY_POS_LON+"&region=nl&unit=mm/u",
+        url: "https://cdn-secure.buienalarm.nl/api/3.4/forecast.php?lat="+lat+"&lon="+lon+"&region=nl&unit=mm/u",
         cache: false,
         type: 'get',
         dataType: 'json',
@@ -58,14 +55,15 @@ function DumbHouse_plot_rain(dygraph_element_id) {
 
 function DumbHouse_plot_temp_forecast(dygraph_element_id, hours) {
     $.ajax({
-        url: "https://api.meteoplaza.com/v2/meteo/completelocation/5237.494?lang=en",
+        url: "/weather/hourly",
         cache: false,
         type: 'get',
         dataType: 'json',
         success: function(forecast) {
-                var csv = "Date,Temp (C)\n";
-                for(var h of forecast.Hourly.slice(0, hours)) {
-                    csv += h.ValidDt + "," + h.TTTT + "\n";
+                var csv = "Date,Temp (C),Feels like\n";
+                for(var h of forecast.slice(0, hours)) {
+                    console.log(h);
+                    csv += h.time + "," + h.temp + "," + h.feels_like + "\n";
                 }
 
                 new Dygraph(document.getElementById(dygraph_element_id), csv,

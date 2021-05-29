@@ -1,3 +1,5 @@
+var MY_POS_LAT = 52.37064;
+var MY_POS_LON = 4.94223;
 
 class DumbHouseApp {
     constructor() {
@@ -161,7 +163,7 @@ class DumbHouseApp {
         $('#' + temp_forecast_element).toggle();
         if ($('#' + temp_forecast_element).is(':visible')) {
             DumbHouse_plot_temp_forecast(temp_forecast_element, hours);
-            DumbHouse_plot_rain(rain_forecast_element);
+            DumbHouse_plot_rain(MY_POS_LAT, MY_POS_LON, rain_forecast_element);
         }
     }
 }

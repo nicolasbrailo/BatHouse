@@ -1,15 +1,23 @@
 {
+    "// Flask options": "this is a comment",
+    "flask_debug_mode": false,
     "daemonize": false,
     "verbose_log": false,
-
     "api_listen_host": "0.0.0.0",
     "api_listen_port": 1234,
+
+    "// MQTT Options": "this is a comment",
+    "mqtt_broker_ip": "192.168.2.100",
+    "mqtt_broker_port": 1883,
 
     "chromecast_scan_on_startup": false,
     "chromecast_debug_device": "192.168.2.101",
 
-    "mqtt_broker_ip": "192.168.2.100",
-    "mqtt_broker_port": 1883,
+    "weather": {
+      "lat": 51.5452504,
+      "lon": -0.1068306,
+      "openweathermap_api_key": "GOTO https://home.openweathermap.org/api_keys"
+    },
 
     "spotify": {
         "redirect_uri": "http://127.0.0.1:2000/test",
