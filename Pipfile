@@ -13,6 +13,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+astral = "*"
 apscheduler = {index = "piwheels",version = "*"}
 flask = {index = "piwheels",version = "*"}
 paho-mqtt = {index = "piwheels",version = "*"}

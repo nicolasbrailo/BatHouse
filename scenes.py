@@ -38,16 +38,16 @@ class SceneHandler(object):
         self.world.get_thing_by_name('BaticomedorLamp').set_brightness(100, broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').set_rgb('FD6F0C', broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(50, broadcast_update=False)
-        self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
+        #self.world.get_thing_by_name('EntrepisoLamp').set_brightness(50, broadcast_update=False)
+        #self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
         self.world.get_thing_by_name('BatBedsideLamp').set_brightness(30)
 
     def sleepy(self):
         self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10, broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').set_rgb('ED7F0C', broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10, broadcast_update=False)
-        self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
+        #self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10, broadcast_update=False)
+        #self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
 
     def world_off(self):
         self.stop_all_media_players()
