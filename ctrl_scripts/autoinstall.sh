@@ -91,18 +91,6 @@ systemctl status zigbee2mqtt
 systemctl enable zigbee2mqtt
 
 
-# Configure co2reader
-nosu git clone git@github.com:nicolasbrailo/co2.git $BATHOME_TGTDIR/co2
-
-ln -s $BATHOME_TGTDIR/co2/co2reader.service /etc/systemd/system
-ln -s $BATHOME_TGTDIR/co2/99-co2dev.rules /etc/udev/rules.d/
-service udev restart
-udevadm control --reload-rules && udevadm trigger
-systemctl daemon-reload
-systemctl restart co2reader
-systemctl status co2reader
-systemctl enable co2reader
-
 # Configure BatHouse
 pip3 install pipenv
 
@@ -146,4 +134,18 @@ systemctl enable BatHouse
 nosu ln -fs "$BATHOME_TGTDIR/BatHouse/ctrl_scripts/taillogs.sh" "$BATHOME_TGTDIR"
 nosu ln -fs "$BATHOME_TGTDIR/BatHouse/ctrl_scripts/restart_world.sh" "$BATHOME_TGTDIR"
 nosu ln -fs "$BATHOME_TGTDIR/BatHouse/ctrl_scripts/status.sh" "$BATHOME_TGTDIR"
+
+
+# Configure co2reader
+nosu git clone git@github.com:nicolasbrailo/co2.git $BATHOME_TGTDIR/co2
+
+ln -s $BATHOME_TGTDIR/co2/co2reader.service /etc/systemd/system
+ln -s $BATHOME_TGTDIR/co2/99-co2dev.rules /etc/udev/rules.d/
+service udev restart
+udevadm control --reload-rules && udevadm trigger
+systemctl daemon-reload
+systemctl restart co2reader
+systemctl status co2reader
+systemctl enable co2reader
+
 
