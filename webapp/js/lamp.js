@@ -18,8 +18,9 @@ class Lamp extends TemplatedThing {
         this.supports_onoff = Lamp.has_on_off(supported_actions);
         this.supports_brightness = Lamp.has_brightness(supported_actions);
         this.has_color = Lamp.has_color(supported_actions);
-	this.has_color_temp = Lamp.has_color_temp(supported_actions);
-	this.has_extra_cfg = this.has_color || this.has_color_temp;
+        this.has_color_temp = Lamp.has_color_temp(supported_actions);
+        this.has_extra_cfg = this.has_color || this.has_color_temp;
+        this.start_periodic_status_updates();
 
         // Register object UI callbacks
         var self = this;
@@ -58,7 +59,8 @@ class Lamp extends TemplatedThing {
         this.is_on = stat.is_on;
         this.brightness = stat.brightness;
         this.rgb_color = stat.rgb;
-	this.color_temp = stat.color_temp;
+        this.color_temp = stat.color_temp;
+        this.updateUI();
     }
 
     update_on_state_from_ui() {

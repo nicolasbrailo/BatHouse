@@ -30,7 +30,6 @@ class MediaPlayer extends TemplatedThing {
         super("media_player.html", things_server_url, name, supported_actions, status);
 
         this.has_extended_control = true;
-        this.ui_update_freq_ms = 60 * 1000;
 
         // Register object UI callbacks
         var self = this;
@@ -49,7 +48,7 @@ class MediaPlayer extends TemplatedThing {
         $(document).on('click', '#media_player_'+this.html_id+'_extended_control_open',
             function(){ $('#media_player_'+self.html_id+'_extended_control').toggle(); });
 
-        this.periodic_update_status();
+        this.start_periodic_status_updates();
     }
 
     update_status(new_status) {
@@ -69,16 +68,6 @@ class MediaPlayer extends TemplatedThing {
         if (this.status.active_device) {
             $('#media_player_'+this.html_id+'_device').val(this.status.active_device);
         }
-    }
-
-    periodic_update_status() {
-        if (this.stop_periodic_updates) return;
-        var self = this;
-        this.status_updater_task = setTimeout(function(){
-            clearTimeout(self.status_updater_task);
-            self.request_action('/json_status');
-            self.periodic_update_status();
-        }, self.ui_update_freq_ms);
     }
 
     on_play()          { this.request_action('/playpause'); }
