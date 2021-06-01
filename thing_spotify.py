@@ -62,7 +62,8 @@ class _ThingSpotifyDummy(Thing):
                 'name': self.get_id(),
                 'uri': None,
                 'active_device': None,
-                'available_devices': None,
+                'last_active_device': None,
+                'available_devices': [],
                 'app': None,
                 'volume_pct': 0,
                 'volume_muted': True,
@@ -173,6 +174,10 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
             if len(act_devs) > 0:
                 active_dev = act_devs[0]
 
+        last_active_dev = active_dev
+        if last_active_dev is None:
+            last_active_dev = self.last_status['last_active_device']
+
         vol = active_dev['volume_percent'] if active_dev is not None else 0
 
         track = self._sp.current_user_playing_track()
@@ -182,6 +187,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                 'name': self.get_id(),
                 'uri': None,
                 'active_device': active_dev['name'] if active_dev is not None else None,
+                'last_active_device': last_active_dev,
                 'available_devices': [x['name'] for x in devices],
                 'app': None,
                 'volume_pct': vol,
@@ -390,7 +396,21 @@ class ThingSpotify(Thing):
 
     @_catch_spotify_deauth
     def playpause(self):
-        return self.impl.playpause()
+        try:
+            return self.impl.playpause()
+        except SpotifyException as ex:
+            if ex.http_status == 404:
+                # No active device: try to search for last active, and if none then pick the first known device
+                stat = self.impl.json_status()
+                newdev = stat['last_active_device']
+                if newdev is None and len(stat['available_devices']) > 0:
+                    newdev = stat['available_devices'] 
+
+                if newdev is not None:
+                    logger.info(f"No active Spotify instance found, arbitrarily playing in {newdev}")
+                    self.play_in_device(newdev)
+                else:
+                    logger.warn(f"No active Spotify instance and no active devices found, can't play")
 
     @_catch_spotify_deauth
     def stop(self):
