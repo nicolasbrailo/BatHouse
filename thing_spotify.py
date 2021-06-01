@@ -400,18 +400,21 @@ class ThingSpotify(Thing):
         try:
             return self.impl.playpause()
         except SpotifyException as ex:
-            if ex.http_status == 404:
-                # No active device: try to search for last active, and if none then pick the first known device
-                stat = self.impl.json_status()
-                newdev = stat['last_active_device']
-                if newdev is None and len(stat['available_devices']) > 0:
-                    newdev = stat['available_devices'][0]
+            if ex.http_status != 404:
+                # 404 -> No device playing. Anything else just raise and let a caller handle
+                raise ex
 
-                if newdev is not None:
-                    logger.info(f"No active Spotify instance found, arbitrarily playing in {newdev}")
-                    self.play_in_device(newdev)
-                else:
-                    logger.warn(f"No active Spotify instance and no active devices found, can't play")
+            # No active device: try to search for last active, and if none then pick the first known device
+            stat = self.impl.json_status()
+            newdev = stat['last_active_device']
+            if newdev is None and len(stat['available_devices']) > 0:
+                newdev = stat['available_devices'][0]
+
+            if newdev is not None:
+                logger.info(f"No active Spotify instance found, arbitrarily playing in {newdev}")
+                self.play_in_device(newdev)
+            else:
+                logger.warn(f"No active Spotify instance and no active devices found, can't play")
 
     @_catch_spotify_deauth
     def stop(self):
