@@ -92,7 +92,7 @@ class TemplatedThing {
         var self = this;
         this.status_updater_task = setTimeout(function(){
             clearTimeout(self.status_updater_task);
-            if (!this.skip_periodic_updates) {
+            if (!self.skip_periodic_updates) {
               self.request_action('/json_status');
             }
             self.start_periodic_status_updates(ui_update_freq_ms);
