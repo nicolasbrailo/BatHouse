@@ -297,7 +297,7 @@ class ThingSpotify(Thing):
             self.impl = _ThingSpotifyImpl(api_base_url, tok)
 
         self.scheduler = BackgroundScheduler()
-        self.scheduler.add_job(func=self._cached_tok_refresh,
+        self.sched_job = self.scheduler.add_job(func=self._cached_tok_refresh,
                                trigger="interval", seconds=self.secs_between_tok_revalidate)
         self.scheduler.start()
 
@@ -308,7 +308,8 @@ class ThingSpotify(Thing):
         self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
 
     def shutdown(self):
-        self.scheduler.shutdown()
+        self.sched_job.remove()
+        self.scheduler.shutdown(wait=False)
 
     def supported_actions(self):
         return self.impl.supported_actions()

@@ -90,14 +90,16 @@ class SceneHandler(object):
                 self.lamp.broadcast_new_state(transition_time=5)
 
         if self._groovy_ref is not None:
-            self._groovy_ref.shutdown()
+            self._groovy_job.remove()
+            self._groovy_ref.shutdown(wait=False)
+            self._groovy_job = None
             self._groovy_ref = None
         else:
             l = self.world.get_thing_by_name('BaticomedorLamp')
             l.set_brightness(100, broadcast_update=False)
             g = Groovy(l)
             self._groovy_ref = BackgroundScheduler()
-            self._groovy_ref.add_job(func=g.doit, trigger="interval", seconds=6)
+            self._groovy_job = self._groovy_ref.add_job(func=g.doit, trigger="interval", seconds=6)
             self._groovy_ref.start()
 
 

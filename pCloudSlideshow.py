@@ -183,7 +183,7 @@ class pCloudCastSlideshow(object):
 
     def shutdown(self):
         logger.debug("Shutdown pCloudCastSlideshow")
-        self.scheduler.shutdown()
+        self.scheduler.shutdown(wait=False)
 
 
 def build_pcloud_slideshow_from_cfg(CFG, chromecast, flask_app):
