@@ -175,7 +175,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                 active_dev = act_devs[0]
 
         last_active_dev = active_dev
-        if last_active_dev is None:
+        if last_active_dev is None and self.last_status is not None:
             last_active_dev = self.last_status['last_active_device']
 
         vol = active_dev['volume_percent'] if active_dev is not None else 0
@@ -404,7 +404,7 @@ class ThingSpotify(Thing):
                 stat = self.impl.json_status()
                 newdev = stat['last_active_device']
                 if newdev is None and len(stat['available_devices']) > 0:
-                    newdev = stat['available_devices'] 
+                    newdev = stat['available_devices'][0]
 
                 if newdev is not None:
                     logger.info(f"No active Spotify instance found, arbitrarily playing in {newdev}")
