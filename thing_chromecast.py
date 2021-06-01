@@ -5,6 +5,7 @@ import pychromecast
 from pychromecast.controllers.youtube import YouTubeController
 
 import json
+import time
 
 # Use the same logger as ZMF things
 import logging
@@ -33,8 +34,12 @@ class ThingChromecast(Thing):
     @staticmethod
     def scan_network():
         """ Get all Chromecasts in the network """
-        logger.info("Scanning for ChromeCasts")
-        return [ThingChromecast(cc) for cc in pychromecast.get_chromecasts()]
+        logger.info("Will scan 10 seconds for Chromecasts...")
+        devs, bro = pychromecast.discovery.discover_chromecasts(timeout=10)
+        pychromecast.discovery.stop_discovery(bro)
+        logger.info("Found {len(devs)} Chromecasts")
+        ccs, bro = pychromecast.get_listed_chromecasts(friendly_names=[d.friendly_name for d in devs])
+        return [ThingChromecast(cc) for cc in ccs]
 
     @staticmethod
     def mk_from_ip(ip):
@@ -45,7 +50,7 @@ class ThingChromecast(Thing):
         thing_id = self.cc.device.friendly_name
         super().__init__(thing_id)
 
-        cc_object.start()
+        cc_object.wait()
         logger.info("Found Chromecast {}".format(thing_id))
 
     def playpause(self):
@@ -123,7 +128,7 @@ class ThingChromecast(Thing):
         # Deploy file to local and send to chromecast
         # https://stackoverflow.com/questions/43580/how-to-find-the-mime-type-of-a-file-in-python
         # Get mime type: file --mime-type -b
-        self.cc.play_media(url='http://192.168.2.100:1234/webapp/bartolito.mkv', content_type='video/x-matroska')
+        self.cc.play_media(url='http://192.168.1.50/webapp/bartolito.mkv', content_type='video/x-matroska')
 
     def register_status_listener(self, listener):
         self.cc.media_controller.register_status_listener(listener)
