@@ -73,7 +73,7 @@ class ThingChromecast(Thing):
         if self._scheduler is None:
             self._scheduler = BackgroundScheduler()
             self._scheduler.start()
-            self._reconnect_timeout_secs = 15
+            self._reconnect_timeout_secs = 3 * 60
 
         if ip is not None:
             self._reconnect_ip = ip

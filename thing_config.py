@@ -6,6 +6,11 @@ import datetime
 import threading
 import time
 
+# Use the same logger as ZMF things
+import logging
+logger = logging.getLogger('zigbee2mqtt2flask.thing')
+
+
 MY_LAT=51.5464371
 MY_LON=0.111148
 LATE_NIGHT_START_HOUR=22
@@ -19,21 +24,19 @@ def is_it_light_outside():
     sun_out = ahora > sunrise and ahora < sunset
     return sun_out
 
-
 def is_it_late_night():
     t = astral_sun(astral.Observer(MY_LAT, MY_LON), date=datetime.date.today())
     sunset = t['dusk']
+    next_sunrise = t['sunrise'] + datetime.timedelta(hours=24)
     ahora = datetime.datetime.now(t['sunset'].tzinfo)
     if ahora < sunset:
         return False
-    if ahora.hour > LATE_NIGHT_START_HOUR:
-        return True
+    if ahora > sunset and ahora < next_sunrise:
+        local_hour = datetime.datetime.now().hour # no tz, just local hour
+        if local_hour >= LATE_NIGHT_START_HOUR or local_hour <= next_sunrise.hour:
+            return True
     return False
 
-
-# Use the same logger as ZMF things
-import logging
-logger = logging.getLogger('zigbee2mqtt2flask.thing')
 
 class IkeaButton(Button):
     def __init__(self, mqtt_id, world, scenes):
@@ -100,7 +103,7 @@ class MotionActivatedLight(MultiIkeaMotionSensor):
             return
 
         if not self.light.is_on:
-            brightness = 10 if is_it_late_night() else 50
+            brightness = 5 if is_it_late_night() else 50
             self.light_on_because_activity = True
             self.light.set_brightness(brightness)
 
