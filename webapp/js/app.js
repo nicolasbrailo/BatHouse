@@ -63,10 +63,13 @@ class DumbHouseApp {
 
     monkeypatch() {
         var self = this;
-        var patched_self = this.get_player('Baticueva TV');
+        const cc_name = 'Baticomedor TV';
+        var patched_self = this.get_player(cc_name);
+      console.log("Monkey ", patched_self)
         if (patched_self === undefined) return;
-        var patched_func = this.get_player('Baticueva TV').updateUI;
-        self.get_player('Baticueva TV').updateUI = function() {
+        var patched_func = this.get_player(cc_name).updateUI;
+        self.get_player(cc_name).updateUI = function() {
+            console.log("Monkey monkey ", patched_self)
             self.before_baticueva_tv_shown();
             patched_func.apply(patched_self);
             self.on_baticueva_tv_shown();
@@ -78,7 +81,7 @@ class DumbHouseApp {
     }
 
     on_baticueva_tv_shown() {
-        $('#media_player_Baticueva_TV_ctrl').append((new Baticueva_TV_extras()).create_ui());
+        $('#media_player_Baticomedor_TV_ctrl').append((new Baticueva_TV_extras()).create_ui());
         if (this.baticueva_extras_open) $('#Baticueva_TV_extras_div').show();
     }
 
