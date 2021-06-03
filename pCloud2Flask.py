@@ -152,7 +152,7 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
     pcloud_cli = pCloudWgetImg(auth, cfg['paths_cache'], cfg['interesting_paths'], cfg['accepted_extensions'])
 
     @flask.route(flask_api_url_prefix)
-    @flask.route(flask_api_url_prefix+ '/get_random_image')
+    @flask.route(flask_api_url_prefix+ '/get_random_image_url')
     def pcloud_idx():
         return pcloud_cli.get_random_img_url()
 
@@ -190,19 +190,6 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
         else:
             return f"Code not valid. <a href='{flask_api_url_prefix}/auth'>Try again</a>."
 
-
-flask_app = Flask(__name__)
-
-cfg = {
-    'client_id': 'TODO',
-    'client_secret': 'TODO',
-    'auth_cache_file': 'auth_cache_file',
-    'paths_cache': 'pcloud_paths_cache',
-    'interesting_paths': ['/Fotos/00MissingGeotag/2021/Argentina'],
-    'accepted_extensions': ['jpeg', 'jpg']
-}
-build_pcloud_and_register_to_flask(flask_app, '/pcloud', cfg)
-
-flask_app.run(debug=True)
+    return flask_api_url_prefix+ '/get_random_image_url'
 
 

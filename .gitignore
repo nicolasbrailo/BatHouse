@@ -7,6 +7,7 @@ config.json
 config.spotify_cache.json
 config.pcloud_auth_cache.json
 config.pcloud_slideshow_cache.json
+config.pcloud_paths_cache.json
 mfp.cache.db
 
 # Ignore minified js

@@ -91,10 +91,15 @@ if CFG["chromecast_scan_on_startup"]:
 
 # Slideshow object
 if 'pcloud' in CFG:
-    from pCloudSlideshow import build_pcloud_slideshow_from_cfg
-    slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
-    # Make sure the scene handler can stop the slideshow when needed
-    scenes.fake_players.append(slideshow)
+    from pCloud2Flask import build_pcloud_and_register_to_flask
+    rnd_img_uri = build_pcloud_and_register_to_flask(flask_app, '/pcloud', CFG['pcloud'])
+    logging.warn("CALL " + rnd_img_uri)
+
+    #from pCloudSlideshow import build_pcloud_slideshow_from_cfg
+    #slideshow = build_pcloud_slideshow_from_cfg(CFG['pcloud'], world.get_thing_by_name('Baticueva TV'), flask_app)
+    ## Make sure the scene handler can stop the slideshow when needed
+    #scenes.fake_players.append(slideshow)
+
 
 if 'mfp' in CFG:
     # MFP integration

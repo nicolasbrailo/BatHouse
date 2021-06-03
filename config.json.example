@@ -27,20 +27,17 @@
     },
 
     "pcloud": {
-        "client_id": "",
-        "client_secret": "",
+        "client_id": "PWD",
+        "client_secret": "PWD",
         "auth_cache_file": "config.pcloud_auth_cache.json",
-        "slideshow": {
-            "cache_file": "config.pcloud_slideshow_cache.json",
-            "src_paths": [
+        "paths_cache": "config.pcloud_paths_cache.json",
+        "interesting_paths": [
                         "/Foo",
                         "/Bar",
                         "/Foobar/baz"
                     ],
-            "update_image_secs": 60,
-            "extensions_filter": ["jpg", "jpeg"]
-        }
-    },
+        "accepted_extensions": ["jpeg", "jpg"]
+    }
 
     "mfp": {
         "cache_file": "mfp.cache",
