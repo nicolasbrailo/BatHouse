@@ -2,8 +2,7 @@ import urllib.parse
 import requests
 import random
 import json
-from flask import Flask
-from flask import request
+from flask import Flask, request, redirect
 
 import logging
 logger = logging.getLogger('BatHome')
@@ -160,6 +159,10 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
     def pcloud_rnd_img():
         return f"<img src='{pcloud_cli.get_random_img_url()}'/>"
 
+    @flask.route(flask_api_url_prefix+ '/goto_random_image')
+    def pcloud_goto_rnd_img():
+        return redirect(pcloud_cli.get_random_img_url(), code=302)
+
     @flask.route(flask_api_url_prefix + '/refresh_url_cache')
     def pcloud_refresh_url_cache():
         return pcloud_cli.refresh_cached_file_list()
@@ -190,6 +193,6 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
         else:
             return f"Code not valid. <a href='{flask_api_url_prefix}/auth'>Try again</a>."
 
-    return flask_api_url_prefix+ '/get_random_image_url'
+    return pcloud_cli
 
 

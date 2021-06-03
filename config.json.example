@@ -36,7 +36,7 @@
                         "/Bar",
                         "/Foobar/baz"
                     ],
-        "accepted_extensions": ["jpeg", "jpg"]
+        "accepted_extensions": ["jpeg", "jpg"],
     }
 
     "mfp": {
