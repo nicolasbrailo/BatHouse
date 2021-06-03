@@ -1,10 +1,12 @@
 import myfitnesspal
 
-import json
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from collections import namedtuple, OrderedDict
 import datetime
+import json
 import shelve
 import threading
-from collections import namedtuple, OrderedDict
 
 MFP_Stats = namedtuple('MFP_Stats', 'calories_consumed weight exercise_minutes')
 
@@ -22,9 +24,7 @@ class MFP_Crawler(object):
         self.pwd = pwd
         self.ignore_cache_day_count = ignore_cache_day_count
         self.default_update_days = prev_days
-
-        self._startup_thread = threading.Thread(target=self.update_stats)
-        self._startup_thread.start()
+        self._stats = None
 
         @flask_app.route('/mfp/stats')
         def flask_mfp_stats():
@@ -38,6 +38,18 @@ class MFP_Crawler(object):
             self.update_stats(int(days))
             return "OK"
 
+        # Refresh stats on start, then add cron to periodically refresh every day at 3 AM
+        self._bg_thread = None
+        self._cron = BackgroundScheduler()
+        self._cron_jon = self._cron.add_job(func=self._trigger_bg_stats_refresh, trigger=CronTrigger(hour=3))
+        self._trigger_bg_stats_refresh()
+        self._cron.start()
+
+    def _trigger_bg_stats_refresh(self):
+        self.stats() # Join previous thread, is there is one
+        self._bg_thread = threading.Thread(target=self.update_stats)
+        self._bg_thread.start()
+
     def update_stats(self, prev_days=None):
         if prev_days is None:
             prev_days = self.default_update_days
@@ -45,9 +57,9 @@ class MFP_Crawler(object):
         self._stats = self._get_stats(self.ignore_cache_day_count, prev_days)
 
     def stats(self):
-        if self._startup_thread is not None:
-            self._startup_thread.join()
-            self._startup_thread = None
+        if self._bg_thread is not None:
+            self._bg_thread.join()
+            self._bg_thread= None
 
         return self._stats
 
