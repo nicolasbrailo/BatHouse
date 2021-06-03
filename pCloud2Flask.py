@@ -101,10 +101,10 @@ class pCloudWgetImg(object):
 
             if path in disk_cache.keys():
                 new_disk_cache[path] = disk_cache[path]
-                logger.debug("pCloudSlideshow read from cache")
+                logger.info("pCloudSlideshow read from cache")
             else:
                 new_disk_cache[path] = self._recursive_ls(path)
-                logger.debug("pCloudSlideshow read from cloud")
+                logger.info("pCloudSlideshow read from cloud")
 
             self.cached_pics_list.extend(new_disk_cache[path])
 
