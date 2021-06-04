@@ -1,11 +1,14 @@
-import urllib.parse
-import requests
-import random
-import json
 from flask import Flask, request, redirect
+import json
+import random
+import requests
+import threading
+import urllib.parse
 
 import logging
 logger = logging.getLogger('BatHome')
+
+PLACEHOLDER_IMG_URL = "https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG"
 
 class pCloudAuth(object):
     def __init__(self, client_id, client_secret, cache_fname):
@@ -57,6 +60,8 @@ class pCloudWgetImg(object):
         self.src_paths = src_paths
 
         self.ext_filter = set([x.lower() for x in ext_filter])
+        self._bg_thread = None
+        self.refresh_cached_file_list()
 
     def _has_accepted_extension(self, filepath):
         p = filepath.lower()
@@ -65,8 +70,8 @@ class pCloudWgetImg(object):
                 return True
         return False
 
-
     def _recursive_ls(self, cloud_path):
+        logger.info("pCloud: cloud ls " + cloud_path)
         r = requests.get(self.auth.build_url('listfolder', {'path': cloud_path}))
         if 'error' in r.json() and r.json()['result'] == 2005:
             raise KeyError("No remote directory {}".format(cloud_path))
@@ -81,8 +86,8 @@ class pCloudWgetImg(object):
 
         return lst
 
-
-    def refresh_cached_file_list(self):
+    def _bg_refresh_cached_file_list(self):
+        disk_cache = {}
         try:
             import json
             with open(self.cache_fname, 'r') as fp:
@@ -91,8 +96,6 @@ class pCloudWgetImg(object):
             pass
         except:
             logger.warning("pCloudSlideshow: Couldn't read cache from {}".format(self.cache_fname), exc_info=True)
-        finally:
-            disk_cache = {}
 
         self.cached_pics_list = []
         new_disk_cache = {}
@@ -101,10 +104,9 @@ class pCloudWgetImg(object):
 
             if path in disk_cache.keys():
                 new_disk_cache[path] = disk_cache[path]
-                logger.info("pCloudSlideshow read from cache")
             else:
                 new_disk_cache[path] = self._recursive_ls(path)
-                logger.info("pCloudSlideshow read from cloud")
+                logger.info("pCloud path read from cloud:", path)
 
             self.cached_pics_list.extend(new_disk_cache[path])
 
@@ -117,6 +119,13 @@ class pCloudWgetImg(object):
         except:
             logger.error("pCloudSlideshow couldn't write cache to {}".format(self.cache_fname), exc_info=True)
 
+    def refresh_cached_file_list(self):
+        if self._bg_thread is not None:
+            self._bg_thread.join()
+
+        logger.info("Refreshing pCloud paths cache in a background thread. This is a slow op")
+        self._bg_thread = threading.Thread(target=self._bg_refresh_cached_file_list)
+        self._bg_thread.start()
 
     def _get_file_url(self, cloudpath):
         r = requests.get(self.auth.build_url('getfilelink', {'path': cloudpath})).json()
@@ -130,6 +139,7 @@ class pCloudWgetImg(object):
     def _get_random_img_url(self):
         if len(self.cached_pics_list) == 0:
             self.refresh_cached_file_list()
+            return PLACEHOLDER_IMG_URL
         return self._get_file_url(random.choice(self.cached_pics_list))
 
     def get_random_img_url(self):
@@ -137,7 +147,7 @@ class pCloudWgetImg(object):
             return self._get_random_img_url()
         except:
             logger.error("pCloud slideshow exception while getting image url. Probably no auth.", exc_info=True)
-            return "https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG"
+            return PLACEHOLDER_IMG_URL
 
     def has_valid_auth(self):
         try:
@@ -145,6 +155,17 @@ class pCloudWgetImg(object):
         except:
             return False
 
+
+PCLOUD_AUTH_STEP1_TMPL = """
+<form action='/pcloud/auth_step2'>
+<ol>
+  <li>Goto <a href='{}' target='_blank'> this link to request pCloud-authentication</a>
+  <li>Login to pCloud
+  <li>Paste the access code here: <input name='access_code'/>
+  <li><input type='submit' value='Submit'/>
+</ol>
+</form>
+"""
 
 def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
     auth = pCloudAuth(cfg['client_id'], cfg['client_secret'], cfg['auth_cache_file'])
@@ -173,16 +194,7 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
 
     @flask.route(flask_api_url_prefix + '/auth')
     def pcloud_reauth_step1():
-        return f"""
-<form action='/pcloud/auth_step2'>
-<ol>
-  <li>Goto <a href='{auth.get_auth_step1()}' target='_blank'> this link to request pCloud-authentication</a>
-  <li>Login to pCloud
-  <li>Paste the access code here: <input name='access_code'/>
-  <li><input type='submit' value='Submit'/>
-</ol>
-</form>
-"""
+        return PCLOUD_AUTH_STEP1_TMPL.format(auth.get_auth_step1())
 
     @flask.route(flask_api_url_prefix + '/auth_step2')
     def pcloud_reauth_step2():
