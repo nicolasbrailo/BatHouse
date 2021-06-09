@@ -106,7 +106,7 @@ class pCloudWgetImg(object):
                 new_disk_cache[path] = disk_cache[path]
             else:
                 new_disk_cache[path] = self._recursive_ls(path)
-                logger.info("pCloud path read from cloud:", path)
+                logger.info(f"pCloud path read from cloud: {path}")
 
             self.cached_pics_list.extend(new_disk_cache[path])
 
@@ -118,6 +118,14 @@ class pCloudWgetImg(object):
                 fp.write(json.dumps(new_disk_cache))
         except:
             logger.error("pCloudSlideshow couldn't write cache to {}".format(self.cache_fname), exc_info=True)
+
+    def force_refresh_cached_file_list(self):
+        try:
+            with open(self.cache_fname, 'w+') as fp:
+                fp.write('')
+        except:
+            pass
+        self.refresh_cached_file_list()
 
     def refresh_cached_file_list(self):
         if self._bg_thread is not None:
@@ -186,7 +194,8 @@ def build_pcloud_and_register_to_flask(flask, flask_api_url_prefix, cfg):
 
     @flask.route(flask_api_url_prefix + '/refresh_url_cache')
     def pcloud_refresh_url_cache():
-        return pcloud_cli.refresh_cached_file_list()
+        pcloud_cli.force_refresh_cached_file_list()
+        return "Refresh scheduled (this is a slow OP!)"
 
     @flask.route(flask_api_url_prefix + '/is_auth')
     def pcloud_is_auth():
