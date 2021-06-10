@@ -54,10 +54,17 @@ h2 {
     }
     .scenes_column {
         width: 450px;
+        height: 115px;
+    }
+
+    .quicklinks_column {
+        width: 65px;
+        height: 115px;
     }
 
     .mfp_column {
-        width: calc(100% - 470px); /* 100% - icon width */
+        height: 115px;
+        width: calc(98% - 470px - 65px); /* 100% - icon width */
     }
 
     .mfp_column h2 {
