@@ -76,8 +76,10 @@ class IkeaButton2(Button):
 
     def handle_action(self, action, msg):
         if action == 'brightness_up_click':
+            self.world.get_thing_by_name('Spotify').volume_up()
             return True
         if action == 'brightness_down_click':
+            self.world.get_thing_by_name('Spotify').volume_down()
             return True
         if action == 'toggle':
             self.world.get_thing_by_name('Spotify').playpause()
