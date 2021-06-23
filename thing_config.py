@@ -125,5 +125,7 @@ def register_all_things(world, scenes):
     world.register_thing(DimmableLamp('BatBedsideLamp', world.mqtt))
     world.register_thing(IkeaButton('BotonIkeaBelen', world, scenes))
     world.register_thing(IkeaButton2('BotonIkeaComedor', world, scenes))
+    world.register_thing(ColorTempDimmableLamp('KitchenLamp', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
     world.register_thing(MotionActivatedLight(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
 

@@ -16,6 +16,7 @@ class _ThingSpotifyDummy(Thing):
     def __init__(self, api_base_url):
         super().__init__("Spotify")
         self.api_base_url = api_base_url
+        self.last_active_dev = None
 
     def supported_actions(self):
         s = super().supported_actions()
@@ -73,7 +74,7 @@ class _ThingSpotifyDummy(Thing):
 
 
 class _ThingSpotifyImpl(_ThingSpotifyDummy):
-    def __init__(self, api_base_url, tok):
+    def __init__(self, api_base_url, tok, last_active_dev=None):
         super().__init__(api_base_url)
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
@@ -82,6 +83,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         self.status_cache_seconds = 10
         self.last_status = None
         self.last_status_t = 0
+        self.last_active_dev = last_active_dev
 
     def playpause(self):
         if self._is_active():
@@ -177,6 +179,8 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         last_active_dev = active_dev
         if last_active_dev is None and self.last_status is not None:
             last_active_dev = self.last_status['last_active_device']
+
+        self.last_active_dev = last_active_dev
 
         vol = active_dev['volume_percent'] if active_dev is not None else 0
 
@@ -305,7 +309,7 @@ class ThingSpotify(Thing):
         # This should refresh the token for another hour or so...
         logger.debug("Forcing Spotify token refresh")
         tok = ThingSpotify._force_tok_refresh(self.cfg)
-        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
+        self.impl = _ThingSpotifyImpl(self.api_base_url, tok, self.impl.last_active_device)
 
     def shutdown(self):
         self.sched_job.remove()
