@@ -105,7 +105,14 @@ class MotionActivatedLight(MultiIkeaMotionSensor):
             return
 
         if not self.light.is_on:
-            brightness = 5 if is_it_late_night() else 50
+            if is_it_late_night():
+                brightness = 5
+                self.timeout_secs = 60
+            else:
+                brightness = 50
+                # Timeout larger than sensor report time, so it will only turn off once
+                # the sensor reports empty
+                self.timeout_secs = 150
             self.light_on_because_activity = True
             self.light.set_brightness(brightness)
 
@@ -128,4 +135,5 @@ def register_all_things(world, scenes):
     world.register_thing(ColorTempDimmableLamp('KitchenLamp', world.mqtt))
     world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
     world.register_thing(MotionActivatedLight(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
+    world.register_thing(MotionActivatedLight(world, ['IkeaMotionSensorBanio'], world.get_thing_by_name('BanioLamp')))
 
