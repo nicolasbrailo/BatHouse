@@ -13,10 +13,10 @@ logger = logging.getLogger('zigbee2mqtt2flask.thing')
 class _ThingSpotifyDummy(Thing):
     """ Dummy Spotify thing used when no auth token is valid """
 
-    def __init__(self, api_base_url):
+    def __init__(self, api_base_url, last_active_dev=None):
         super().__init__("Spotify")
         self.api_base_url = api_base_url
-        self.last_active_dev = None
+        self.last_active_dev = last_active_dev
 
     def supported_actions(self):
         s = super().supported_actions()
@@ -75,7 +75,7 @@ class _ThingSpotifyDummy(Thing):
 
 class _ThingSpotifyImpl(_ThingSpotifyDummy):
     def __init__(self, api_base_url, tok, last_active_dev=None):
-        super().__init__(api_base_url)
+        super().__init__(api_base_url, last_active_dev)
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
         self.volume_up_pct_delta = 10;
@@ -384,7 +384,7 @@ class ThingSpotify(Thing):
             except SpotifyException as ex:
                 if ex.http_status == 401:
                     logger.debug("Spotify access token expired, impl is now dummy Spotify thing")
-                    self.impl = _ThingSpotifyDummy(self.api_base_url)
+                    self.impl = _ThingSpotifyDummy(self.api_base_url, self.impl.last_active_dev)
 
                     logger.debug("Trying to renew token...")
                     tok = ThingSpotify._get_cached_token(self.cfg)
@@ -392,7 +392,7 @@ class ThingSpotify(Thing):
                         logger.debug("Refresh token failed, user will need to renew manually")
                     else:
                         logger.debug("Refresh token OK: {}".format(tok))
-                        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
+                        self.impl = _ThingSpotifyImpl(self.api_base_url, tok, self.impl.last_active_dev)
 
                     return base_func(self, *a, **kw)
                 else:
