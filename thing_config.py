@@ -84,6 +84,24 @@ class IkeaButton2(Button):
         if action == 'toggle':
             self.world.get_thing_by_name('Spotify').playpause()
             return True
+        if action == 'toggle_hold':
+            sp = self.world.get_thing_by_name('Spotify')
+            sp_st = sp.json_status()
+            dev_active = sp_st['active_device']
+            known_devs = sp_st['available_devices']
+            devs_to_skip = ['Baticomedor TV'] # Hardcoded list of devices to never use for Spotify
+            available_devs = [x for x in known_devs if x != dev_active and x not in devs_to_skip]
+
+            logger.info("Spotify active device is " + str(dev_active))
+            for dev in known_devs:
+                can_play =  ' (can transfer playback)' if dev in available_devs else " (can't transfer playback)"
+                logger.info("\tKnown devices: " + str(dev) + can_play)
+
+            if len(available_devs) > 0:
+                logger.info("Transferring Spotify playback to ", available_devs[0])
+                sp.play_in_device(available_devs[0])
+
+            return True
         if action == 'arrow_right_click':
             self.world.get_thing_by_name('Spotify').play_next_in_queue()
             return True
