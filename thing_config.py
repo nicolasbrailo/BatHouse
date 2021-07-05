@@ -65,7 +65,7 @@ class IkeaButton(Button):
                 self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10)
             return True
 
-        logger.warning("Unknown action: Ikea button - ", action)
+        logger.warning("Unknown action: Ikea button - " + str(action))
 
 
 class IkeaButton2(Button):
@@ -98,7 +98,7 @@ class IkeaButton2(Button):
                 logger.info("\tKnown devices: " + str(dev) + can_play)
 
             if len(available_devs) > 0:
-                logger.info("Transferring Spotify playback to ", available_devs[0])
+                logger.info("Transferring Spotify playback to " + str(available_devs[0]))
                 sp.play_in_device(available_devs[0])
 
             return True
@@ -109,7 +109,7 @@ class IkeaButton2(Button):
             self.world.get_thing_by_name('Spotify').play_prev_in_queue()
             return True
 
-        logger.warning("Unknown action: Ikea button - ", action)
+        logger.warning("Unknown action: Ikea button - " + str(action))
 
 
 class MotionActivatedLight(MultiIkeaMotionSensor):
