@@ -10,13 +10,14 @@ from spotipy.oauth2 import SpotifyOAuth
 import logging
 logger = logging.getLogger('zigbee2mqtt2flask.thing')
 
+LAST_ACTIVE_DEVICE = None
+
 class _ThingSpotifyDummy(Thing):
     """ Dummy Spotify thing used when no auth token is valid """
 
-    def __init__(self, api_base_url, last_active_dev=None):
+    def __init__(self, api_base_url):
         super().__init__("Spotify")
         self.api_base_url = api_base_url
-        self.last_active_dev = last_active_dev
 
     def supported_actions(self):
         s = super().supported_actions()
@@ -55,7 +56,7 @@ class _ThingSpotifyDummy(Thing):
     def play_in_device(self, dev_name):
         pass
 
-    def json_status(self):
+    def json_status(self, nocache=False):
         err_solve = "<a href='/{}/thing/{}/auth_token_refresh' target='blank'>Refresh authentication data</a>"
         return {
                 'error': 'Not authenticated',
@@ -74,8 +75,8 @@ class _ThingSpotifyDummy(Thing):
 
 
 class _ThingSpotifyImpl(_ThingSpotifyDummy):
-    def __init__(self, api_base_url, tok, last_active_dev=None):
-        super().__init__(api_base_url, last_active_dev)
+    def __init__(self, api_base_url, tok):
+        super().__init__(api_base_url)
         self._sp = Spotify(auth=tok)
         self.unmuted_vol_pct = 0
         self.volume_up_pct_delta = 10;
@@ -83,7 +84,6 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         self.status_cache_seconds = 10
         self.last_status = None
         self.last_status_t = 0
-        self.last_active_dev = last_active_dev
 
     def playpause(self):
         if self._is_active():
@@ -146,6 +146,8 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         for dev in devs:
             if dev['name'] == dev_name:
                 self._sp.transfer_playback(dev['id'])
+                if self.json_status(nocache=True)['player_state'] != 'Playing':
+                    self.playpause()
                 return
 
         raise KeyError("Spotify knows no device called {}".format(dev_name))
@@ -160,8 +162,9 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
         track = self._sp.current_user_playing_track()
         return (track is not None) and track['is_playing']
 
-    def json_status(self):
-        if self.last_status is not None:
+    def json_status(self, nocache=False):
+        global LAST_ACTIVE_DEVICE
+        if nocache == False and self.last_status is not None:
             if time.time() - self.last_status_t < self.status_cache_seconds:
                 logger.debug("Return Spotify status from cache")
                 return self.last_status
@@ -176,11 +179,8 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
             if len(act_devs) > 0:
                 active_dev = act_devs[0]
 
-        last_active_dev = active_dev
-        if last_active_dev is None and self.last_status is not None:
-            last_active_dev = self.last_status['last_active_device']
-
-        self.last_active_dev = last_active_dev
+        if active_dev is not None:
+            LAST_ACTIVE_DEVICE = active_dev['name']
 
         vol = active_dev['volume_percent'] if active_dev is not None else 0
 
@@ -191,7 +191,7 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                 'name': self.get_id(),
                 'uri': None,
                 'active_device': active_dev['name'] if active_dev is not None else None,
-                'last_active_device': last_active_dev,
+                'last_active_device': LAST_ACTIVE_DEVICE,
                 'available_devices': [x['name'] for x in devices],
                 'app': None,
                 'volume_pct': vol,
@@ -309,7 +309,7 @@ class ThingSpotify(Thing):
         # This should refresh the token for another hour or so...
         logger.debug("Forcing Spotify token refresh")
         tok = ThingSpotify._force_tok_refresh(self.cfg)
-        self.impl = _ThingSpotifyImpl(self.api_base_url, tok, self.impl.last_active_device)
+        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
 
     def shutdown(self):
         self.sched_job.remove()
@@ -384,7 +384,7 @@ class ThingSpotify(Thing):
             except SpotifyException as ex:
                 if ex.http_status == 401:
                     logger.debug("Spotify access token expired, impl is now dummy Spotify thing")
-                    self.impl = _ThingSpotifyDummy(self.api_base_url, self.impl.last_active_dev)
+                    self.impl = _ThingSpotifyDummy(self.api_base_url)
 
                     logger.debug("Trying to renew token...")
                     tok = ThingSpotify._get_cached_token(self.cfg)
@@ -392,7 +392,7 @@ class ThingSpotify(Thing):
                         logger.debug("Refresh token failed, user will need to renew manually")
                     else:
                         logger.debug("Refresh token OK: {}".format(tok))
-                        self.impl = _ThingSpotifyImpl(self.api_base_url, tok, self.impl.last_active_dev)
+                        self.impl = _ThingSpotifyImpl(self.api_base_url, tok)
 
                     return base_func(self, *a, **kw)
                 else:
@@ -409,7 +409,7 @@ class ThingSpotify(Thing):
                 raise ex
 
             # No active device: try to search for last active, and if none then pick the first known device
-            stat = self.impl.json_status()
+            stat = self.impl.json_status(nocache=True)
             newdev = stat['last_active_device']
             if newdev is None and len(stat['available_devices']) > 0:
                 newdev = stat['available_devices'][0]
