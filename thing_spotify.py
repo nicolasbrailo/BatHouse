@@ -200,13 +200,17 @@ class _ThingSpotifyImpl(_ThingSpotifyDummy):
                 'media': None,
                 }
         
-        if track is None:
+        if track is None or track['item'] is None:
             return self.last_status
 
         # Get all cover images sorted by image size
-        imgs = [(img['height'] * img['width'], img['url'])
-                    for img in track['item']['album']['images']]
-        imgs.sort()
+        imgs = []
+        try:
+            imgs = [(img['height'] * img['width'], img['url'])
+                        for img in track['item']['album']['images']]
+            imgs.sort()
+        except:
+            pass
 
         # Pick an image that's at least 300*300 (or the biggest, if all are smaller)
         selected_img = None
@@ -411,8 +415,11 @@ class ThingSpotify(Thing):
             # No active device: try to search for last active, and if none then pick the first known device
             stat = self.impl.json_status(nocache=True)
             newdev = stat['last_active_device']
-            if newdev is None and len(stat['available_devices']) > 0:
-                newdev = stat['available_devices'][0]
+
+            # If newdev is None or newdev is a device that went offline, and there are
+            # other available_devs, then pick the first available dev
+            if newdev not in stat['available_devices'] and len(stat['available_devices']) > 0:
+                newdev = stat['available_devices'][1]
 
             if newdev is not None:
                 logger.info(f"No active Spotify instance found, arbitrarily playing in {newdev}")
