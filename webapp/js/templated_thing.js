@@ -81,14 +81,23 @@ class TemplatedThing {
       this.request_action('/json_status');
     }
 
+    pause_periodic_status_updates() {
+      this.skip_periodic_updates = true;
+    }
+
     start_periodic_status_updates(ui_update_freq_ms) {
         this.install_visibility_callback();
 
         if (ui_update_freq_ms == undefined) {
-          ui_update_freq_ms = this.default_ui_update_freq_ms
+          if (this.ui_update_freq_ms !== undefined) {
+            ui_update_freq_ms = this.ui_update_freq_ms;
+          } else {
+            ui_update_freq_ms = this.default_ui_update_freq_ms;
+          }
         }
 
         this.ui_update_freq_ms = ui_update_freq_ms;
+        this.skip_periodic_updates = false;
         var self = this;
         this.status_updater_task = setTimeout(function(){
             clearTimeout(self.status_updater_task);

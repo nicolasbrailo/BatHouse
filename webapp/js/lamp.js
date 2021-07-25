@@ -26,7 +26,7 @@ class Lamp extends TemplatedThing {
         var self = this;
 
         $(document).on('click', '#lamp_open_panel_ctrl'+this.html_id,
-            function(){ $('#lamp_detailed_panel_ctrl'+self.html_id).toggle(); });
+            function(){ console.log("ASD"); $('#lamp_detailed_panel_ctrl'+self.html_id).toggle(); });
 
         $(document).on('click', '#lamp_is_on_checkbox'+this.html_id,
             function(){ self.update_on_state_from_ui(); });
@@ -36,10 +36,14 @@ class Lamp extends TemplatedThing {
         $(document).on('touchend', '#lamp_set_brightness_slider'+this.html_id,
             function(){ self.update_brigthness_from_ui(); });
 
+
+        $(document).on('click', '#lamp_set_rgb'+this.html_id,
+            function(){ console.log("ASD"); self.pause_periodic_status_updates(); });
+        $(document).on('blur', '#lamp_set_rgb'+this.html_id,
+            function(){ console.log("close"); self.start_periodic_status_updates(); });
         $(document).on('change', '#lamp_set_rgb'+this.html_id,
-            function(){ self.update_color_from_ui(); });
-        $(document).on('input', '#lamp_set_rgb'+this.html_id,
-            function(){ self.throttled_update_color_from_ui(); });
+            function(){ console.log("chg"); self.update_color_from_ui(); self.start_periodic_status_updates(); });
+
         $(document).on('input', '#lamp_color_shifter_'+this.html_id,
             function(){ self.toggle_shift(); });
 

@@ -20,8 +20,8 @@
 	{{#if has_color}}
 		Lamp color: <input type="color" id="lamp_set_rgb{{html_id}}"
 				{{#if rgb_color}}value="#{{rgb_color}}"{{/if}} >
-		<input type="button" id="lamp_color_shifter_{{html_id}}" text="Shift!"/>
-        {{/if}}
+		<input type="button" id="lamp_color_shifter_{{html_id}}" text="Shift!" value="Shift!"/>
+  {{/if}}
 
 	{{#if has_color_temp}}
 	    Temperature: <input type="range" class="lamp_set_brightness_slider form-control-range"
