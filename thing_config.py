@@ -1,5 +1,8 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
 from astral.sun import sun as astral_sun
 import astral
 import datetime
@@ -55,11 +58,12 @@ class IkeaButton(Button):
             return True
         if action == 'toggle':
             if self.world.get_thing_by_name('BaticomedorLamp').is_on or \
-                    self.world.get_thing_by_name('EmliviaRoomLamp').is_on or \
                     self.world.get_thing_by_name('BatBedsideLamp').is_on or \
+                    self.world.get_thing_by_name('BanioLamp').is_on or \
+                    self.world.get_thing_by_name('KitchenLamp').is_on or \
                     self.world.get_thing_by_name('EntrepisoLamp').is_on:
-                time.sleep(3)
-                self.scenes.all_lights_off()
+                time.sleep(2)
+                self.scenes.all_lights_off(all_except=['EmliviaRoomLamp'])
             else:
                 self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10)
                 self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10)
@@ -122,16 +126,23 @@ class MotionActivatedLight(MultiIkeaMotionSensor):
         if is_it_light_outside():
             return
 
-        if not self.light.is_on:
-            brightness = 5 if is_it_late_night() else 50
-            self.light_on_because_activity = True
-            self.light.set_brightness(brightness)
+        # Only trigger if the light wasn't on before (eg manually)
+        if self.light.is_on:
+            return
+
+        logger.info("MotionActivatedLight on activity_detected")
+        brightness = 5 if is_it_late_night() else 50
+        self.light_on_because_activity = True
+        self.light.set_brightness(brightness)
 
     def all_vacant(self):
+        logger.info("MotionActivatedLight on all_vacant")
         if self.light_on_because_activity:
+            self.light_on_because_activity = False
             self.light.light_off()
 
     def activity_timeout(self):
+        logger.info("MotionActivatedLight on timeout")
         self.all_vacant()
 
 
@@ -145,11 +156,43 @@ class MotionActivatedLightLongTimeout(MotionActivatedLight):
         self.timeout_secs = 150
         super().activity_detected()
 
+class Cronenberg(Thing):
+    def __init__(self, world):
+        super().__init__('Cronenberg')
+        self.managing_emlivia_night_light = False
+        self.world = world
+        self._cron = BackgroundScheduler()
+        self._cron_jon = self._cron.add_job(func=self._tick, trigger=IntervalTrigger(minutes=15))
+        self._cron.start()
+
+    def json_status(self):
+        return {}
+
+    def _tick(self):
+        light = self.world.get_thing_by_name('EmliviaRoomLamp')
+
+        local_hour = datetime.datetime.now().hour # no tz, just local hour
+        emlivia_night = local_hour >= 21 or local_hour < 8
+
+        logger.info("Cronenberg tick at {} hrs. Nighttime? {} Day out? {} Managing light? {}".format(local_hour, emlivia_night, is_it_light_outside(), self.managing_emlivia_night_light))
+
+        if not is_it_light_outside() and emlivia_night and not self.managing_emlivia_night_light:
+            logger.info("Emlivia night light ON")
+            light.set_brightness(10)
+            self.managing_emlivia_night_light = True
+
+        elif self.managing_emlivia_night_light and is_it_light_outside():
+            logger.info("Emlivia night light OFF")
+            self.managing_emlivia_night_light = False
+            light.light_off()
+
+
 
 def register_all_things(world, scenes):
-    world.register_thing(ColorDimmableLamp('BaticomedorLamp', world.mqtt))
+    world.register_thing(Cronenberg(world))
+    world.register_thing(ColorDimmableLamp('EntrepisoLamp', world.mqtt))
     world.register_thing(ColorDimmableLamp('EmliviaRoomLamp', world.mqtt))
-    world.register_thing(ColorTempDimmableLamp('EntrepisoLamp', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
     world.register_thing(DimmableLamp('BatiofficeDeskLamp', world.mqtt))
     world.register_thing(DimmableLamp('BatBedsideLamp', world.mqtt))
     world.register_thing(IkeaButton('BotonIkeaBelen', world, scenes))

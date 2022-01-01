@@ -53,10 +53,11 @@ class SceneHandler(object):
         self.stop_all_media_players()
         self.all_lights_off()
 
-    def all_lights_off(self):
+    def all_lights_off(self, all_except=None):
         for light in self.world.get_things_supporting(['light_off']):
-            light.light_off(broadcast_update=True)
-            logger.info("Light {} off".format(light.get_id()))
+            if all_except and light.get_id() not in all_except:
+                light.light_off(broadcast_update=True)
+                logger.info("Light {} off".format(light.get_id()))
 
     def stop_all_media_players(self):
         for player in self.fake_players:

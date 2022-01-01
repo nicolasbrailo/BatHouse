@@ -401,6 +401,7 @@ class ThingSpotify(Thing):
                     return base_func(self, *a, **kw)
                 else:
                     raise ex
+
         return wrap
 
     @_catch_spotify_deauth
@@ -465,5 +466,11 @@ class ThingSpotify(Thing):
 
     @_catch_spotify_deauth
     def json_status(self):
-        return self.impl.json_status()
+        try:
+            return self.impl.json_status()
+        except ex:
+            dummy = _ThingSpotifyDummy(api_base_url)
+            s = dummy.json_status();
+            s['error'] = str(ex)
+            return s
 

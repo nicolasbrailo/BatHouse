@@ -70,11 +70,14 @@
 		'FF00FF',
 		];
 
-	var lamp = get_lamp('BaticomedorLamp');
+	var lamp = get_lamp('EntrepisoLamp');
 	for (var color of colors) {
 		// Copy color, otherwise lambda binds color to last idx
 		(function(c) {
-			$(document).on('click', '#btn_'+c, function(){ lamp.set_rgb_color(''+c); });
+      $(document).on('click', '#btn_'+c, () => {
+        lamp.request_action('/light_on');
+        lamp.set_rgb_color(''+c);
+      });
 		})(color);
 		var ui = '<input type="button" id="btn_'+color+'" style="height: 100px; width: 100%; background-color: #'+color+';" value=""/>';
 		$('#ui_main_list').append(ui);
