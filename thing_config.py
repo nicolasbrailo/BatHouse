@@ -49,14 +49,28 @@ class KitchenBoton(Button):
 
     def handle_action(self, action, msg):
         if action == 'brightness_up_click':
-            return True
-        if action == 'arrow_right_click':
+            logger.info("Transfer Spotify to Portalcito")
+            self.world.get_thing_by_name('Spotify').playpause()
+            self.world.get_thing_by_name('Spotify').play_in_device('Portalcito')
             return True
         if action == 'brightness_down_click':
+            if self.world.get_thing_by_name('KitchenSpot1').is_on:
+                self.world.get_thing_by_name('KitchenSpot1').light_off()
+            else:
+                self.world.get_thing_by_name('KitchenSpot1').set_brightness(100)
+            return True
+            return True
+        if action == 'arrow_right_click':
+            self.world.get_thing_by_name('Spotify').play_next_in_queue()
             return True
         if action == 'arrow_left_click':
+            self.world.get_thing_by_name('Spotify').play_prev_in_queue()
             return True
         if action == 'toggle':
+            if self.world.get_thing_by_name('KitchenStandLamp').is_on:
+                self.world.get_thing_by_name('KitchenStandLamp').light_off()
+            else:
+                self.world.get_thing_by_name('KitchenStandLamp').set_brightness(100)
             return True
 
         logger.warning("Unknown action: Ikea button - " + str(action))
@@ -80,7 +94,7 @@ class BatipiezaBoton(Button):
                     self.world.get_thing_by_name('KitchenStandLamp').is_on or \
                     self.world.get_thing_by_name('EntrepisoLamp').is_on:
                 time.sleep(2)
-                self.scenes.all_lights_off(all_except=['EmliviaRoomLamp'])
+                self.scenes.all_lights_off(all_except=['EmliviaStandLamp'])
             else:
                 self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10)
                 self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10)
@@ -106,11 +120,9 @@ class BaticomedorBoton(Button):
             if self.world.get_thing_by_name('KitchenStandLamp').is_on:
                 self.world.get_thing_by_name('KitchenStandLamp').light_off()
                 self.world.get_thing_by_name('KitchenSpot1').light_off()
-                self.world.get_thing_by_name('Spotify').stop()
             else:
                 self.world.get_thing_by_name('KitchenStandLamp').set_brightness(100)
                 self.world.get_thing_by_name('KitchenSpot1').set_brightness(100)
-                self.world.get_thing_by_name('Spotify').play_in_device('Portalcito')
             return True
         if action == 'up-press':
             self.world.get_thing_by_name('BaticomedorLamp').light_off()
@@ -237,7 +249,7 @@ class Cronenberg(Thing):
         return {}
 
     def _tick(self):
-        light = self.world.get_thing_by_name('EmliviaRoomLamp')
+        light = self.world.get_thing_by_name('EmliviaStandLamp')
 
         local_hour = datetime.datetime.now().hour # no tz, just local hour
         emlivia_night = local_hour >= 21 or local_hour < 8
@@ -261,13 +273,18 @@ def register_all_things(world, scenes):
 
     world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
     world.register_thing(DimmableLamp('BaticomedorSnoopyLamp', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('BaticomedorSpot', world.mqtt))
     world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
 
     world.register_thing(DimmableLamp('BatipiezaLamp', world.mqtt))
     world.register_thing(BatipiezaBoton('BatipiezaBoton', world, scenes))
 
+    world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
+    world.register_thing(ColorDimmableLamp('EmliviaLamp', world.mqtt))
+
     world.register_thing(DimmableLamp('NicofficeDeskLamp', world.mqtt))
     world.register_thing(DimmableLamp('NicofficeStandLamp', world.mqtt))
+    world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
     world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
 
     world.register_thing(ColorTempDimmableLamp('KitchenStandLamp', world.mqtt))
@@ -275,7 +292,6 @@ def register_all_things(world, scenes):
     world.register_thing(KitchenBoton('KitchenBoton', world, scenes))
 
     world.register_thing(ColorDimmableLamp('EntrepisoLamp', world.mqtt))
-    world.register_thing(ColorDimmableLamp('EmliviaRoomLamp', world.mqtt))
     world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
     world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
     world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorBanio'], world.get_thing_by_name('BanioLamp')))

@@ -468,7 +468,7 @@ class ThingSpotify(Thing):
     def json_status(self):
         try:
             return self.impl.json_status()
-        except ex:
+        except SpotifyException as ex:
             dummy = _ThingSpotifyDummy(api_base_url)
             s = dummy.json_status();
             s['error'] = str(ex)
