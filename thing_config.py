@@ -1,4 +1,4 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, MultiThing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -49,9 +49,11 @@ class KitchenBoton(Button):
 
     def handle_action(self, action, msg):
         if action == 'brightness_up_click':
-            logger.info("Transfer Spotify to Portalcito")
-            self.world.get_thing_by_name('Spotify').playpause()
-            self.world.get_thing_by_name('Spotify').play_in_device('Portalcito')
+            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] != 'Portalcito':
+                self.world.get_thing_by_name('Spotify').play_in_device('Portalcito')
+                logger.info("Transfer Spotify to Portalcito")
+            else:
+                self.world.get_thing_by_name('Spotify').playpause()
             return True
         if action == 'brightness_down_click':
             if self.world.get_thing_by_name('KitchenSpot1').is_on:
@@ -61,10 +63,12 @@ class KitchenBoton(Button):
             return True
             return True
         if action == 'arrow_right_click':
-            self.world.get_thing_by_name('Spotify').play_next_in_queue()
+            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] == 'Portalcito':
+                self.world.get_thing_by_name('Spotify').play_next_in_queue()
             return True
         if action == 'arrow_left_click':
-            self.world.get_thing_by_name('Spotify').play_prev_in_queue()
+            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] == 'Portalcito':
+                self.world.get_thing_by_name('Spotify').play_prev_in_queue()
             return True
         if action == 'toggle':
             if self.world.get_thing_by_name('KitchenStandLamp').is_on:
@@ -266,8 +270,6 @@ class Cronenberg(Thing):
             self.managing_emlivia_night_light = False
             light.light_off()
 
-
-
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
@@ -282,8 +284,8 @@ def register_all_things(world, scenes):
     world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
     world.register_thing(ColorDimmableLamp('EmliviaLamp', world.mqtt))
 
-    world.register_thing(DimmableLamp('NicofficeDeskLamp', world.mqtt))
-    world.register_thing(DimmableLamp('NicofficeStandLamp', world.mqtt))
+    world.register_thing(MultiThing([DimmableLamp('NicofficeDeskLamp', world.mqtt),
+                                    DimmableLamp('NicofficeStandLamp', world.mqtt)]))
     world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
     world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
 
