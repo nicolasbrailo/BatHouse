@@ -26,11 +26,12 @@ nosu mkdir -p "$BATHOME_CFG"
 
 echo "This script may be destructive if you changed your config files."
 echo "Ensure you really want to run this and then delete the exit command in this script"
+exit
 
 
 #Xapt-get update
 sudo apt-get upgrade
-apt-get --assume-yes install mosquitto npm
+apt-get --assume-yes install mosquitto npm python3-pip
 
 #X# Configure mosquitto
 touch $BATHOME_LOGS/mosquitto.log
@@ -45,7 +46,8 @@ systemctl enable mosquitto
 
 # Configure zigbee2mqtt
 nosu git clone https://github.com/Koenkk/zigbee2mqtt.git $BATHOME_TGTDIR/zigbee2mqtt
-nosu npm install $BATHOME_TGTDIR/zigbee2mqtt
+cd$BATHOME_TGTDIR/zigbee2mqtt
+nosu npm install
 
 nosu ln -s "$BATHOME_TGTDIR/zigbee2mqtt/data/log" "$BATHOME_LOGS/zigbee2mqtt"
 nosu ln -s "$BATHOME_TGTDIR/zigbee2mqtt/data/configuration.yaml" "$BATHOME_CFG/zigbee2mqtt.conf"

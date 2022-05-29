@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "zigbee2mqtt": "file:../../BatHome/zigbee2mqtt"
+  }
+}

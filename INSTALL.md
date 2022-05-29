@@ -20,9 +20,14 @@ $ sudo apt-get install mosquitto
 ### Install zigbee2mqtt / https://www.zigbee2mqtt.io/
 Note: instructions here not quite the same as https://www.zigbee2mqtt.io/getting_started/running_zigbee2mqtt.html
 
-$ sudo git clone https://github.com/Koenkk/zigbee2mqtt.git
+Without a Zigbee stick plugged, in:
+
+$ sudo apt-get install npm
+$ git clone https://github.com/Koenkk/zigbee2mqtt.git
 $ npm install
 $ npm start
+
+At this point it should fail with "cannot open /dev/ttyAMC0". Now plug the Zigbee stick and verify a new /dev/tty device is avaiable (may be /dev/ttyACM0, ttyUSB0 or something else). Next run of `npm start` should succeed.
 
 ### Configure zigbee2mqtt
 
