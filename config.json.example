@@ -4,7 +4,7 @@
     "daemonize": false,
     "verbose_log": false,
     "api_listen_host": "0.0.0.0",
-    "api_listen_port": 1234,
+    "api_listen_port": 80,
 
     "// MQTT Options": "this is a comment",
     "mqtt_broker_ip": "192.168.2.100",

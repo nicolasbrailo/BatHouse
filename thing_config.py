@@ -1,4 +1,5 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, MultiThing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
+#from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MultiThing
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -273,28 +274,32 @@ class Cronenberg(Thing):
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
-    world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
-    world.register_thing(DimmableLamp('BaticomedorSnoopyLamp', world.mqtt))
-    world.register_thing(ColorTempDimmableLamp('BaticomedorSpot', world.mqtt))
-    world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
+    world.register_thing(DimmableLamp('IkeaE27_dim_1', world.mqtt))
+    world.register_thing(DimmableLamp('BaticomedorFloorlampL', world.mqtt))
+    world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
 
-    world.register_thing(DimmableLamp('BatipiezaLamp', world.mqtt))
-    world.register_thing(BatipiezaBoton('BatipiezaBoton', world, scenes))
+    #world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
+    #world.register_thing(DimmableLamp('BaticomedorSnoopyLamp', world.mqtt))
+    #world.register_thing(ColorTempDimmableLamp('BaticomedorSpot', world.mqtt))
+    #world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
 
-    world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
-    world.register_thing(ColorDimmableLamp('EmliviaLamp', world.mqtt))
+    #world.register_thing(DimmableLamp('BatipiezaLamp', world.mqtt))
+    #world.register_thing(BatipiezaBoton('BatipiezaBoton', world, scenes))
 
-    world.register_thing(MultiThing([DimmableLamp('NicofficeDeskLamp', world.mqtt),
-                                    DimmableLamp('NicofficeStandLamp', world.mqtt)]))
-    world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
-    world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
+    #world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
+    #world.register_thing(ColorDimmableLamp('EmliviaLamp', world.mqtt))
 
-    world.register_thing(ColorTempDimmableLamp('KitchenStandLamp', world.mqtt))
-    world.register_thing(ColorTempDimmableLamp('KitchenSpot1', world.mqtt))
-    world.register_thing(KitchenBoton('KitchenBoton', world, scenes))
+    #world.register_thing(MultiThing([DimmableLamp('NicofficeDeskLamp', world.mqtt),
+    #                                DimmableLamp('NicofficeStandLamp', world.mqtt)]))
+    #world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
+    #world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
 
-    world.register_thing(ColorDimmableLamp('EntrepisoLamp', world.mqtt))
-    world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
-    world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
-    world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorBanio'], world.get_thing_by_name('BanioLamp')))
+    #world.register_thing(ColorTempDimmableLamp('KitchenStandLamp', world.mqtt))
+    #world.register_thing(ColorTempDimmableLamp('KitchenSpot1', world.mqtt))
+    #world.register_thing(KitchenBoton('KitchenBoton', world, scenes))
+
+    #world.register_thing(ColorDimmableLamp('EntrepisoLamp', world.mqtt))
+    #world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
+    #world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
+    #world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorBanio'], world.get_thing_by_name('BanioLamp')))
 
