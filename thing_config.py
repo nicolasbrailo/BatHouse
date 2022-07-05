@@ -1,5 +1,5 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
-#from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MultiThing
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MultiThing
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -92,17 +92,13 @@ class BatipiezaBoton(Button):
         if action == 'on':
             return True
         if action == 'press':
-            if self.world.get_thing_by_name('BaticomedorLamp').is_on or \
-                    self.world.get_thing_by_name('BaticomedorSnoopyLamp').is_on or \
-                    self.world.get_thing_by_name('BatipiezaLamp').is_on or \
-                    self.world.get_thing_by_name('BanioLamp').is_on or \
-                    self.world.get_thing_by_name('KitchenStandLamp').is_on or \
-                    self.world.get_thing_by_name('EntrepisoLamp').is_on:
+            if self.world.get_thing_by_name('Belador').is_on or \
+                    self.world.get_thing_by_name('Snoopy').is_on or \
+                    self.world.get_thing_by_name('BaticomedorFloorlampL').is_on:
                 time.sleep(2)
-                self.scenes.all_lights_off(all_except=['EmliviaStandLamp'])
+                self.scenes.all_lights_off(all_except=['OlmaLamp'])
             else:
-                self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10)
-                self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10)
+                self.world.get_thing_by_name('Belador').set_brightness(10)
             return True
         return False
 
@@ -254,7 +250,7 @@ class Cronenberg(Thing):
         return {}
 
     def _tick(self):
-        light = self.world.get_thing_by_name('EmliviaStandLamp')
+        light = self.world.get_thing_by_name('OlmaVelador')
 
         local_hour = datetime.datetime.now().hour # no tz, just local hour
         emlivia_night = local_hour >= 21 or local_hour < 8
@@ -274,20 +270,25 @@ class Cronenberg(Thing):
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
-    world.register_thing(DimmableLamp('IkeaE27_dim_1', world.mqtt))
-    world.register_thing(DimmableLamp('BaticomedorFloorlampL', world.mqtt))
-    world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
+    world.register_thing(DimmableLamp('CocinaCountertop', world.mqtt))
+    world.register_thing(DimmableLamp('LandingPB', world.mqtt))
+    world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
 
-    #world.register_thing(ColorTempDimmableLamp('BaticomedorLamp', world.mqtt))
-    #world.register_thing(DimmableLamp('BaticomedorSnoopyLamp', world.mqtt))
+    world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
+    world.register_thing(DimmableLamp('NicoVelador', world.mqtt))
+    world.register_thing(BatipiezaBoton('BeladorBoton', world, scenes))
+
+    world.register_thing(MultiThing('Comedor', ColorDimmableLamp, ['ComedorL', 'ComedorR'], world.mqtt))
+    world.register_thing(DimmableLamp('Snoopy', world.mqtt))
+
+    world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
+
     #world.register_thing(ColorTempDimmableLamp('BaticomedorSpot', world.mqtt))
     #world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
 
     #world.register_thing(DimmableLamp('BatipiezaLamp', world.mqtt))
-    #world.register_thing(BatipiezaBoton('BatipiezaBoton', world, scenes))
 
     #world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
-    #world.register_thing(ColorDimmableLamp('EmliviaLamp', world.mqtt))
 
     #world.register_thing(MultiThing([DimmableLamp('NicofficeDeskLamp', world.mqtt),
     #                                DimmableLamp('NicofficeStandLamp', world.mqtt)]))

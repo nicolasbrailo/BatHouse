@@ -48,7 +48,7 @@ Description=BatHouse
 After=zigbee2mqtt.target
 
 [Service]
-ExecStart=/usb/bin/authbind --deep /usr/bin/python3 -m pipenv run python ./server.py
+ExecStart=/usr/bin/authbind --deep /usr/bin/python3 -m pipenv run python ./server.py
 WorkingDirectory=$BATHOME_TGTDIR/BatHouse
 StandardOutput=inherit
 StandardError=inherit
