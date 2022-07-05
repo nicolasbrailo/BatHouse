@@ -1,11 +1,18 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing, Lamp, DimmableLamp, ColorDimmableLamp, ColorTempDimmableLamp, Button, MultiIkeaMotionSensor
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import ColorDimmableLamp
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import ColorTempDimmableLamp
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import DimmableLamp
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Lamp
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MotionActivatedNightLight
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MultiThing
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing
+
+from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import light_outside
+from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import late_night
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from astral.sun import sun as astral_sun
-import astral
 import datetime
 import threading
 import time
@@ -20,27 +27,10 @@ MY_LON=0.111148
 LATE_NIGHT_START_HOUR=22
 
 def is_it_light_outside():
-    t = astral_sun(astral.Observer(MY_LAT, MY_LON), date=datetime.date.today())
-    tolerance = datetime.timedelta(minutes=45)
-    sunrise = t['sunrise'] + tolerance
-    sunset = t['sunset'] - tolerance
-    ahora = datetime.datetime.now(t['sunset'].tzinfo)
-    sun_out = ahora > sunrise and ahora < sunset
-    return sun_out
+    return light_outside(MY_LAT, MY_LON)
 
 def is_it_late_night():
-    t = astral_sun(astral.Observer(MY_LAT, MY_LON), date=datetime.date.today())
-    sunset = t['dusk']
-    next_sunrise = t['sunrise'] + datetime.timedelta(hours=24)
-    ahora = datetime.datetime.now(t['sunset'].tzinfo)
-    if ahora < sunset:
-        return False
-    if ahora > sunset and ahora < next_sunrise:
-        local_hour = datetime.datetime.now().hour # no tz, just local hour
-        if local_hour >= LATE_NIGHT_START_HOUR or local_hour <= next_sunrise.hour:
-            return True
-    return False
-
+    return late_night(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR)
 
 class KitchenBoton(Button):
     def __init__(self, mqtt_id, world, scenes):
@@ -197,46 +187,6 @@ class NicofficeBoton(Button):
         logger.warning("Unknown action: Ikea button - " + str(action))
 
 
-class MotionActivatedLight(MultiIkeaMotionSensor):
-    def __init__(self, world, sensor_mqtt_ids, light):
-        super().__init__(world, sensor_mqtt_ids)
-        self.light = light
-        self.light_on_because_activity = False
-
-    def activity_detected(self):
-        if is_it_light_outside():
-            return
-
-        # Only trigger if the light wasn't on before (eg manually)
-        if self.light.is_on:
-            return
-
-        logger.info("MotionActivatedLight on activity_detected")
-        brightness = 5 if is_it_late_night() else 50
-        self.light_on_because_activity = True
-        self.light.set_brightness(brightness)
-
-    def all_vacant(self):
-        logger.info("MotionActivatedLight on all_vacant")
-        if self.light_on_because_activity:
-            self.light_on_because_activity = False
-            self.light.light_off()
-
-    def activity_timeout(self):
-        logger.info("MotionActivatedLight on timeout")
-        self.all_vacant()
-
-
-class MotionActivatedLightLongTimeout(MotionActivatedLight):
-    def __init__(self, world, sensor_mqtt_ids, light):
-        super().__init__(world, sensor_mqtt_ids, light)
-
-    def activity_detected(self):
-        # Timeout larger than sensor report time, so it will only turn off once
-        # the sensor reports empty
-        self.timeout_secs = 150
-        super().activity_detected()
-
 class Cronenberg(Thing):
     def __init__(self, world):
         super().__init__('Cronenberg')
@@ -271,8 +221,14 @@ def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
     world.register_thing(DimmableLamp('CocinaCountertop', world.mqtt))
+
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
+    s = MotionActivatedNightLight(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR, world,
+                                     ['EscaleraPBSensor1', 'EscaleraPBSensor2'],
+                                      world.get_thing_by_name('EscaleraPB'))
+    s.always_off_during_daylight(False)
+    world.register_thing(s)
 
     world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
     world.register_thing(DimmableLamp('NicoVelador', world.mqtt))
@@ -283,24 +239,8 @@ def register_all_things(world, scenes):
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
 
-    #world.register_thing(ColorTempDimmableLamp('BaticomedorSpot', world.mqtt))
     #world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
-
-    #world.register_thing(DimmableLamp('BatipiezaLamp', world.mqtt))
-
-    #world.register_thing(ColorDimmableLamp('EmliviaStandLamp', world.mqtt))
-
-    #world.register_thing(MultiThing([DimmableLamp('NicofficeDeskLamp', world.mqtt),
-    #                                DimmableLamp('NicofficeStandLamp', world.mqtt)]))
     #world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
     #world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
-
-    #world.register_thing(ColorTempDimmableLamp('KitchenStandLamp', world.mqtt))
-    #world.register_thing(ColorTempDimmableLamp('KitchenSpot1', world.mqtt))
     #world.register_thing(KitchenBoton('KitchenBoton', world, scenes))
-
-    #world.register_thing(ColorDimmableLamp('EntrepisoLamp', world.mqtt))
-    #world.register_thing(ColorTempDimmableLamp('BanioLamp', world.mqtt))
-    #world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorUpstairs','IkeaMotionSensorEntrepiso'], world.get_thing_by_name('EntrepisoLamp')))
-    #world.register_thing(MotionActivatedLightLongTimeout(world, ['IkeaMotionSensorBanio'], world.get_thing_by_name('BanioLamp')))
 
