@@ -92,41 +92,34 @@ class BatipiezaBoton(Button):
             return True
         return False
 
-class BaticomedorBoton(Button):
-    def __init__(self, mqtt_id, world, scenes):
+class BotonComedorHue(Button):
+    def __init__(self, mqtt_id, world):
         super().__init__(mqtt_id)
         self.world = world
-        self.scenes = scenes
 
     def handle_action(self, action, msg):
         if action == 'on-press':
-            if self.world.get_thing_by_name('BaticomedorLamp').is_on:
-                self.world.get_thing_by_name('BaticomedorLamp').light_off()
-                self.world.get_thing_by_name('BaticomedorSnoopyLamp').light_off()
+            if self.world.get_thing_by_name('Comedor').is_on or self.world.get_thing_by_name('Snoopy').is_on:
+                self.world.get_thing_by_name('Comedor').light_off()
+                self.world.get_thing_by_name('Snoopy').light_off()
             else:
-                self.world.get_thing_by_name('BaticomedorLamp').set_brightness(100)
-                self.world.get_thing_by_name('BaticomedorSnoopyLamp').set_brightness(50)
-            return True
-        if action == 'off-press':
-            if self.world.get_thing_by_name('KitchenStandLamp').is_on:
-                self.world.get_thing_by_name('KitchenStandLamp').light_off()
-                self.world.get_thing_by_name('KitchenSpot1').light_off()
-            else:
-                self.world.get_thing_by_name('KitchenStandLamp').set_brightness(100)
-                self.world.get_thing_by_name('KitchenSpot1').set_brightness(100)
-            return True
-        if action == 'up-press':
-            self.world.get_thing_by_name('BaticomedorLamp').light_off()
-            self.world.get_thing_by_name('NicofficeDeskLamp').light_off()
-            self.world.get_thing_by_name('NicofficeStandLamp').light_off()
-            self.world.get_thing_by_name('KitchenStandLamp').light_off()
-            self.world.get_thing_by_name('KitchenSpot1').light_off()
-            self.world.get_thing_by_name('BaticomedorSnoopyLamp').light_off()
-            self.world.get_thing_by_name('BatipiezaLamp').set_brightness(20)
-            return True
-        if action == 'down-press':
+                self.world.get_thing_by_name('Comedor').set_brightness(100)
+                self.world.get_thing_by_name('Snoopy').set_brightness(50)
             return True
         if action == 'on-hold':
+                self.world.get_thing_by_name('Comedor').set_brightness(100)
+                self.world.get_thing_by_name('Snoopy').set_brightness(100)
+        if action == 'off-press':
+            if self.world.get_thing_by_name('CocinaCountertop').is_on or self.world.get_thing_by_name('LandingPB').is_on:
+                self.world.get_thing_by_name('LandingPB').light_off()
+                self.world.get_thing_by_name('CocinaCountertop').light_off()
+            else:
+                self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
+                self.world.get_thing_by_name('LandingPB').set_brightness(50)
+            return True
+        if action == 'up-press':
+            return True
+        if action == 'down-press':
             return True
         if action == 'on-hold-release':
             return True
@@ -224,18 +217,20 @@ def register_all_things(world, scenes):
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
-    s = MotionActivatedNightLight(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR, world,
+    world.register_thing(DimmableLamp('EscaleraP1', world.mqtt))
+    world.register_thing(MotionActivatedNightLight(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR, world,
                                      ['EscaleraPBSensor1', 'EscaleraPBSensor2'],
-                                      world.get_thing_by_name('EscaleraPB'))
-    s.always_off_during_daylight(False)
-    world.register_thing(s)
+                                      world.get_thing_by_name('EscaleraPB')))
 
     world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
     world.register_thing(DimmableLamp('NicoVelador', world.mqtt))
     world.register_thing(BatipiezaBoton('BeladorBoton', world, scenes))
 
+    world.register_thing(DimmableLamp('Oficina', world.mqtt))
+
     world.register_thing(MultiThing('Comedor', ColorDimmableLamp, ['ComedorL', 'ComedorR'], world.mqtt))
     world.register_thing(DimmableLamp('Snoopy', world.mqtt))
+    world.register_thing(BotonComedorHue('BotonComedor', world.mqtt))
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
 
