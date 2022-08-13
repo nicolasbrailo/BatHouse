@@ -98,43 +98,44 @@ class BotonComedorHue(Button):
         self.world = world
 
     def handle_action(self, action, msg):
-        if action == 'on-press':
-            if self.world.get_thing_by_name('Comedor').is_on or self.world.get_thing_by_name('Snoopy').is_on:
+        if action == 'on_press':
+            if self.world.get_thing_by_name('Snoopy').is_on:
                 self.world.get_thing_by_name('Comedor').light_off()
                 self.world.get_thing_by_name('Snoopy').light_off()
             else:
                 self.world.get_thing_by_name('Comedor').set_brightness(100)
                 self.world.get_thing_by_name('Snoopy').set_brightness(50)
             return True
-        if action == 'on-hold':
+        if action == 'on_hold':
                 self.world.get_thing_by_name('Comedor').set_brightness(100)
                 self.world.get_thing_by_name('Snoopy').set_brightness(100)
-        if action == 'off-press':
+        if action == 'off_press':
             if self.world.get_thing_by_name('CocinaCountertop').is_on or self.world.get_thing_by_name('LandingPB').is_on:
-                self.world.get_thing_by_name('LandingPB').light_off()
-                self.world.get_thing_by_name('CocinaCountertop').light_off()
+                # Ignore: it's confusing to toggle state because it can't be seen
+                pass
             else:
                 self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
                 self.world.get_thing_by_name('LandingPB').set_brightness(50)
             return True
-        if action == 'up-press':
+        if action == 'up_press':
             return True
-        if action == 'down-press':
+        if action == 'down_press':
             return True
-        if action == 'on-hold-release':
+        if action == 'on_hold_release':
             return True
-        if action == 'off-hold':
+        if action == 'off_hold':
             return True
-        if action == 'off-hold-release':
+        if action == 'off_hold_release':
             return True
-        if action == 'up-hold':
+        if action == 'up_hold':
             return True
-        if action == 'up-hold-release':
+        if action == 'up_hold_release':
             return True
-        if action == 'down-hold':
+        if action == 'down_hold':
             return True
-        if action == 'down-hold-release':
+        if action == 'down_hold_release':
             return True
+        return False
 
 class NicofficeBoton(Button):
     def __init__(self, mqtt_id, world, scenes):
@@ -228,9 +229,11 @@ def register_all_things(world, scenes):
 
     world.register_thing(DimmableLamp('Oficina', world.mqtt))
 
+    # 'Comedor' is a multithing, and member variables don't seem to work with multithing (they are funcs instead)
+    # Only functions can be called on multithings
     world.register_thing(MultiThing('Comedor', ColorDimmableLamp, ['ComedorL', 'ComedorR'], world.mqtt))
     world.register_thing(DimmableLamp('Snoopy', world.mqtt))
-    world.register_thing(BotonComedorHue('BotonComedor', world.mqtt))
+    world.register_thing(BotonComedorHue('BotonComedor', world))
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
 
