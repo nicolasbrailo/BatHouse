@@ -214,7 +214,8 @@ class Cronenberg(Thing):
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
-    world.register_thing(DimmableLamp('CocinaCountertop', world.mqtt))
+    world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
+                                   ['CocinaCountertop1', 'CocinaCountertop2'], world.mqtt))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
