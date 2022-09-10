@@ -197,7 +197,7 @@
 .lamp_li {
     list-style-type: none;
     border: 1px black solid;
-    width: 100%;
+    width: 80%;
     padding-top: 6px;
     padding-bottom: 6px;
 }
