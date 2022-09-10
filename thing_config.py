@@ -32,43 +32,27 @@ def is_it_light_outside():
 def is_it_late_night():
     return late_night(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR)
 
-class KitchenBoton(Button):
+class BotonCocina(Button):
     def __init__(self, mqtt_id, world, scenes):
         super().__init__(mqtt_id)
         self.world = world
         self.scenes = scenes
 
     def handle_action(self, action, msg):
-        if action == 'brightness_up_click':
-            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] != 'Portalcito':
-                self.world.get_thing_by_name('Spotify').play_in_device('Portalcito')
-                logger.info("Transfer Spotify to Portalcito")
+        if action == 'on':
+            if self.world.get_thing_by_name('CocinaCountertop').is_on or \
+                    self.world.get_thing_by_name('LandingPB').is_on :
+                self.world.get_thing_by_name('CocinaCountertop').light_off()
+                self.world.get_thing_by_name('LandingPB').light_off()
             else:
-                self.world.get_thing_by_name('Spotify').playpause()
+                self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
+                self.world.get_thing_by_name('LandingPB').set_brightness(30)
             return True
-        if action == 'brightness_down_click':
-            if self.world.get_thing_by_name('KitchenSpot1').is_on:
-                self.world.get_thing_by_name('KitchenSpot1').light_off()
-            else:
-                self.world.get_thing_by_name('KitchenSpot1').set_brightness(100)
-            return True
-            return True
-        if action == 'arrow_right_click':
-            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] == 'Portalcito':
-                self.world.get_thing_by_name('Spotify').play_next_in_queue()
-            return True
-        if action == 'arrow_left_click':
-            if self.world.get_thing_by_name('Spotify').json_status()['active_device'] == 'Portalcito':
-                self.world.get_thing_by_name('Spotify').play_prev_in_queue()
-            return True
-        if action == 'toggle':
-            if self.world.get_thing_by_name('KitchenStandLamp').is_on:
-                self.world.get_thing_by_name('KitchenStandLamp').light_off()
-            else:
-                self.world.get_thing_by_name('KitchenStandLamp').set_brightness(100)
+        if action == 'off':
             return True
 
         logger.warning("Unknown action: Ikea button - " + str(action))
+        return True
 
 class BatipiezaBoton(Button):
     def __init__(self, mqtt_id, world, scenes):
@@ -214,8 +198,10 @@ class Cronenberg(Thing):
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
 
+    world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
                                    ['CocinaCountertop1', 'CocinaCountertop2'], world.mqtt))
+    world.register_thing(DimmableLamp('CocinaCeiling', world.mqtt))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
@@ -238,7 +224,6 @@ def register_all_things(world, scenes):
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
 
-    #world.register_thing(BaticomedorBoton('BaticomedorBoton', world, scenes))
     #world.register_thing(ColorTempDimmableLamp('NicofficeSpotLamp', world.mqtt))
     #world.register_thing(NicofficeBoton('NicofficeBoton', world, scenes))
     #world.register_thing(KitchenBoton('KitchenBoton', world, scenes))
