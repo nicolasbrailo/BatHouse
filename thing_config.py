@@ -203,6 +203,8 @@ def register_all_things(world, scenes):
                                    ['CocinaCountertop1', 'CocinaCountertop2'], world.mqtt))
     world.register_thing(DimmableLamp('CocinaCeiling', world.mqtt))
 
+    world.register_thing(DimmableLamp('ComedorII', world.mqtt))
+
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraP1', world.mqtt))
