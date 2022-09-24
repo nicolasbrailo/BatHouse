@@ -69,7 +69,7 @@ class BotonEntrada(Button):
     def _timeout(self):
         logger.info("Leaving timeout: shutdown all managed lights")
         for t in self.managed_things:
-            self.world.get_thing_by_name('Oficina').set_brightness(0)
+            self.world.get_thing_by_name(t).light_off()
         self._bg.remove()
         self._scheduler = None
 
