@@ -39,7 +39,7 @@ class BotonEntrada(Button):
         self.scenes = scenes
         self._scheduler = None
         self.timeout_secs = 60 * 3
-        self.managed_things = ['ComedorII', 'EscaleraPB']
+        self.managed_things = ['ComedorII', 'LandingPB']
 
     def handle_action(self, action, msg):
         if action == 'on':
