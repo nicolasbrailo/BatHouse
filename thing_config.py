@@ -32,24 +32,50 @@ def is_it_light_outside():
 def is_it_late_night():
     return late_night(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR)
 
+class BotonSinUso(Button):
+    def __init__(self, mqtt_id, world, scenes):
+        super().__init__(mqtt_id)
+        self.world = world
+        self.scenes = scenes
+
+    def handle_action(self, action, msg):
+        if action == 'on':
+            return True
+        if action == 'off':
+            return True
+        logger.warning("Unknown action: Ikea button - " + str(action))
+        return True
+
 class BotonEntrada(Button):
     def __init__(self, mqtt_id, world, scenes):
         super().__init__(mqtt_id)
         self.world = world
         self.scenes = scenes
         self._scheduler = None
-        self.timeout_secs = 60 * 3
+        self.timeout_secs = 60 * 2
         self.managed_things = ['ComedorII', 'LandingPB']
 
     def handle_action(self, action, msg):
-        if action == 'on':
+        if action == 'toggle':
             self._leaving_routine()
             return True
-        if action == 'off':
-            self._leaving_routine()
+        if action == 'brightness_up_click':
+            self.world.get_thing_by_name('Comedor').set_brightness(50)
+            self.world.get_thing_by_name('Snoopy').set_brightness(30)
             return True
-
-        logger.warning("Unknown action: Ikea button - " + str(action))
+        if action == 'brightness_down_click':
+            self.scenes.all_lights_off(all_except=['ComedorII', 'LandingPB'])
+            # TODO: Reenable spotify
+            #self.world.get_thing_by_name('Spotify').stop()
+            return True
+        if action == 'toggle_hold':
+            self.scenes.all_lights_off()
+            return True
+        if action == 'arrow_right_click':
+            return True
+        if action == 'arrow_left_click':
+            return True
+        logger.warning("Unknown action: Ikea RC button - " + str(action))
         return True
 
     def _leaving_routine(self):
@@ -249,6 +275,8 @@ class BotonComedorHue(Button):
 
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
+
+    world.register_thing(BotonSinUso('BotonSinUso', world, scenes))
 
     world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
