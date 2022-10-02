@@ -1,14 +1,5 @@
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Button
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import ColorDimmableLamp
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import ColorTempDimmableLamp
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import DimmableLamp
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Lamp
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MotionActivatedNightLight
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import MultiThing
-from zigbee2mqtt2flask.zigbee2mqtt2flask.things import Thing
-
-from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import light_outside
-from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import late_night
+from zigbee2mqtt2flask.zigbee2mqtt2flask.things import *
+from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import *
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -32,7 +23,28 @@ def is_it_light_outside():
 def is_it_late_night():
     return late_night(MY_LAT, MY_LON, LATE_NIGHT_START_HOUR)
 
-class BotonSinUso(Button):
+
+class BeladorBoton(Button):
+    def __init__(self, mqtt_id, world, scenes):
+        super().__init__(mqtt_id)
+        self.world = world
+        self.scenes = scenes
+
+    def handle_action(self, action, msg):
+        if action == 'release':
+            return True
+        if action == 'on':
+            return True
+        if action == 'press':
+            if any_light_on(self.world, ['Belador', 'Snoopy', 'NicoVelador', 'Comedor']):
+                time.sleep(2)
+                self.scenes.all_lights_off(all_except=['OlmaVelador'])
+            else:
+                self.world.get_thing_by_name('Belador').set_brightness(10)
+        return True
+
+
+class BatipiezaBoton(Button):
     def __init__(self, mqtt_id, world, scenes):
         super().__init__(mqtt_id)
         self.world = world
@@ -40,11 +52,74 @@ class BotonSinUso(Button):
 
     def handle_action(self, action, msg):
         if action == 'on':
-            return True
+            light_group_toggle(self.world, [
+                    ('Belador', 30),
+                    ('NicoVelador', 25),
+                ]);
         if action == 'off':
-            return True
-        logger.warning("Unknown action: Ikea button - " + str(action))
+            self.world.get_thing_by_name('EscaleraP1').light_toggle(brightness=25)
         return True
+
+
+class BotonComedorHue(Button):
+    def __init__(self, mqtt_id, world):
+        super().__init__(mqtt_id)
+        self.world = world
+
+    def handle_action(self, action, msg):
+        if action == 'on_press':
+            light_group_toggle(self.world, [
+                    ('Snoopy', 50),
+                    ('Comedor', 60),
+                ]);
+            return True
+        if action == 'on_hold':
+            light_group_toggle(self.world, [
+                    ('Snoopy', 100),
+                    ('Comedor', 100),
+                ]);
+            return True
+        if action == 'off_press':
+            self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
+            self.world.get_thing_by_name('LandingPB').set_brightness(50)
+            return True
+        if action == 'up_press':
+            return True
+        if action == 'down_press':
+            return True
+        if action == 'on_hold_release':
+            return True
+        if action == 'off_hold':
+            return True
+        if action == 'off_hold_release':
+            return True
+        if action == 'up_hold':
+            return True
+        if action == 'up_hold_release':
+            return True
+        if action == 'down_hold':
+            return True
+        if action == 'down_hold_release':
+            return True
+        return False
+
+
+class BotonCocina(Button):
+    def __init__(self, mqtt_id, world, scenes):
+        super().__init__(mqtt_id)
+        self.world = world
+        self.scenes = scenes
+
+    def handle_action(self, action, msg):
+        if action == 'on':
+            self.world.get_thing_by_name('CocinaCeiling').light_toggle(brightness=100)
+        if action == 'off':
+            light_group_toggle(self.world, [
+                    ('CocinaCountertop', 100),
+                    ('LandingPB', 30),
+                ]);
+        return True
+
 
 class BotonEntrada(Button):
     def __init__(self, mqtt_id, world, scenes):
@@ -100,98 +175,48 @@ class BotonEntrada(Button):
         self._scheduler = None
 
 
-class BotonCocina(Button):
-    def __init__(self, mqtt_id, world, scenes):
-        super().__init__(mqtt_id)
-        self.world = world
-        self.scenes = scenes
-
-    def handle_action(self, action, msg):
-        if action == 'on':
-            if self.world.get_thing_by_name('CocinaCeiling').is_on:
-                self.world.get_thing_by_name('CocinaCeiling').light_off()
-            else:
-                self.world.get_thing_by_name('CocinaCeiling').set_brightness(100)
-            return True
-        if action == 'off':
-            if self.world.get_thing_by_name('CocinaCountertop').is_on or \
-                    self.world.get_thing_by_name('LandingPB').is_on :
-                self.world.get_thing_by_name('CocinaCountertop').light_off()
-                self.world.get_thing_by_name('LandingPB').light_off()
-            else:
-                self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
-                self.world.get_thing_by_name('LandingPB').set_brightness(30)
-            return True
-
-        logger.warning("Unknown action: Ikea button - " + str(action))
-        return True
-
-class BatipiezaBoton(Button):
-    def __init__(self, mqtt_id, world, scenes):
-        super().__init__(mqtt_id)
-        self.world = world
-        self.scenes = scenes
-
-    def handle_action(self, action, msg):
-        if action == 'release':
-            return True
-        if action == 'on':
-            return True
-        if action == 'press':
-            if self.world.get_thing_by_name('Belador').is_on or \
-                    self.world.get_thing_by_name('Snoopy').is_on or \
-                    self.world.get_thing_by_name('NicoVelador').is_on or \
-                    self.world.get_thing_by_name('BaticomedorFloorlampL').is_on:
-                time.sleep(2)
-                self.scenes.all_lights_off(all_except=['OlmaLamp'])
-            else:
-                self.world.get_thing_by_name('Belador').set_brightness(10)
-                self.world.get_thing_by_name('NicoVelador').set_brightness(10)
-            return True
-        return False
-
-class NicofficeBoton(Button):
-    def __init__(self, mqtt_id, world, scenes):
-        super().__init__(mqtt_id)
-        self.world = world
-        self.scenes = scenes
-
-    def handle_action(self, action, msg):
-        if action == 'brightness_up_click':
-            self.world.get_thing_by_name('Spotify').volume_up()
-            return True
-        if action == 'brightness_down_click':
-            self.world.get_thing_by_name('Spotify').volume_down()
-            return True
-        if action == 'toggle':
-            self.world.get_thing_by_name('Spotify').playpause()
-            return True
-        if action == 'toggle_hold':
-            sp = self.world.get_thing_by_name('Spotify')
-            sp_st = sp.json_status()
-            dev_active = sp_st['active_device']
-            known_devs = sp_st['available_devices']
-            devs_to_skip = ['Baticomedor TV'] # Hardcoded list of devices to never use for Spotify
-            available_devs = [x for x in known_devs if x != dev_active and x not in devs_to_skip]
-
-            logger.info("Spotify active device is " + str(dev_active))
-            for dev in known_devs:
-                can_play =  ' (can transfer playback)' if dev in available_devs else " (can't transfer playback)"
-                logger.info("\tKnown devices: " + str(dev) + can_play)
-
-            if len(available_devs) > 0:
-                logger.info("Transferring Spotify playback to " + str(available_devs[0]))
-                sp.play_in_device(available_devs[0])
-
-            return True
-        if action == 'arrow_right_click':
-            self.world.get_thing_by_name('Spotify').play_next_in_queue()
-            return True
-        if action == 'arrow_left_click':
-            self.world.get_thing_by_name('Spotify').play_prev_in_queue()
-            return True
-
-        logger.warning("Unknown action: Ikea button - " + str(action))
+#class NicofficeBoton(Button):
+#    def __init__(self, mqtt_id, world, scenes):
+#        super().__init__(mqtt_id)
+#        self.world = world
+#        self.scenes = scenes
+#
+#    def handle_action(self, action, msg):
+#        if action == 'brightness_up_click':
+#            self.world.get_thing_by_name('Spotify').volume_up()
+#            return True
+#        if action == 'brightness_down_click':
+#            self.world.get_thing_by_name('Spotify').volume_down()
+#            return True
+#        if action == 'toggle':
+#            self.world.get_thing_by_name('Spotify').playpause()
+#            return True
+#        if action == 'toggle_hold':
+#            sp = self.world.get_thing_by_name('Spotify')
+#            sp_st = sp.json_status()
+#            dev_active = sp_st['active_device']
+#            known_devs = sp_st['available_devices']
+#            devs_to_skip = ['Baticomedor TV'] # Hardcoded list of devices to never use for Spotify
+#            available_devs = [x for x in known_devs if x != dev_active and x not in devs_to_skip]
+#
+#            logger.info("Spotify active device is " + str(dev_active))
+#            for dev in known_devs:
+#                can_play =  ' (can transfer playback)' if dev in available_devs else " (can't transfer playback)"
+#                logger.info("\tKnown devices: " + str(dev) + can_play)
+#
+#            if len(available_devs) > 0:
+#                logger.info("Transferring Spotify playback to " + str(available_devs[0]))
+#                sp.play_in_device(available_devs[0])
+#
+#            return True
+#        if action == 'arrow_right_click':
+#            self.world.get_thing_by_name('Spotify').play_next_in_queue()
+#            return True
+#        if action == 'arrow_left_click':
+#            self.world.get_thing_by_name('Spotify').play_prev_in_queue()
+#            return True
+#
+#        logger.warning("Unknown action: Ikea button - " + str(action))
 
 
 class Cronenberg(Thing):
@@ -225,58 +250,8 @@ class Cronenberg(Thing):
             light.light_off()
 
 
-
-class BotonComedorHue(Button):
-    def __init__(self, mqtt_id, world):
-        super().__init__(mqtt_id)
-        self.world = world
-
-    def handle_action(self, action, msg):
-        if action == 'on_press':
-            if self.world.get_thing_by_name('Snoopy').is_on:
-                self.world.get_thing_by_name('Comedor').light_off()
-                self.world.get_thing_by_name('Snoopy').light_off()
-            else:
-                self.world.get_thing_by_name('Comedor').set_brightness(100)
-                self.world.get_thing_by_name('Snoopy').set_brightness(50)
-            return True
-        if action == 'on_hold':
-                self.world.get_thing_by_name('Comedor').set_brightness(100)
-                self.world.get_thing_by_name('Snoopy').set_brightness(100)
-        if action == 'off_press':
-            if self.world.get_thing_by_name('CocinaCountertop').is_on or self.world.get_thing_by_name('LandingPB').is_on:
-                # Ignore: it's confusing to toggle state because it can't be seen
-                pass
-            else:
-                self.world.get_thing_by_name('CocinaCountertop').set_brightness(100)
-                self.world.get_thing_by_name('LandingPB').set_brightness(50)
-            return True
-        if action == 'up_press':
-            return True
-        if action == 'down_press':
-            return True
-        if action == 'on_hold_release':
-            return True
-        if action == 'off_hold':
-            return True
-        if action == 'off_hold_release':
-            return True
-        if action == 'up_hold':
-            return True
-        if action == 'up_hold_release':
-            return True
-        if action == 'down_hold':
-            return True
-        if action == 'down_hold_release':
-            self.world.get_thing_by_name('NicoVelador').set_brightness(10)
-            return True
-        return False
-
-
 def register_all_things(world, scenes):
     world.register_thing(Cronenberg(world))
-
-    world.register_thing(BotonSinUso('BotonSinUso', world, scenes))
 
     world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
@@ -295,7 +270,8 @@ def register_all_things(world, scenes):
 
     world.register_thing(ColorDimmableLamp('Belador', world.mqtt))
     world.register_thing(DimmableLamp('NicoVelador', world.mqtt))
-    world.register_thing(BatipiezaBoton('BeladorBoton', world, scenes))
+    world.register_thing(BeladorBoton('BeladorBoton', world, scenes))
+    world.register_thing(BatipiezaBoton('BatipiezaBoton', world, scenes))
 
     world.register_thing(DimmableLamp('Oficina', world.mqtt))
 
