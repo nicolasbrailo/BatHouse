@@ -127,7 +127,7 @@ class BotonEntrada(Button):
         self.world = world
         self.scenes = scenes
         self._scheduler = None
-        self.timeout_secs = 60 * 2
+        self.timeout_secs = 60 * 4
         self.managed_things = ['ComedorII', 'LandingPB']
 
     def handle_action(self, action, msg):
