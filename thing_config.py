@@ -128,7 +128,7 @@ class BotonEntrada(Button):
         self.scenes = scenes
         self._scheduler = None
         self.timeout_secs = 60 * 4
-        self.managed_things = ['ComedorII', 'LandingPB']
+        self.managed_things = ['ComedorII', 'LandingPB', 'EscaleraPB']
 
     def handle_action(self, action, msg):
         if action == 'toggle':
@@ -251,7 +251,7 @@ class Cronenberg(Thing):
 
 
 def register_all_things(world, scenes):
-    world.register_thing(Cronenberg(world))
+    #world.register_thing(Cronenberg(world))
 
     world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
