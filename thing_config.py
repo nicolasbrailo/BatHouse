@@ -128,7 +128,7 @@ class BotonEntrada(Button):
         self.scenes = scenes
         self._scheduler = None
         self.timeout_secs = 60 * 4
-        self.managed_things = ['ComedorII', 'LandingPB', 'EscaleraPB']
+        self.managed_things = [('ComedorII', 100), ('LandingPB', 100), ('EscaleraPB', 50)]
 
     def handle_action(self, action, msg):
         if action == 'toggle':
@@ -144,7 +144,7 @@ class BotonEntrada(Button):
             #self.world.get_thing_by_name('Spotify').stop()
             return True
         if action == 'toggle_hold':
-            self.scenes.all_lights_off()
+            self.scenes.world_off()
             return True
         if action == 'arrow_right_click':
             return True
@@ -156,7 +156,6 @@ class BotonEntrada(Button):
     def _leaving_routine(self):
         logger.warning("Leaving home scene on")
         if self._scheduler is not None:
-            logger.warning("Cancel previous leaving routine")
             self._bg.remove()
 
         self._scheduler = BackgroundScheduler()
@@ -164,12 +163,12 @@ class BotonEntrada(Button):
         self._bg = self._scheduler.add_job(func=self._timeout,
                                trigger="interval", seconds=self.timeout_secs)
 
-        for t in self.managed_things:
-            self.world.get_thing_by_name(t).set_brightness(100)
+        for t,pct in self.managed_things:
+            self.world.get_thing_by_name(t).set_brightness(pct)
 
     def _timeout(self):
         logger.info("Leaving timeout: shutdown all managed lights")
-        for t in self.managed_things:
+        for t,_pct in self.managed_things:
             self.world.get_thing_by_name(t).light_off()
         self._bg.remove()
         self._scheduler = None
