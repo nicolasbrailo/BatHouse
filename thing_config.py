@@ -132,7 +132,7 @@ class BotonEntrada(Button):
 
     def handle_action(self, action, msg):
         if action == 'toggle':
-            self._leaving_routine()
+            self.trigger_leaving_routine()
             return True
         if action == 'brightness_up_click':
             self.world.get_thing_by_name('Comedor').set_brightness(50)
@@ -153,7 +153,7 @@ class BotonEntrada(Button):
         logger.warning("Unknown action: Ikea RC button - " + str(action))
         return True
 
-    def _leaving_routine(self):
+    def trigger_leaving_routine(self):
         logger.warning("Leaving home scene on")
         if self._scheduler is not None:
             self._bg.remove()
@@ -249,6 +249,26 @@ class Cronenberg(Thing):
             light.light_off()
 
 
+class SensorPuertaEntrada(DoorOpenSensor):
+    def __init__(self, mqtt_id, leaving_mgr):
+        self.door_open_timeout_secs = 60
+        super().__init__(mqtt_id, self.door_open_timeout_secs)
+        self.leaving_mgr = leaving_mgr
+
+    def door_closed(self):
+        logger.info("Puerta cerrada: " + str(self.json_status()))
+
+    def door_opened(self):
+        logger.info("Puerta abierta: " + str(self.json_status()))
+        if not is_it_light_outside():
+            logger.info("No light outside, trigger leaving routine")
+            self.leaving_mgr.trigger_leaving_routine()
+
+    def door_open_timeout(self):
+        logger.info("Door open after timeout expired...")
+        #TODO Flash all lights
+
+
 def register_all_things(world, scenes):
     #world.register_thing(Cronenberg(world))
 
@@ -257,8 +277,10 @@ def register_all_things(world, scenes):
                                    ['CocinaCountertop1', 'CocinaCountertop2'], world.mqtt))
     world.register_thing(DimmableLamp('CocinaCeiling', world.mqtt))
 
-    world.register_thing(BotonEntrada('BotonEntrada', world, scenes))
+    boton_entrada = BotonEntrada('BotonEntrada', world, scenes)
+    world.register_thing(boton_entrada)
     world.register_thing(DimmableLamp('ComedorII', world.mqtt))
+    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', boton_entrada))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
