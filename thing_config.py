@@ -120,38 +120,13 @@ class BotonCocina(Button):
                 ]);
         return True
 
-
-class BotonEntrada(Button):
-    def __init__(self, mqtt_id, world, scenes):
-        super().__init__(mqtt_id)
+class LeavingRoutine:
+    def __init__(self, world, scenes):
         self.world = world
         self.scenes = scenes
         self._scheduler = None
         self.timeout_secs = 60 * 4
         self.managed_things = [('ComedorII', 100), ('LandingPB', 100), ('EscaleraPB', 50)]
-
-    def handle_action(self, action, msg):
-        if action == 'toggle':
-            self.trigger_leaving_routine()
-            return True
-        if action == 'brightness_up_click':
-            self.world.get_thing_by_name('Comedor').set_brightness(50)
-            self.world.get_thing_by_name('Snoopy').set_brightness(30)
-            return True
-        if action == 'brightness_down_click':
-            self.scenes.all_lights_off(all_except=['ComedorII', 'LandingPB'])
-            # TODO: Reenable spotify
-            #self.world.get_thing_by_name('Spotify').stop()
-            return True
-        if action == 'toggle_hold':
-            self.scenes.world_off()
-            return True
-        if action == 'arrow_right_click':
-            return True
-        if action == 'arrow_left_click':
-            return True
-        logger.warning("Unknown action: Ikea RC button - " + str(action))
-        return True
 
     def trigger_leaving_routine(self):
         logger.warning("Leaving home scene on")
@@ -172,6 +147,38 @@ class BotonEntrada(Button):
             self.world.get_thing_by_name(t).light_off()
         self._bg.remove()
         self._scheduler = None
+
+class BotonEntrada(Button):
+    def __init__(self, mqtt_id, world, scenes, leaving_routine):
+        super().__init__(mqtt_id)
+        self.world = world
+        self.scenes = scenes
+        self.leaving_routine = leaving_routine
+
+    def handle_action(self, action, msg):
+        if action == 'toggle':
+            self.leaving_routine.trigger_leaving_routine()
+            return True
+        if action == 'brightness_up_click':
+            self.world.get_thing_by_name('Comedor').set_brightness(50)
+            self.world.get_thing_by_name('Snoopy').set_brightness(30)
+            return True
+        if action == 'brightness_down_click':
+            self.scenes.all_lights_off(all_except=['ComedorII', 'LandingPB'])
+            try:
+                self.world.get_thing_by_name('Spotify').stop()
+            except:
+                logger.warning("Spotify not enabled, can't stop it")
+            return True
+        if action == 'toggle_hold':
+            self.scenes.world_off()
+            return True
+        if action == 'arrow_right_click':
+            return True
+        if action == 'arrow_left_click':
+            return True
+        logger.warning("Unknown action: Ikea RC button - " + str(action))
+        return True
 
 
 #class NicofficeBoton(Button):
@@ -250,10 +257,10 @@ class Cronenberg(Thing):
 
 
 class SensorPuertaEntrada(DoorOpenSensor):
-    def __init__(self, mqtt_id, leaving_mgr):
+    def __init__(self, mqtt_id, leaving_routine):
         self.door_open_timeout_secs = 60
         super().__init__(mqtt_id, self.door_open_timeout_secs)
-        self.leaving_mgr = leaving_mgr
+        self.leaving_routine = leaving_routine
 
     def door_closed(self):
         logger.info("Puerta cerrada: " + str(self.json_status()))
@@ -262,7 +269,7 @@ class SensorPuertaEntrada(DoorOpenSensor):
         logger.info("Puerta abierta: " + str(self.json_status()))
         if not is_it_light_outside():
             logger.info("No light outside, trigger leaving routine")
-            self.leaving_mgr.trigger_leaving_routine()
+            self.leaving_routine.trigger_leaving_routine()
 
     def door_open_timeout(self):
         logger.info("Door open after timeout expired...")
@@ -271,16 +278,16 @@ class SensorPuertaEntrada(DoorOpenSensor):
 
 def register_all_things(world, scenes):
     #world.register_thing(Cronenberg(world))
+    leaving_routine = LeavingRoutine(world, scenes)
 
     world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
                                    ['CocinaCountertop1', 'CocinaCountertop2'], world.mqtt))
     world.register_thing(DimmableLamp('CocinaCeiling', world.mqtt))
 
-    boton_entrada = BotonEntrada('BotonEntrada', world, scenes)
-    world.register_thing(boton_entrada)
+    world.register_thing(BotonEntrada('BotonEntrada', world, scenes, leaving_routine))
     world.register_thing(DimmableLamp('ComedorII', world.mqtt))
-    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', boton_entrada))
+    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', leaving_routine))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
