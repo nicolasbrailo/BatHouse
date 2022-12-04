@@ -80,8 +80,10 @@ if 'spotify' in CFG:
     spotify_control = ThingSpotify(CFG['spotify'], "ZMF")
     world.register_thing(spotify_control)
 
+
 from thing_sonos import Sonos
 world.register_thing(Sonos())
+
 
 from thing_chromecast import ThingChromecast
 ThingChromecast.set_flask_bindings(flask_app, world)

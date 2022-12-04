@@ -18,6 +18,12 @@ class Sonos(Thing):
     def __init__(self):
         super().__init__("Sonos")
 
+    def supported_actions(self):
+        return ['stop']
+
+    def json_status(self):
+        return {}
+
     def stop(self):
         all_devs = get_sonos_by_name()
         for name in all_devs:

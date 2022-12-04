@@ -165,14 +165,7 @@ class BotonEntrada(Button):
             return True
         if action == 'brightness_down_click':
             self.scenes.all_lights_off(all_except=['ComedorII', 'LandingPB'])
-            try:
-                self.world.get_thing_by_name('Spotify').stop()
-            except:
-                logger.warning("Spotify not enabled, can't stop it")
-            try:
-                self.world.get_thing_by_name('Sonos').stop()
-            except:
-                logger.warning("Sonos not enabled, can't stop it")
+            self.scenes.stop_all_media_players()
             return True
         if action == 'toggle_hold':
             self.scenes.world_off()
