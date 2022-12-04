@@ -169,6 +169,10 @@ class BotonEntrada(Button):
                 self.world.get_thing_by_name('Spotify').stop()
             except:
                 logger.warning("Spotify not enabled, can't stop it")
+            try:
+                self.world.get_thing_by_name('Sonos').stop()
+            except:
+                logger.warning("Sonos not enabled, can't stop it")
             return True
         if action == 'toggle_hold':
             self.scenes.world_off()
