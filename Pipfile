@@ -23,8 +23,10 @@ requests = {index = "piwheels",version = "*"}
 myfitnesspal = {index = "piwheels",version = "*"}
 spotipy = {git = "https://github.com/plamere/spotipy.git"}
 lxml = "*"
-gevent = "*"
+gevent = "22.10.1"
 gevent-websocket = "*"
+soco = "*"
+greenlet = "1.1.3"
 
 [requires]
 python_version = "3"
