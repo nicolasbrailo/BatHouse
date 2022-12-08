@@ -41,8 +41,6 @@ class Sonos(Thing):
         all_devs = get_sonos_by_name()
 
         for name in all_devs:
-            if name != 'Oficina':
-                continue
             try:
                 play_state = all_devs[name].get_current_transport_info()['current_transport_state']
                 something_playing = all_devs[name].is_playing_tv or \

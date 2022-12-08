@@ -141,11 +141,6 @@ class LeavingRoutine:
         for t,pct in self.managed_things:
             self.world.get_thing_by_name(t).set_brightness(pct)
 
-        try:
-            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
-        except Exception as ex:
-            logger.error("Failed to play sonos announcement: " + str(ex))
-
     def _timeout(self):
         logger.info("Leaving timeout: shutdown all managed lights")
         for t,_pct in self.managed_things:
@@ -273,9 +268,19 @@ class SensorPuertaEntrada(DoorOpenSensor):
             logger.info("No light outside, trigger leaving routine")
             self.leaving_routine.trigger_leaving_routine()
 
+        try:
+            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
+        except Exception as ex:
+            logger.error("Failed to play sonos announcement: " + str(ex))
+
     def door_open_timeout(self):
         logger.info("Door open after timeout expired...")
         #TODO Flash all lights
+
+        try:
+            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
+        except Exception as ex:
+            logger.error("Failed to play sonos announcement: " + str(ex))
 
 
 def register_all_things(world, scenes):
