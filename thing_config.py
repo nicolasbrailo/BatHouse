@@ -141,6 +141,11 @@ class LeavingRoutine:
         for t,pct in self.managed_things:
             self.world.get_thing_by_name(t).set_brightness(pct)
 
+        try:
+            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
+        except Exception as ex:
+            logger.error("Failed to play sonos announcement: " + str(ex))
+
     def _timeout(self):
         logger.info("Leaving timeout: shutdown all managed lights")
         for t,_pct in self.managed_things:

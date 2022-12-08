@@ -25,6 +25,9 @@ class SceneHandler(object):
             m()
             return "OK"
 
+    def olivia_come(self):
+        self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/oliviacome.mp3')
+
     def living_room_evening(self):
         self.world.get_thing_by_name('BaticomedorLamp').set_brightness(100, broadcast_update=False)
         self.world.get_thing_by_name('BaticomedorLamp').set_rgb('FD6F0C', broadcast_update=False)
