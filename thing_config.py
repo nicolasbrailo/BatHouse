@@ -254,10 +254,11 @@ class Cronenberg(Thing):
 
 
 class SensorPuertaEntrada(DoorOpenSensor):
-    def __init__(self, mqtt_id, leaving_routine):
+    def __init__(self, mqtt_id, leaving_routine, world):
         self.door_open_timeout_secs = 60
         super().__init__(mqtt_id, self.door_open_timeout_secs)
         self.leaving_routine = leaving_routine
+        self.world = world
 
     def door_closed(self):
         logger.info("Puerta cerrada: " + str(self.json_status()))
@@ -269,7 +270,8 @@ class SensorPuertaEntrada(DoorOpenSensor):
             self.leaving_routine.trigger_leaving_routine()
 
         try:
-            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
+            self.world.get_thing_by_name('Sonos')\
+                    .play_announcement('http://bati.casa/webapp/win95.mp3', force=['GroundFloor'])
         except Exception as ex:
             logger.error("Failed to play sonos announcement: " + str(ex))
 
@@ -278,7 +280,8 @@ class SensorPuertaEntrada(DoorOpenSensor):
         #TODO Flash all lights
 
         try:
-            self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/win95.mp3')
+            self.world.get_thing_by_name('Sonos')\
+                    .play_announcement('http://bati.casa/webapp/win95.mp3')
         except Exception as ex:
             logger.error("Failed to play sonos announcement: " + str(ex))
 
@@ -294,7 +297,7 @@ def register_all_things(world, scenes):
 
     world.register_thing(BotonEntrada('BotonEntrada', world, scenes, leaving_routine))
     world.register_thing(DimmableLamp('ComedorII', world.mqtt))
-    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', leaving_routine))
+    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', leaving_routine, world))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
