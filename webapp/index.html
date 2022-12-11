@@ -17,18 +17,52 @@
     <script src="http://dygraphs.com/extras/smooth-plotter.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
 
-    <script type="text/javascript" src="9d32464f1e.bathouse.minified.js"></script>
-    <link rel="stylesheet" href="f9b687af00.bathouse.minified.css">
+    <script type="text/javascript" src="db8d79ab2e.bathouse.minified.js"></script>
+    <link rel="stylesheet" href="2ca55b006e.bathouse.minified.css">
 
 <script>
 var app;
 $(document).ready(function(){
-    app = new DumbHouseApp();
-    $.when(app.is_ready).then(function() {
-        app.show_list_of(Lamp, '#lamps_list');
-        app.show_list_of_media_players('#media_players_list');
-        app.show_scene_shortcuts("#scenes_shortcuts");
-    });
+  app = new DumbHouseApp();
+  $.when(app.is_ready).then(function() {
+    app.show_list_of(Lamp, '#lamps_list');
+    app.show_list_of(Outlet, '#lamps_list');
+    app.show_list_of_media_players('#media_players_list');
+    app.show_scene_shortcuts("#scenes_shortcuts");
+  });
+
+  app.plot_local_sensors = function() {
+    function simple_dygraph_plot(html_elm_id, url) {
+      $('#' + html_elm_id).toggle();
+      $.ajax({
+          url: url,
+          cache: false,
+          type: 'get',
+          dataType: 'text',
+          success: function(t_csv) {
+                  new Dygraph(
+                      document.getElementById(html_elm_id),
+                      t_csv,
+                      {
+                          series: {'SensorHTBanio': {'plotter': smoothPlotter}},
+                          fillGraph: false,
+                          connectSeparatedPoints: true,
+                          highlightCircleSize: 2,
+                          strokeWidth: 1,
+                          highlightSeriesOpts: {
+                              strokeWidth: 3,
+                              strokeBorderWidth: 1,
+                              highlightCircleSize: 5
+                          },
+                      });
+              }
+      });
+    }
+
+    simple_dygraph_plot('local_temps',    "/sensors/get_single_metric_in_all_sensors_csv/temperature")
+    simple_dygraph_plot('local_humidity', "/sensors/get_single_metric_in_all_sensors_csv/humidity")
+    return false;
+  }
 });
 </script>
 </head>
@@ -54,9 +88,10 @@ $(document).ready(function(){
 
     <div style="clear: both">
         <h2><a href="#local_co2_temp_h2" id="local_co2_temp_h2"
-                onclick="return app.toggle_Local_Sensors_Plot('local_co2_temp');">
+                onclick="return app.plot_local_sensors();">
                 Local sensors</a></h2>
-        <div id="local_co2_temp" style="display: none; width: 100%"></div>
+        <div id="local_temps" style="display: none; width: 100%"></div>
+        <div id="local_humidity" style="display: none; width: 100%"></div>
 
         <h2><a href="#weather_plots" id="weather_plots"
                 onclick="return app.toggle_Weather_Plots('rain_forecast', 'temp_forecast', 24);">
@@ -71,9 +106,6 @@ $(document).ready(function(){
 
     <h1>
         <a href="admin.html">Admin</a>
-        | <a href="olivia.html">Olivia</a>
-        | <a href="olivia_cuarto.html">Olivia2</a>
-        | <a href="nico.html">Nico</a>
     </h1>
 </div>
 </body>

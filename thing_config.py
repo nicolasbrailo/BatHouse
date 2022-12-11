@@ -226,38 +226,34 @@ class BotonEntrada(Button):
 class Cronenberg(Thing):
     def __init__(self, world):
         super().__init__('Cronenberg')
-        self.managing_emlivia_night_light = False
+        self.managing_light = False
         self.world = world
         self._cron = BackgroundScheduler()
         self._cron_jon = self._cron.add_job(func=self._tick, trigger=IntervalTrigger(minutes=15))
         self._cron.start()
+        self._tick()
 
     def json_status(self):
         return {}
 
     def _tick(self):
-        light = self.world.get_thing_by_name('OlmaVelador')
-
         local_hour = datetime.datetime.now().hour # no tz, just local hour
-        emlivia_night = local_hour >= 21 or local_hour < 8
 
-        logger.info("Cronenberg tick at {} hrs. Nighttime? {} Day out? {} Managing light? {}".format(local_hour, emlivia_night, is_it_light_outside(), self.managing_emlivia_night_light))
+        if not is_it_light_outside() and local_hour < 23 and local_hour > 12:
+            logger.info("Arbolito on")
+            self.world.get_thing_by_name('IkeaOutlet').outlet_on()
+            self.managing_light = True
 
-        if not is_it_light_outside() and emlivia_night and not self.managing_emlivia_night_light:
-            logger.info("Emlivia night light ON")
-            light.set_brightness(10)
-            self.managing_emlivia_night_light = True
-
-        elif self.managing_emlivia_night_light and is_it_light_outside():
-            logger.info("Emlivia night light OFF")
-            self.managing_emlivia_night_light = False
-            light.light_off()
+        elif self.managing_light and local_hour == 23:
+            logger.info("Arbolito off")
+            self.managing_light = False
+            self.world.get_thing_by_name('IkeaOutlet').outlet_off()
 
 
 class SensorPuertaEntrada(DoorOpenSensor):
-    def __init__(self, mqtt_id, leaving_routine, world):
+    def __init__(self, mqtt_id, db, leaving_routine, world):
         self.door_open_timeout_secs = 60
-        super().__init__(mqtt_id, self.door_open_timeout_secs)
+        super().__init__(mqtt_id, db, self.door_open_timeout_secs)
         self.leaving_routine = leaving_routine
         self.world = world
 
@@ -280,17 +276,21 @@ class SensorPuertaEntrada(DoorOpenSensor):
         logger.info("Door open after timeout expired...")
         #TODO Flash all lights
 
-        try:
-            self.world.get_thing_by_name('Sonos')\
-                    .play_announcement('http://bati.casa/webapp/win95.mp3')
-        except Exception as ex:
-            logger.error("Failed to play sonos announcement: " + str(ex))
+        #try:
+        #    self.world.get_thing_by_name('Sonos')\
+        #            .play_announcement('http://bati.casa/webapp/win95.mp3')
+        #except Exception as ex:
+        #    logger.error("Failed to play sonos announcement: " + str(ex))
 
 
 
-def register_all_things(world, scenes):
-    #world.register_thing(Cronenberg(world))
+def register_all_things(world, scenes, flask_app):
     leaving_routine = LeavingRoutine(world, scenes)
+
+    db = SensorsDB("/home/pi/BatHome/sensors.sqlite",
+                   metrics=['temperature', 'humidity'],
+                   retention_rows=1000)
+    db.register_flask(flask_app)
 
     world.register_thing(BotonCocina('BotonCocina', world, scenes))
     world.register_thing(MultiThing('CocinaCountertop', DimmableLamp,
@@ -299,7 +299,7 @@ def register_all_things(world, scenes):
 
     world.register_thing(BotonEntrada('BotonEntrada', world, scenes, leaving_routine))
     world.register_thing(DimmableLamp('ComedorII', world.mqtt))
-    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', leaving_routine, world))
+    world.register_thing(SensorPuertaEntrada('SensorPuertaEntrada', db, leaving_routine, world))
 
     world.register_thing(DimmableLamp('LandingPB', world.mqtt))
     world.register_thing(DimmableLamp('EscaleraPB', world.mqtt))
@@ -318,12 +318,13 @@ def register_all_things(world, scenes):
     world.register_thing(MultiThing('Comedor', ColorDimmableLamp, ['ComedorL', 'ComedorR'], world.mqtt))
     world.register_thing(DimmableLamp('Snoopy', world.mqtt))
     world.register_thing(BotonComedorHue('BotonComedor', world))
+    world.register_thing(IkeaPowerOutlet('IkeaOutlet', world.mqtt))
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
-    db = SensorsDB("/home/pi/BatHome/sensors.sqlite",
-                   table='samples',
-                   metrics=['temperature', 'humidity'],
-                   retention_rows=10)
-    world.register_thing(TuyaHumidityTempSensor('SensorHumTempOlma', db))
 
+    world.register_thing(TuyaHumidityTempSensor('SensorHTOlma', db))
+    world.register_thing(TuyaHumidityTempSensor('SensorHTBanio', db))
+    world.register_thing(TuyaHumidityTempSensor('SensorHTBatipieza', db))
+
+    world.register_thing(Cronenberg(world))
 

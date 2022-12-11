@@ -32,6 +32,7 @@ $MINIFY_APP ./$DEPLOY_PATH/js/scene_list.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/mqtt_device_info.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/media_player.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/lamp.js >> tmp.$TARGET_JS
+$MINIFY_APP ./$DEPLOY_PATH/js/outlet.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/baticueva_tv_extras.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/mfp.js >> tmp.$TARGET_JS
 $MINIFY_APP ./$DEPLOY_PATH/js/app.js >> tmp.$TARGET_JS

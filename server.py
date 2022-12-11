@@ -70,7 +70,7 @@ scenes = SceneHandler(flask_app, world)
 
 # Register known things in the world
 from thing_config import register_all_things
-register_all_things(world, scenes)
+register_all_things(world, scenes, flask_app)
 
 
 

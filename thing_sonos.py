@@ -52,25 +52,27 @@ class Sonos(Thing):
                                             'playing' in play_state.lower()
 
                 if something_playing:
-                    logger.info(f"Skip announcement on {name}, something else is playing")
+                    #logger.info(f"Skip announcement on {name}, something else is playing")
                     continue
 
                 vols_to_restore[name] = all_devs[name].volume
                 all_devs[name].volume = ANNOUNCEMENT_VOL
                 all_devs[name].play_uri(uri, title='Baticasa Announcement')
-                logger.info(f"Playing {uri} in {name}, volume {all_devs[name].volume}")
+                #logger.info(f"Playing {uri} in {name}, volume {all_devs[name].volume}")
             except Exception as ex:
-                logger.info(f"Failed to stop {name}: {ex}")
+                logger.info(f"Failed to play in {name}: {ex}")
 
         for name in vols_to_restore:
             timeout = MAX_PLAY_WAIT_SEC
             while True:
                 play_state = all_devs[name].get_current_transport_info()['current_transport_state']
                 if 'playing' not in play_state.lower() or timeout <= 0:
-                    logger.info(f"Restore {name} volume to {vols_to_restore[name]}")
+                    #logger.info(f"Restore {name} volume to {vols_to_restore[name]}")
                     all_devs[name].volume = vols_to_restore[name]
                     break
-                logger.info(f"{name} still playing, waiting...")
+                #logger.info(f"{name} still playing, waiting...")
                 timeout -= 1
+                if timeout <= 0:
+                    logger.error(f"{name} still playing and timed out...")
                 time.sleep(1)
 

@@ -28,24 +28,46 @@ class SceneHandler(object):
     def olivia_come(self):
         self.world.get_thing_by_name('Sonos').play_announcement('http://bati.casa/webapp/oliviacome.mp3')
 
-    def living_room_evening(self):
-        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(100, broadcast_update=False)
-        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('FD6F0C', broadcast_update=False)
-        self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
-        #self.world.get_thing_by_name('EntrepisoLamp').set_brightness(50, broadcast_update=False)
-        #self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
-        self.world.get_thing_by_name('BatBedsideLamp').set_brightness(30)
+    def comedor_tarde(self):
+        self.world.get_thing_by_name('Comedor').set_brightness(100, broadcast_update=False)
+        self.world.get_thing_by_name('Comedor').set_rgb('FFF999', broadcast_update=False)
+        self.world.get_thing_by_name('Snoopy').set_brightness(100, broadcast_update=False)
+        self.world.get_thing_by_name('EscaleraP1').set_brightness(20, broadcast_update=False)
+
+        self.world.get_thing_by_name('Comedor').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('Snoopy').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('EscaleraP1').broadcast_new_state(transition_time=3)
+
+    def tardenoche(self):
+        self.world.get_thing_by_name('Comedor').set_brightness(100, broadcast_update=False)
+        self.world.get_thing_by_name('Comedor').set_rgb('FD6F0C', broadcast_update=False)
+        self.world.get_thing_by_name('Snoopy').set_brightness(100, broadcast_update=False)
+        self.world.get_thing_by_name('EscaleraP1').set_brightness(20, broadcast_update=False)
+
+        self.world.get_thing_by_name('Comedor').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('Snoopy').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('EscaleraP1').broadcast_new_state(transition_time=3)
 
     def sleepy(self):
-        self.world.get_thing_by_name('BaticomedorLamp').set_brightness(10, broadcast_update=False)
-        self.world.get_thing_by_name('BaticomedorLamp').set_rgb('ED7F0C', broadcast_update=False)
-        self.world.get_thing_by_name('BaticomedorLamp').broadcast_new_state(transition_time=3)
-        #self.world.get_thing_by_name('EntrepisoLamp').set_brightness(10, broadcast_update=False)
-        #self.world.get_thing_by_name('EntrepisoLamp').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('Comedor').set_brightness(40, broadcast_update=False)
+        self.world.get_thing_by_name('Comedor').set_rgb('FD6F0C', broadcast_update=False)
+        self.world.get_thing_by_name('Snoopy').set_brightness(20, broadcast_update=False)
+        self.world.get_thing_by_name('EscaleraP1').set_brightness(0, broadcast_update=False)
+
+        self.world.get_thing_by_name('Comedor').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('Snoopy').broadcast_new_state(transition_time=3)
+        self.world.get_thing_by_name('EscaleraP1').broadcast_new_state(transition_time=3)
 
     def world_off(self):
         self.stop_all_media_players()
         self.all_lights_off()
+        self.all_outlets_off()
+
+    def all_outlets_off(self, all_except=[]):
+        for t in self.world.get_things_supporting(['outlet_off']):
+            if t.get_id() not in all_except:
+                t.outlet_off()
+                logger.info("Outlet {} off".format(t.get_id()))
 
     def all_lights_off(self, all_except=[]):
         for light in self.world.get_things_supporting(['light_off']):
