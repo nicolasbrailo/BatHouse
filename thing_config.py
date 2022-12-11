@@ -1,4 +1,5 @@
 from zigbee2mqtt2flask.zigbee2mqtt2flask.things import *
+from zigbee2mqtt2flask.zigbee2mqtt2flask.sensors_db import *
 from zigbee2mqtt2flask.zigbee2mqtt2flask.geo_helper import *
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -286,6 +287,7 @@ class SensorPuertaEntrada(DoorOpenSensor):
             logger.error("Failed to play sonos announcement: " + str(ex))
 
 
+
 def register_all_things(world, scenes):
     #world.register_thing(Cronenberg(world))
     leaving_routine = LeavingRoutine(world, scenes)
@@ -318,5 +320,10 @@ def register_all_things(world, scenes):
     world.register_thing(BotonComedorHue('BotonComedor', world))
 
     world.register_thing(ColorDimmableLamp('OlmaVelador', world.mqtt))
+    db = SensorsDB("/home/pi/BatHome/sensors.sqlite",
+                   table='samples',
+                   metrics=['temperature', 'humidity'],
+                   retention_rows=10)
+    world.register_thing(TuyaHumidityTempSensor('SensorHumTempOlma', db))
 
 
